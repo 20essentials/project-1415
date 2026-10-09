@@ -8,7 +8,7 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `done` (eje
 | # | Paso | Status | Archivo / Notas |
 |---|------|--------|-----------------|
 | 0 | Scaffold + Wix setup (login, proyecto, apps, env) | done | `step-0-scaffold-and-setup.md` |
-| 1 | Design system + header + navbar + hero | materialized | `step-1-create-hero-section.md` |
+| 1 | Design system + header + navbar + hero | done | `step-1-create-hero-section.md` |
 | 2 | Footer completo | materialized | `step-2-create-footer.md` |
 | 3 | Seed del catálogo (5 plantas, variantes, categorías, imágenes) | materialized | `step-3-seed-plant-catalog.md` |
 | 4 | Home page (secciones completas) | materialized | `step-4-create-home-page.md` |

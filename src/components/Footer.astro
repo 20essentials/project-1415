@@ -1,0 +1,31 @@
+---
+// ── Composer skeleton: src/components/Footer.astro ────────────────────────────
+// Substitutions (see compose.mjs):
+//   Petals & Predators — brand name for the wordmark + copyright.
+//   Grown by hand, fed by instinct. — short brand-voice tagline from data.shell.
+//   {{nav.links}} — same inlined Navigation links array (mirror/subset);
+//        one <a href={href}>{label}</a> per entry, labels VERBATIM. No cart,
+//        login, or account links.
+// Fixed bulk (keep literal): transition:persist, the year expression.
+const year = new Date().getFullYear();
+---
+<footer class="site-footer" transition:persist="site-footer">
+  <div class="max-w-6xl mx-auto px-6 py-16 flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+    <div class="flex flex-col gap-3 max-w-prose">
+      <span class="font-display text-lg text-ink">Petals & Predators</span>
+      <p class="text-sm">Grown by hand, fed by instinct.</p>
+    </div>
+    <nav>
+      <ul class="flex flex-col gap-3 text-sm">        <li><a href="/">Home</a></li>
+        <li><a href="/products">Shop</a></li>
+        <li><a href="/category/carnivorous">Carnivorous</a></li>
+        <li><a href="/category/flowers">Flowers</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="max-w-6xl mx-auto px-6 pb-8 text-xs">
+    <p>© {year} Petals & Predators. All rights reserved.</p>
+  </div>
+</footer>

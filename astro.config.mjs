@@ -5,9 +5,11 @@ import wixPages from "@wix/astro-pages";
 
 import react from "@astrojs/react";
 import wixHostingAdapter from "@wix/astro-wix-hosting-adapter";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
+  vite: { plugins: [tailwindcss()] },
   integrations: [wix(), wixPages(), react()],
   security: { checkOrigin: false },
   adapter: wixHostingAdapter(),

@@ -1,3 +1,39 @@
+---
+version: alpha
+name: Petals & Predators
+colors:
+  paper: "#08090A"
+  paper-warm: "#0F0F12"
+  ink: "#FAF8F5"
+  ink-soft: "#D9D7D4"
+  mute: "#969E9B"
+  rule: "#1E1F21"
+  accent: "#18E299"
+  cream: "#FFFFFF"
+  error: "#EA4335"
+typography:
+  display:
+    fontFamily: Fraunces, Georgia, serif
+    fontWeight: 400
+    lineHeight: 52px
+    letterSpacing: -2px
+  body:
+    fontFamily: Inter, ui-sans-serif, system-ui, sans-serif
+    fontWeight: 400
+    lineHeight: 20px
+  mono:
+    fontFamily: ui-monospace, SFMono-Regular, monospace
+rounded:
+  sm: 4px
+  md: 6px
+  lg: 12px
+containers:
+  prose: 42rem
+  md: 48rem
+  3xl: 64rem
+  6xl: 76.8rem
+googleFontsHref: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600&display=swap
+---
 # Design reference
 
 Source: https://www.mintlify.com/
