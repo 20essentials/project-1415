@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./fonts.css";
 
 /* Canonical design tokens — derived utilities (bg-paper, text-ink, rounded-md, …). */
 @theme {
