@@ -5,8 +5,13 @@
  * This file is the SINGLE source of truth for stores-component classes.
  * The designer's global.css does NOT publish .product-card, .product-grid,
  * .product-card-media, .product-card-ribbon, .product-card-index, or the
- * .offer-callout family — those all live here. See references/shared/STYLING.md
- * § "Component-specific CSS is owned by the component, not the designer".
+ * .offer-callout family — those all live here.
+ *
+ * Authored with Tailwind v4 utilities. `@reference "./global.css"` makes the
+ * designer's `@theme` tokens and `@utility` declarations visible to `@apply`
+ * from this non-entrypoint file (plain `@apply` fails here without it).
+ * Values that depend on a token fallback chain (`var(--a, var(--b))`) stay as
+ * direct CSS declarations because they can't be expressed as a utility.
  *
  * Class groups in this file:
  * - .product-card / .product-grid / .product-card-* → product cards (ProductCard.astro), product listings (products/index.astro, category/[slug].astro), home grid (index.astro)
@@ -14,113 +19,60 @@
  * - .option-* / .stock-status / .modifier-text → ProductPurchase.tsx (variant pills, stock label, free-text modifier)
  * - .quantity-* → ProductPurchase.tsx + CartView.tsx (quantity stepper)
  * - .back-in-stock-* → BackInStockForm.tsx (out-of-stock subscribe)
- *
- * Uses the palette + typography custom properties declared in global.css.
  */
+
+@reference "./global.css";
 
 /* =========================================================================
    Product card + grid — owned here, NOT in global.css.
    The .product-card uses overflow: hidden + border-radius, so inner padding
-   is the responsibility of THIS file (whoever sets the radius owns the
-   inset). Don't ship a stub rule and rely on the template to add padding
-   utilities — that's the leak this file was created to prevent.
+   is the responsibility of THIS file (whoever sets the radius owns the inset).
    ========================================================================= */
 .product-grid {
-  display: grid;
+  @apply grid gap-8 transition-opacity duration-200;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 2rem;
-  transition: opacity 200ms ease;
 }
 body[data-navigating="true"] .product-grid {
-  opacity: 0.55;
-  pointer-events: none;
+  @apply opacity-[0.55] pointer-events-none;
 }
 
 .product-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding-bottom: 1rem;
+  @apply relative flex flex-col gap-4 pb-4 overflow-hidden no-underline text-inherit;
   background: var(--color-paper, var(--color-cream));
   border-radius: var(--radius-xl);
-  overflow: hidden;
-  text-decoration: none;
-  color: inherit;
   transition: transform 280ms ease, box-shadow 280ms ease;
   box-shadow: var(--shadow-card, 0 4px 16px -8px rgba(0, 0, 0, 0.15));
 }
 .product-card:hover {
-  transform: translateY(-4px);
+  @apply -translate-y-1;
 }
 .product-card:hover .product-card-media > img {
-  transform: scale(1.04);
+  @apply scale-[1.04];
 }
 
 .product-card-media {
-  position: relative;
-  margin: 1rem;
-  aspect-ratio: 4 / 5;
+  @apply relative m-4 aspect-[4/5] overflow-hidden rounded-md;
   background: var(--color-paper-warm, var(--color-cream));
-  border-radius: var(--radius-md);
-  overflow: hidden;
 }
 .product-card-media > img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 600ms ease;
+  @apply w-full h-full object-cover transition-transform duration-[600ms];
 }
 
 .product-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding-inline: 1rem;
+  @apply flex flex-col gap-2 px-4;
 }
 .product-card-name {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.125rem;
-  line-height: 1.25;
-  color: var(--color-ink);
+  @apply m-0 font-display text-lg leading-tight text-ink;
 }
 .product-card-price {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  letter-spacing: 0.02em;
-  color: var(--color-mute);
+  @apply m-0 font-body text-sm tracking-[0.02em] text-mute;
 }
 
 .product-card-ribbon {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  padding: 0.375rem 0.625rem;
-  background: var(--color-accent);
-  color: var(--color-ink);
-  font-family: var(--font-body);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  border-radius: var(--radius-sm);
-  z-index: 2;
+  @apply absolute top-4 left-4 px-2.5 py-1.5 bg-accent text-ink font-body text-[0.6875rem] font-semibold tracking-[0.08em] uppercase rounded-sm z-[2];
 }
 .product-card-index {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  padding: 0.375rem 0.5rem;
-  background: rgba(255, 255, 255, 0.85);
-  color: var(--color-ink);
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  border-radius: var(--radius-pill, 9999px);
-  z-index: 2;
+  @apply absolute top-4 right-4 px-2 py-1.5 bg-white/85 text-ink font-display text-xs font-bold tracking-[0.04em] rounded-full z-[2];
 }
 
 /* =========================================================================
@@ -129,271 +81,136 @@ body[data-navigating="true"] .product-grid {
    contain `\n` line breaks; -detail must preserve them via white-space.
    ========================================================================= */
 .offer-callout {
+  @apply flex flex-col gap-4 p-6 border border-rule border-l-2 border-l-accent rounded-md;
   background: var(--color-paper-warm, var(--color-cream));
-  border: 1px solid var(--color-rule);
-  border-left: 2px solid var(--color-accent);
-  padding: 1.5rem;
-  border-radius: var(--radius-md);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 .offer-callout-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  @apply flex flex-col gap-2;
 }
 .offer-callout-item + .offer-callout-item {
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-rule);
+  @apply pt-4 border-t border-rule;
 }
 .offer-callout-badge {
-  align-self: flex-start;
-  padding: 0.25rem 0.5rem;
-  background: var(--color-ink);
-  color: var(--color-paper);
-  font-family: var(--font-body);
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  border-radius: var(--radius-sm);
+  @apply self-start px-2 py-1 bg-ink text-paper font-body text-[0.625rem] font-bold tracking-[0.1em] uppercase rounded-sm;
 }
 .offer-callout-name {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  color: var(--color-ink);
-  margin: 0;
+  @apply m-0 font-display text-base text-ink;
 }
 .offer-callout-detail {
-  font-family: var(--font-body);
-  font-size: 0.875rem;
+  @apply m-0 font-body text-sm whitespace-pre-line;
   color: var(--color-ink-soft, var(--color-mute));
-  white-space: pre-line;
-  margin: 0;
 }
 .offer-callout-foot {
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  color: var(--color-mute);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 0;
+  @apply m-0 font-body text-xs text-mute uppercase tracking-[0.06em];
 }
-
-
-/* =========================================================================
-   Rules below use direct CSS (var(--token)) only — no `@apply`.
-
-   Tailwind v4 `@apply` in a non-entrypoint CSS file only works for utilities
-   whose theme keys the designer's `@theme` block declares. Earlier revisions
-   of this template used `@apply font-heading text-bark/70 bg-parchment …`,
-   which assumed a different token vocabulary than current designer output
-   (`paper`/`ink`/`font-display` …) and built-failed on every run that loaded
-   it. Direct `var(--color-paper)` / `0.75rem` calls work against
-   any designer-published token set as long as the core scales exist (they
-   always do). Use fallback chains (`var(--color-paper-warm, var(--color-cream))`)
-   when a token is sometimes-published.
-   ========================================================================= */
 
 /* --- Variant / option pills (ProductPurchase.tsx) --- */
 .option-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  @apply flex flex-col gap-3 mb-6;
 }
 .option-label {
-  font-family: var(--font-display);
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  @apply font-display text-sm uppercase tracking-[0.05em];
   color: var(--color-ink-soft, var(--color-mute));
 }
 .option-choices {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  @apply flex flex-wrap gap-3;
 }
 .option-pill {
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--color-ink);
-  background: transparent;
-  color: var(--color-ink);
-  font-family: var(--font-body);
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: background-color 150ms ease, color 150ms ease;
+  @apply px-4 py-3 border border-ink bg-transparent text-ink font-body rounded-full cursor-pointer transition-colors duration-150;
 }
 .option-pill.selected {
-  background: var(--color-ink);
-  color: var(--color-paper);
+  @apply bg-ink text-paper;
 }
 .option-pill:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  @apply opacity-40 cursor-not-allowed;
 }
 
 /* --- Quantity stepper (ProductPurchase.tsx, CartView.tsx qty editing) --- */
 .quantity-selector {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid var(--color-ink);
-  border-radius: var(--radius-md);
-  overflow: hidden;
+  @apply inline-flex items-center border border-ink rounded-md overflow-hidden;
 }
 .quantity-btn {
-  padding: 0.5rem 0.75rem;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: var(--color-ink);
-  font-family: var(--font-body);
+  @apply px-3 py-2 bg-transparent border-0 cursor-pointer text-ink font-body;
 }
 .quantity-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  @apply opacity-40 cursor-not-allowed;
 }
 .quantity-value {
-  padding: 0.75rem 1rem;
-  font-variant-numeric: tabular-nums;
+  @apply px-4 py-3 tabular-nums;
 }
 
 /* --- Modifier free-text input (ProductPurchase.tsx, FREE_TEXT render type) --- */
 .modifier-text {
-  width: 100%;
-  padding: 0.75rem;
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  border: 1px solid var(--color-rule);
-  border-radius: var(--radius-sm);
+  @apply w-full p-3 font-body text-sm border border-rule rounded-sm text-ink resize-y;
   background: var(--color-paper-warm, var(--color-paper, var(--color-cream)));
-  color: var(--color-ink);
-  resize: vertical;
 }
 .modifier-text:focus {
-  outline: none;
-  border-color: var(--color-ink);
+  @apply outline-none border-ink;
   background: var(--color-paper, var(--color-cream));
 }
 
 /* --- Stock status (ProductPurchase.tsx) --- */
 .stock-status {
-  font-size: 0.875rem;
+  @apply text-sm italic;
   color: var(--color-ink-soft, var(--color-mute));
-  font-style: italic;
 }
 
 /* --- Back-in-stock subscribe form (BackInStockForm.tsx) ---
  * Rendered inside .purchase-area in three OOS branches when
  * backInStockEnabled=true (probe in [slug].astro). */
 .back-in-stock-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
-  padding: 1.5rem;
-  border: 1px solid var(--color-rule);
-  border-radius: var(--radius-md);
+  @apply flex flex-col gap-4 mt-4 p-6 border border-rule rounded-md;
   background: var(--color-paper, var(--color-cream));
 }
 .back-in-stock-headline {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  @apply flex flex-col gap-3;
 }
 .back-in-stock-eyebrow {
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  @apply font-display text-xs uppercase tracking-[0.05em];
   color: var(--color-ink-soft, var(--color-mute));
 }
 .back-in-stock-lede {
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  color: var(--color-ink);
-  line-height: 1.5;
+  @apply font-body text-sm text-ink leading-normal;
 }
 .back-in-stock-label {
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  @apply font-display text-xs uppercase tracking-[0.05em];
   color: var(--color-ink-soft, var(--color-mute));
 }
 .back-in-stock-row {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  @apply flex flex-row flex-wrap gap-3;
 }
 .back-in-stock-input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  border: 1px solid var(--color-rule);
-  border-radius: var(--radius-sm);
+  @apply flex-1 min-w-0 px-4 py-3 font-body text-sm border border-rule rounded-sm text-ink transition-colors duration-150;
   background: var(--color-paper-warm, var(--color-paper, var(--color-cream)));
-  color: var(--color-ink);
-  min-width: 0;
-  transition: border-color 0.15s ease;
 }
 .back-in-stock-input:focus {
-  outline: none;
-  border-color: var(--color-ink);
+  @apply outline-none border-ink;
 }
 .back-in-stock-submit {
-  padding: 0.75rem 1.5rem;
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: var(--color-ink);
-  color: var(--color-paper);
-  border: 1px solid var(--color-ink);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background-color 150ms ease;
+  @apply px-6 py-3 font-display text-xs uppercase tracking-[0.05em] bg-ink text-paper border border-ink rounded-sm cursor-pointer transition-colors duration-150;
 }
 .back-in-stock-submit:hover:not(:disabled) {
   background: var(--color-ink-soft, var(--color-ink));
 }
 .back-in-stock-submit:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  @apply opacity-50 cursor-not-allowed;
 }
 .back-in-stock-error {
-  font-family: var(--font-body);
-  font-size: 0.875rem;
+  @apply font-body text-sm;
   color: var(--color-error, var(--color-accent));
 }
 .back-in-stock-success {
-  margin-top: 1rem;
-  padding: 1.5rem;
-  border: 1px solid var(--color-rule);
-  border-radius: var(--radius-md);
+  @apply mt-4 p-6 border border-rule rounded-md;
   background: var(--color-paper, var(--color-cream));
 }
 .back-in-stock-success-headline {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  color: var(--color-ink);
-  margin: 0 0 0.5rem 0;
+  @apply font-display text-base text-ink m-0 mb-2;
 }
 .back-in-stock-success-detail {
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  color: var(--color-ink);
-  line-height: 1.55;
-  margin: 0;
+  @apply font-body text-sm text-ink leading-[1.55] m-0;
 }
 .stock-status.back-in-stock-alt {
-  margin-top: 0.75rem;
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-style: italic;
+  @apply mt-3 font-body text-sm italic;
   color: var(--color-ink-soft, var(--color-mute));
 }
 
