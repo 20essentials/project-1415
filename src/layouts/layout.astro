@@ -35,9 +35,6 @@ const { title, description, hasSeoTags = false } = Astro.props;
     <main><slot /></main>
     <Footer />
     <script>
-      // Persisted rail aria-current sync + top loading bar + rail-anchored
-      // scroll across listing-to-listing navigation. Stores pack relies on
-      // all three; do not split into separate scripts.
       function syncCategoryRail() {
         const path = window.location.pathname;
         const activeSlug = path.startsWith("/category/")
@@ -83,11 +80,7 @@ const { title, description, hasSeoTags = false } = Astro.props;
           if (progress.dataset.state === "done") delete progress.dataset.state;
         }, 320);
       }
-      // Anchor the persisted rail across listing-to-listing navigation. The
-      // page-header above the rail differs between /products and /category/[slug]
-      // (breadcrumbs, lede, optional image), so naive scroll preservation reads
-      // as a jump. Capture rail.getBoundingClientRect().top before the swap and
-      // re-equalize after.
+      // Re-equalize the rail's viewport position across listing-to-listing swaps.
       const isListing = (p: string) =>
         p === "/products" || p === "/products/" || p.startsWith("/category/");
       let railAnchorTop: number | null = null;

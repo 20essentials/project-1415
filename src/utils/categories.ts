@@ -1,14 +1,5 @@
-// Wix Stores Categories — visible, in-use categories under the @wix/stores
-// tree. Drops the auto-provisioned "All Products" root and any category
-// with zero items so the storefront only surfaces curator-meaningful
-// buckets. Returns [] on any failure so consumers can render gracefully.
-//
-// Only one category-tree is in scope here: @wix/stores. Sites with multiple
-// stores trees (B2B, marketplaces) should pass an explicit treeKey.
-
-// The official `@wix/categories` package re-exports these functions; the
-// auto_sdk module is already on disk via every other @wix/* package's
-// transitive deps, so no extra `npm install` is needed.
+// Visible, non-empty @wix/stores categories for the storefront. Returns [] on
+// failure. The auto-provisioned "All Products" root is dropped.
 import * as categories from "@wix/auto_sdk_categories_categories";
 import { productsV3 } from "@wix/stores";
 
@@ -16,15 +7,11 @@ const STORES_NAMESPACE = "@wix/stores";
 const STORES_APP_ID = "215238eb-22a5-4c36-9e7b-e7c08025e04e";
 const ALL_PRODUCTS_HANDLE = "online_stores_all_products";
 
-// Module-level TTL cache — opportunistic across requests on warm worker
-// isolates, harmless on cold starts. Categories rarely change; 5 min is fine.
-// Errors are NOT cached so a transient failure doesn't lock out the listing.
+// Module-level TTL cache (categories change rarely); errors are not cached.
 const CATEGORIES_TTL_MS = 5 * 60 * 1000;
 let categoriesCache: { at: number; data: StoreCategory[]; bySlug: Map<string, StoreCategory> } | null = null;
 let inflightCategories: Promise<StoreCategory[]> | null = null;
 
-// Per-category product-ID list — cached under the same TTL so the
-// 2-call listProductsInCategory pipeline doesn't re-fetch IDs on every page.
 const categoryItemIdsCache = new Map<string, { at: number; ids: string[] }>();
 
 export interface StoreCategory {
@@ -49,9 +36,7 @@ function toStoreCategory(c: any): StoreCategory | null {
 }
 
 async function fetchCategories(): Promise<StoreCategory[]> {
-  // The SDK builder rejects empty filter expressions with INVALID_FILTER.
-  // `.eq("visible", true)` is the constraint we want anyway and satisfies
-  // the validator.
+  // The SDK rejects empty filters; `.eq("visible", true)` satisfies it.
   const res = await categories
     .queryCategories({
       treeReference: { appNamespace: STORES_NAMESPACE },
@@ -122,10 +107,7 @@ export interface ProductPage {
   prevCursor: string | null;
 }
 
-// Cursor-paginated product list for a single category. Two calls under the
-// hood — there is no Wix endpoint that does category filter + cursor paging
-// in one shot. The cursor we surface is the productsV3 cursor, so paging is
-// stable as long as the category membership doesn't change mid-session.
+// Cursor-paginated products for one category (two calls: ids, then productsV3).
 export async function listProductsInCategory(
   categoryId: string,
   opts: { limit: number; cursor?: string },

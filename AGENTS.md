@@ -31,6 +31,14 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 - Por defecto, mantener los datos en el frontmatter del propio componente. **No** crear módulos externos (`src/utils/*.ts`) salvo que los datos se compartan realmente entre varios archivos; abstraer de más es sobre-ingeniería.
 - Mantener los marcadores de plantilla (`<!-- nav:links -->`, `<!-- nav:actions -->`, `<!-- home:* -->`) aunque se refactorice: el pipeline de pasos los usa.
 
+### Comentarios: solo si aportan (nada de relleno)
+
+- Regla práctica: si el comentario se puede borrar sin perder información, se borra.
+- Prohibido el comentario que repite lo que el código ya dice (`// setea el estado`, `// loop sobre items`) o que narra la acción del agente.
+- Sin bloques-parrado ni cabeceras de scaffold/skeleton (`// ── Composer skeleton: …`). Un comentario = máximo una línea.
+- Un comentario solo se justifica si explica un **por qué** no evidente: gotcha de API, workaround, decisión de diseño, id mágico. Nada más.
+- Conservar únicamente los comentarios operativos que el tooling/pipeline necesita (marcadores `<!-- nav:links -->`, `<!-- nav:actions -->`, `<!-- home:* -->`).
+
 ### Diagnóstico de herramientas (no forzar soluciones)
 
 - Si `Edit` falla con "Could not find oldString" en un bloque multilínea pero encuentra una sola línea, sospechar diferencias de fin de línea (CRLF vs LF). Diagnosticar la causa antes de recurrir a reescribir archivos enteros.

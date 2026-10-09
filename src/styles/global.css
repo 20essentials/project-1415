@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
-/* Design tokens — canonical source. Derived utilities (bg-paper, text-ink,
-   rounded-md, font-display, …) come from this @theme block. */
+/* Canonical design tokens — derived utilities (bg-paper, text-ink, rounded-md, …). */
 @theme {
   --color-paper: #08090a;
   --color-paper-warm: #0f0f12;
@@ -59,8 +58,7 @@
 [data-decorative-slot] { position: relative; overflow: hidden; }
 [data-decorative-slot] > img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Navigation feedback (paired with the layout.astro script). The default
-   ClientRouter root cross-fade is disabled; the top progress bar carries it. */
+/* Top progress bar carries navigation feedback (default root cross-fade disabled). */
 ::view-transition-old(root),
 ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 

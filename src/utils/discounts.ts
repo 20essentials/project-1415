@@ -1,17 +1,6 @@
-// Live discount-rule fetch + per-product matching for storefront indicators.
-// Owned by the ecom pack because Wix Discount Rules is an @wix/ecom primitive.
-// Consumers: stores pack (ProductCard ribbon, product-detail offer callout,
-// home featured grid). Future ecom-using verticals (bookings, events) can
-// reuse the same util without change.
-//
-// Gotchas encoded here — do not remove:
-//  1. queryDiscountRules needs ECOM.DISCOUNT_RULES_READ — must be called via
-//     auth.elevate(), otherwise a visitor client returns no rules silently.
-//  2. Scope objects are returned with `_id` (underscore), not `id`. Check both.
-//  3. "All products" scope shape: { _id: "all_<appDefId>", catalogItemFilter:
-//     { catalogAppId, catalogItemIds: [] } }. Empty array + app id = applies
-//     to every product.
-
+// Live discount rules + per-product matching (@wix/ecom primitive).
+// Gotchas: queryDiscountRules needs auth.elevate(); scopes use `_id` not `id`;
+// an "all products" scope has an empty catalogItemIds + a catalogAppId.
 import { discountRules } from "@wix/ecom";
 import { auth } from "@wix/essentials";
 
