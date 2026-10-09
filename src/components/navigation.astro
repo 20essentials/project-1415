@@ -1,45 +1,65 @@
 ---
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/products", label: "Shop" },
-  { href: "/category/carnivorous", label: "Carnivorous" },
-  { href: "/category/flowers", label: "Flowers" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { href: '/', label: 'Home' },
+  { href: '/products', label: 'Shop' },
+  { href: '/category/carnivorous', label: 'Carnivorous' },
+  { href: '/category/flowers', label: 'Flowers' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' }
 ];
 ---
-<header class="site-nav" transition:persist="site-nav">
-  <nav class="max-w-6xl mx-auto px-6 flex items-center justify-between gap-6 py-4">
-    <a href="/" class="font-display text-lg tracking-tight flex items-center gap-2">
-      ❀ <span class="font-display tracking-tight">Petals & Predators</span>
+
+<header
+  class='sticky top-0 z-50 border-b border-rule bg-paper/90 backdrop-blur-sm'
+  transition:persist='site-nav'
+>
+  <nav
+    class='max-w-6xl mx-auto px-6 flex items-center justify-between gap-6 py-4'
+  >
+    <a
+      href='/'
+      class='font-display text-lg tracking-tight flex items-center gap-2'
+    >
+      ❀ <span class='font-display tracking-tight'>Petals & Predators</span>
     </a>
 
-    <input type="checkbox" id="nav-toggle" class="peer hidden" aria-hidden="true" />
+    <input
+      type='checkbox'
+      id='nav-toggle'
+      class='peer hidden'
+      aria-hidden='true'
+    />
     <label
-      for="nav-toggle"
-      class="md:hidden inline-flex flex-col gap-1.25 cursor-pointer"
-      aria-label="Toggle navigation"
-      aria-controls="primary-nav"
-      aria-expanded="false"
+      for='nav-toggle'
+      class='md:hidden inline-flex flex-col gap-1.25 cursor-pointer'
+      aria-label='Toggle navigation'
+      aria-controls='primary-nav'
+      aria-expanded='false'
       data-nav-toggle
     >
-      <span class="block h-0.5 w-6 bg-ink"></span>
-      <span class="block h-0.5 w-6 bg-ink"></span>
-      <span class="block h-0.5 w-6 bg-ink"></span>
+      <span class='block h-0.5 w-6 bg-ink'></span>
+      <span class='block h-0.5 w-6 bg-ink'></span>
+      <span class='block h-0.5 w-6 bg-ink'></span>
     </label>
 
     <div
-      class="hidden peer-checked:flex md:flex absolute md:static top-full left-0 right-0 md:right-auto
+      class='hidden peer-checked:flex md:flex absolute md:static top-full left-0 right-0 md:right-auto
              flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center
-             bg-paper md:bg-transparent border-b md:border-0 border-rule px-6 md:px-0 py-4 md:py-0"
+             bg-paper md:bg-transparent border-b md:border-0 border-rule px-6 md:px-0 py-4 md:py-0'
     >
-      <ul class="flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center">
-        {navLinks.map(({ href, label }) => (
-          <li class="site-nav-item"><a href={href}>{label}</a></li>
-        ))}
+      <ul
+        class='flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center'
+      >
+        {
+          navLinks.map(({ href, label }) => (
+            <li class='relative'>
+              <a href={href}>{label}</a>
+            </li>
+          ))
+        }
         <!-- nav:links -->
       </ul>
-      <div class="nav-actions">
+      <div class='flex items-center gap-4'>
         <!-- nav:actions -->
       </div>
     </div>
