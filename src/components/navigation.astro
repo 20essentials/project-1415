@@ -1,12 +1,12 @@
 ---
-// ── Composer skeleton: src/components/navigation.astro ────────────────────────
-// Substitutions (see compose.mjs):
-//   ❀ — brand mark / wordmark text from data.shell.
-//   {{nav.links}} — one <a href={href}>{label}</a> per entry in the inlined
-//        Navigation links array, labels VERBATIM (no editorial rebrands). Render
-//        each inside a <li class="site-nav-item">.
-// Fixed bulk (keep literal): transition:persist, the <!-- nav:links --> marker,
-// the empty <div class="nav-actions"> mount, the mobile hamburger toggle.
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/products", label: "Shop" },
+  { href: "/category/carnivorous", label: "Carnivorous" },
+  { href: "/category/flowers", label: "Flowers" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+];
 ---
 <header class="site-nav" transition:persist="site-nav">
   <nav class="max-w-6xl mx-auto px-6 flex items-center justify-between gap-6 py-4">
@@ -17,15 +17,15 @@
     <input type="checkbox" id="nav-toggle" class="peer hidden" aria-hidden="true" />
     <label
       for="nav-toggle"
-      class="md:hidden inline-flex flex-col gap-[5px] cursor-pointer"
+      class="md:hidden inline-flex flex-col gap-1.25 cursor-pointer"
       aria-label="Toggle navigation"
       aria-controls="primary-nav"
       aria-expanded="false"
       data-nav-toggle
     >
-      <span class="block h-[2px] w-6 bg-ink"></span>
-      <span class="block h-[2px] w-6 bg-ink"></span>
-      <span class="block h-[2px] w-6 bg-ink"></span>
+      <span class="block h-0.5 w-6 bg-ink"></span>
+      <span class="block h-0.5 w-6 bg-ink"></span>
+      <span class="block h-0.5 w-6 bg-ink"></span>
     </label>
 
     <div
@@ -33,12 +33,10 @@
              flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center
              bg-paper md:bg-transparent border-b md:border-0 border-rule px-6 md:px-0 py-4 md:py-0"
     >
-      <ul class="flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center">        <li class="site-nav-item"><a href="/">Home</a></li>
-        <li class="site-nav-item"><a href="/products">Shop</a></li>
-        <li class="site-nav-item"><a href="/category/carnivorous">Carnivorous</a></li>
-        <li class="site-nav-item"><a href="/category/flowers">Flowers</a></li>
-        <li class="site-nav-item"><a href="/about">About</a></li>
-        <li class="site-nav-item"><a href="/contact">Contact</a></li>
+      <ul class="flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center">
+        {navLinks.map(({ href, label }) => (
+          <li class="site-nav-item"><a href={href}>{label}</a></li>
+        ))}
         <!-- nav:links -->
       </ul>
       <div class="nav-actions">
