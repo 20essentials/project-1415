@@ -9,9 +9,9 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `done` (eje
 |---|------|--------|-----------------|
 | 0 | Scaffold + Wix setup (login, proyecto, apps, env) | done | `step-0-scaffold-and-setup.md` |
 | 1 | Design system + header + navbar + hero | done | `step-1-create-hero-section.md` |
-| 2 | Footer completo | materialized | `step-2-create-footer.md` |
-| 3 | Seed del catálogo (5 plantas, variantes, categorías, imágenes) | materialized | `step-3-seed-plant-catalog.md` |
-| 4 | Home page (secciones completas) | materialized | `step-4-create-home-page.md` |
+| 2 | Footer completo | done | `step-2-create-footer.md` |
+| 3 | Seed del catálogo (5 plantas, variantes, categorías, imágenes) | done | `step-3-seed-plant-catalog.md` |
+| 4 | Home landing scroll-world con los 6 clips de `public/videos/` | materialized | `step-4-create-home-page.md` (+ receta en `.opencode/references/higgsfield-landing-prompts.md`) |
 | 5 | Shop + páginas de categoría | materialized | `step-5-create-shop-page.md` |
 | 6 | Product detail (variantes + add-to-cart) | materialized | `step-6-create-product-detail.md` |
 | 7 | Cart + checkout nativo Wix + badge en nav | materialized | `step-7-create-cart-and-checkout.md` |

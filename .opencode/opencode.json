@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "wix-mcp": {
+      "type": "remote",
+      "url": "https://mcp.wix.com/mcp",
+      "headers": {
+        "Authorization": "IST.eyJraWQiOiJQb3pIX2FDMiIsImFsZyI6IlJTMjU2In0.eyJkYXRhIjoie1wiaWRcIjpcIjFiNWJiZDBiLWM2OTYtNDBlYS04MzlhLTBhNWNhYWYxMjNlZlwiLFwiaWRlbnRpdHlcIjp7XCJ0eXBlXCI6XCJhcHBsaWNhdGlvblwiLFwiaWRcIjpcImRmZWI2ZmQ2LWM5MmEtNDEwOC1hZDRhLTA1YTEwYTJkZTgyYlwifSxcInRlbmFudFwiOntcInR5cGVcIjpcImFjY291bnRcIixcImlkXCI6XCI2MDA1ODIzOS1mMmJkLTQwOGItODlhMi02ZDQ2NGRmZjZlOGFcIn19IiwiaWF0IjoxNzkxNTY1NjAxfQ.hvJIAPfBf6pdcIWxJPZOuc0isKxzW1XnAjf4Uj4-mFPhE2bwvrwMrKJ-7Kazj0MXHR87bSa8aqocf5lJomsjFEKq3OgLs93rbzDP0bjmyEm6LZPiic8zetCKCvPZZymCn60v6NxWkorgYPF70xoEWyYm3h8_A9ABGzO-4B6Fkd66H93zj8i9Ei1gGBr2uHjCl5gsqPuNRg2AoKfizWoBjGr7ZDlVDHTGemMW3m3S8X38iGapTCYx3SM4oq4eSvOj88s-SZA8WdiPQYOICp4ObxgMZulO70cCOV9XAJgcibi9XSJU8icZZlVojXp4VlnDsUh0PeBDO7e_yVQcmxWogg",
+        "wix-account-id": "60058239-f2bd-408b-89a2-6d464dff6e8a"
+      }
+    }
+  }
+}

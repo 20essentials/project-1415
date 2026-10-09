@@ -53,6 +53,13 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 - No ampliar el alcance por inferencia (p. ej. "todo src" → convertir hojas CSS enteras, borrar scaffold). Si el alcance es ambiguo o implica cambios destructivos, preguntar antes de ejecutar.
 - Cambios que pueden romper el build o alterar el diseño (conversión masiva de CSS, borrado de archivos) se confirman primero.
 
+## Instalación de comandos y skills (siempre local)
+
+- Todo comando o skill se instala **solo** dentro de `.opencode/` de este proyecto. Nunca en rutas globales (`~/.config/opencode/`, `~/.claude/`, `~/.agents/`) ni en otros proyectos.
+- Comandos → `.opencode/commands/<nombre>.md`. Skills → `.opencode/skills/<nombre>/SKILL.md` (la carpeta del skill debe llevar el mismo `name` que su frontmatter).
+- Al instalar desde un repo externo: clonar en un temporal, copiar **solo** la carpeta del skill (no el repo entero) con `SKILL.md` + sus `references/`, y verificar que el frontmatter tenga `name` y `description`.
+- Recordar al usuario reiniciar opencode después de instalar: la config y los skills se cargan al arrancar.
+
 ## Flujo de trabajo por comandos
 
 - El sitio se construye por pasos: cada `.opencode/commands/step-N-*.md` es la **fuente de verdad** de qué hacer a continuación. Ejecutar en orden (`/step-0-scaffold-and-setup`, `/step-1-create-hero-section`, …).

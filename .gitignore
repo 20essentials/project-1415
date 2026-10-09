@@ -1,5 +1,6 @@
 # wix integration
 .wix/
+text-just-for-me.txt
 
 # build output
 dist/
