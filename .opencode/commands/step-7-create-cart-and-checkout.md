@@ -28,7 +28,7 @@ navbar, y checkout redirigiendo al checkout alojado de Wix + página de agradeci
    no construyas checkout propio), y "Continue shopping" → `/products`.
 2. **Estado vacío** — "Your cart is empty" + CTA a `/products`.
 3. **`src/components/CartBadge.tsx` en la navbar** — montar en
-   `src/components/Navigation.astro` **en el marker `<!-- nav:actions -->`**:
+   `src/components/navigation.astro` **en el marker `<!-- nav:actions -->`**:
    icono de carrito con contador (actualiza en vivo con la Current Cart API),
    `aria-label="Cart, N items"`, link a `/cart`.
 4. **`src/pages/thank-you.astro`** — confirmación post-compra (pedido, resumen,

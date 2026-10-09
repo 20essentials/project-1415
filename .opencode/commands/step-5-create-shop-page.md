@@ -29,7 +29,7 @@ El catálogo navegable: grid de productos en `/products`, páginas de categoría
    `stores.categoryIds` (carnivorous, flowers, kits-accessories); título de
    categoría, lede, grid filtrado por categoría.
 3. **`src/components/CategoryRail.astro`** — pills "All / Carnivorous / Flowers /
-   Kits & Accessories" con `aria-current` (el script de `Layout.astro` ya lo
+   Kits & Accessories" con `aria-current` (el script de `layout.astro` ya lo
    sincroniza en `/products` y `/category/*` — no re-implementarlo, solo usar los
    atributos `data-category-rail` / `data-category-slug`).
 4. **`src/components/ProductCard.astro`** — componente único reutilizado por home

@@ -8,7 +8,7 @@ description: Step 1 — Design system + header + navbar + hero · Petals & Preda
 ## Objetivo
 
 Convertir la captura de `DESIGN.md` en tokens canónicos, correr el Composer de la
-skill para que escriba `Layout.astro` (header), `Navigation.astro` (navbar) e
+skill para que escriba `layout.astro` (header), `navigation.astro` (navbar) e
 `index.astro` (hero), y dejar esa primera pantalla afinada a la marca.
 
 ## Contexto
@@ -115,8 +115,8 @@ del shell es un punto de partida — refínalo (tono cálido, confiable, en ingl
 
 ### 4. Afinar la primera pantalla
 
-- `src/layouts/Layout.astro` — título por defecto, Fraunces via `<link>`, header sticky opcional.
-- `src/components/Navigation.astro` — marca ❀ + "Petals & Predators", links, menú móvil
+- `src/layouts/layout.astro` — título por defecto, Fraunces via `<link>`, header sticky opcional.
+- `src/components/navigation.astro` — marca ❀ + "Petals & Predators", links, menú móvil
   (hamburger con `aria-expanded`, teclado), **deja libre el slot `<!-- nav:actions -->`**
   (step-7 monta ahí el CartBadge).
 - `src/pages/index.astro` — hero con el headline Fraunces ~50px/52px `tracking -2px`,

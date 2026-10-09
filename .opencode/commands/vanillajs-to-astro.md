@@ -1,12 +1,12 @@
 ---
-description: Convierte un proyecto vanilla (HTML/CSS/JS) a Astro 2026 con todo el código dentro de Hero.astro
+description: Convierte un proyecto vanilla (HTML/CSS/JS) a Astro 2026 con todo el código dentro de hero.astro
 ---
 
 Convierte el proyecto vanilla que está en la carpeta `$ARGUMENTS` (si no se pasa ruta, busca dentro de `js-to-astro/` y `preview/` por un `index.html`, `style.css` y `script.js`) a un componente Astro moderno. Sigue fielmente el contrato visual y de comportamiento del código original.
 
 ## Estructura de salida
 
-- Todo el código queda dentro de `src/components/Hero.astro`:
+- Todo el código queda dentro de `src/components/hero.astro`:
   - el marcado HTML tal cual (elementos con los mismos id/class que el original),
   - los estilos en `<style is:global>` (los originales aplican a `body`/`html`, por eso `is:global`),
   - el JS completo dentro de un `<script>` con los imports al inicio.

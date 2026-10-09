@@ -10,8 +10,8 @@ NO TOMAR ATAJOS — CADA `git adco{N}` CORRESPONDE A UN CAMBIO ESPECIFICO Y DEBE
 
 1. Obtén el nombre del proyecto del directorio actual
 2. Si no existe `.git`, ejecuta `git init`
-3. Hero.astro → `git adco` (v0.0.1)
-4. Layout.astro: cambia `<title>Project</title>` a `<title>Project {NUM}</title>` → `git adco2`
+3. hero.astro → `git adco` (v0.0.1)
+4. layout.astro: cambia `<title>Project</title>` a `<title>Project {NUM}</title>` → `git adco2`
 5. styles.css → `git adco3`
 6. astro.config.mjs: reemplaza ambos (repito AMBOS) `project-239` (esto:  ...
     : 'https://20essentials.github.io/project-239/',
@@ -19,5 +19,5 @@ NO TOMAR ATAJOS — CADA `git adco{N}` CORRESPONDE A UN CAMBIO ESPECIFICO Y DEBE
 7. README.md: reemplaza solo el preview `project-{NUM}` → `git adco5`
 8. README.md: reemplaza el link izquierdo con `project-{PREV}` → `git adco6`
 9. README.md: reemplaza el link derecho con `project-{NEXT}` → `git adco7`
-10. Layout.astro: elimina `<style></style>` y el script comentado → `git adco8`
+10. layout.astro: elimina `<style></style>` y el script comentado → `git adco8`
 11. Si el .gitignore de la carpeta raiz no tiene .opencode/* agregalo  → `git adco9`

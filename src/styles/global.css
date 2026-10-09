@@ -165,7 +165,7 @@
   color: var(--color-mute);
 }
 
-/* ── View Transitions wiring (paired with Layout.astro <script>) ──────────────
+/* ── View Transitions wiring (paired with layout.astro <script>) ──────────────
    Disable the default ClientRouter root cross-fade; the progress bar + grid-dim
    carry navigation feedback instead. Do not split into a separate file. */
 ::view-transition-old(root),

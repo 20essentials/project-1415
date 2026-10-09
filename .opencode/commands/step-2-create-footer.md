@@ -7,7 +7,7 @@ description: Step 2 — Footer completo · Petals & Predators
 
 ## Objetivo
 
-Convertir el `Footer.astro` básico que escribió el Composer en un footer completo:
+Convertir el `footer.astro` básico que escribió el Composer en un footer completo:
 columnas de enlaces, tagline, newsletter, redes sociales y fila legal — responsive y accesible.
 
 ## Contexto
@@ -15,7 +15,7 @@ columnas de enlaces, tagline, newsletter, redes sociales y fila legal — respon
 - **Marca:** Petals & Predators — sitio en inglés.
 - **Design system:** `DESIGN.md` + `.wix/design-tokens.css` + `src/styles/global.css`.
 - **Páginas hoy:** !`ls src/pages 2>/dev/null || echo "(ninguna)"` · **Comandos:** !`ls .opencode/commands`
-- El footer vive en `src/components/Footer.astro` y se monta desde `Layout.astro` (todas las páginas).
+- El footer vive en `src/components/footer.astro` y se monta desde `layout.astro` (todas las páginas).
 
 ## Functionality
 

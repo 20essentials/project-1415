@@ -55,7 +55,7 @@ garden-store/
 |---|---|---|
 | step-0 | Proyecto Wix vivo | login CLI, `scaffold.sh` (flatten a CWD), `npm install --legacy-peer-deps`, apps Wix Stores + Wix Forms, `env pull`, verificar `wix.config.json` |
 | step-1 | Design system + header + navbar + hero | frontmatter DESIGN.md (roles wix + Fraunces) → `emit-design-tokens.mjs` → pre-copy de CSS/utils → `compose.mjs` → customizar hero/nav |
-| step-2 | `Footer.astro` completo | columnas, tagline, newsletter, social, legal, responsive |
+| step-2 | `footer.astro` completo | columnas, tagline, newsletter, social, legal, responsive |
 | step-3 | Catálogo sembrado | 5 productos con variantes/categorías + imágenes → `.wix/seeded.json` |
 | step-4 | Home page | value props, categorías, featured products (SDK runtime), testimonios, CTA |
 | step-5 | Shop + categorías | `/products`, `/category/[slug]`, ProductCard, CategoryRail, filtros |

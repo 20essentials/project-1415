@@ -1,5 +1,5 @@
 ---
-// ── Composer skeleton: src/layouts/Layout.astro ──────────────────────────────
+// ── Composer skeleton: src/layouts/layout.astro ──────────────────────────────
 // Fully replaces the scaffold's bare stub. The <script> below and the View
 // Transitions wiring are LITERAL fixed bulk — do not re-author. Composer's only
 // substitutions (see compose.mjs):
@@ -12,8 +12,8 @@ import '../styles/global.css';
 import '../styles/components-stores.css';
 import '../styles/components-ecom.css';
 import { ClientRouter } from 'astro:transitions';
-import Navigation from '../components/Navigation.astro';
-import Footer from '../components/Footer.astro';
+import Navigation from '../components/navigation.astro';
+import Footer from '../components/footer.astro';
 
 interface Props {
   title?: string;

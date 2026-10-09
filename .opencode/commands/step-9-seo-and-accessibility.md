@@ -21,14 +21,14 @@ alt de imágenes, navegación por teclado, contraste y comportamiento responsive
 
 ### SEO
 
-1. **`title` + `description` por página** vía los Props de `Layout.astro`
+1. **`title` + `description` por página** vía los Props de `layout.astro`
    (home, shop, categoría, PDP, cart, about, contact) — único `h1` por página.
 2. **Open Graph / Twitter** (`og:title`, `og:description`, `og:image` con imagen
    real 1200×630 si existe, `twitter:card`) + `<link rel="canonical">`.
 3. **`src/robots.txt`** (allow `/`, disallow `/cart`, `/thank-you`) y
    **sitemap**: si `@astrojs/sitemap` se integra limpio en `astro.config.mjs`,
    úsalo; si no, deja el sitemap manual de las rutas canónicas en `public/sitemap.xml`.
-4. **Favicon** — reemplazar el data-uri vacío de `Layout.astro` con un SVG hoja/❀ en
+4. **Favicon** — reemplazar el data-uri vacío de `layout.astro` con un SVG hoja/❀ en
    `public/favicon.svg`.
 5. Descripciones en inglés, <160 chars, con keywords naturales (carnivorous plants,
    rare plants, buy flowers online).
@@ -49,7 +49,7 @@ alt de imágenes, navegación por teclado, contraste y comportamiento responsive
 10. **`prefers-reduced-motion`** — anular transforms/transiciones no esenciales.
 11. **Responsive sweep** en 375 / 768 / 1024 / 1280 px: nav, grids, PDP, carrito,
     footer — sin overflow horizontal ni texto cortado.
-12. Meta viewport y `lang="en"` correctos (verificar en `Layout.astro`).
+12. Meta viewport y `lang="en"` correctos (verificar en `layout.astro`).
 
 ## Verificación
 
