@@ -1,87 +1,236 @@
 @import "tailwindcss";
-@import "./fonts.css";
+@import "lenis/dist/lenis.css";
 
-/* Canonical design tokens — derived utilities (bg-paper, text-ink, rounded-md, …). */
+@theme inline {
+  --font-display: var(--font-hina), serif;
+  --font-sans: var(--font-zen), sans-serif;
+}
+
 @theme {
-  --color-paper: #08090a;
-  --color-paper-warm: #0f0f12;
-  --color-ink: #faf8f5;
-  --color-ink-soft: #d9d7d4;
-  --color-mute: #969e9b;
-  --color-rule: #1e1f21;
-  --color-accent: #18e299;
-  --color-cream: #ffffff;
-  --color-error: #ea4335;
+  --color-bg: #131209;
+  --color-crema: #f3eadb;
+  --color-teja: #d0703a;
+  --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+}
 
-  --font-display: Fraunces, Georgia, serif;
-  --font-body: Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, monospace;
-
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 12px;
-
-  --container-prose: 42rem;
-  --container-md: 48rem;
-  --container-3xl: 64rem;
-  --container-6xl: 76.8rem;
+/* Recorta el interlineado a la altura de las mayúsculas para centrar el texto ópticamente. */
+@utility text-trim {
+  text-box: trim-both cap alphabetic;
 }
 
 @layer base {
-  * {
-    box-sizing: border-box;
+  :root {
+    interpolate-size: allow-keywords;
+    color-scheme: dark;
   }
+
   html {
-    -webkit-text-size-adjust: 100%;
-  }
-  body {
-    margin: 0;
-    background: var(--color-paper);
-    color: var(--color-ink);
-    font-family: var(--font-body);
-    line-height: 1.6;
+    background-color: var(--color-bg);
+    color: var(--color-crema);
+    font-synthesis: none;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  h1, h2, h3, h4, h5, h6 {
-    margin: 0;
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg);
+  }
+
+  h1,
+  h2,
+  h3 {
     font-family: var(--font-display);
-    line-height: 1.15;
+    font-weight: 400;
+    text-wrap: balance;
   }
-  p { margin: 0; }
-  a { color: inherit; text-decoration: none; }
-  button { font: inherit; cursor: pointer; }
-  input, textarea, select { font: inherit; }
-  img { display: block; max-width: 100%; height: auto; }
-  ul, ol { margin: 0; padding: 0; list-style: none; }
+
+  p,
+  li,
+  dd,
+  blockquote {
+    text-wrap: pretty;
+  }
+
+  address {
+    font-style: normal;
+  }
+
+  strong,
+  b {
+    font-weight: 500;
+  }
+
+  em,
+  i {
+    font-style: normal;
+  }
+
+  ::selection {
+    background-color: var(--color-teja);
+    color: var(--color-bg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-teja);
+    outline-offset: 4px;
+  }
 }
 
-/* Image slots filled by the orchestrator after the Image phase. */
-[data-decorative-slot] { position: relative; overflow: hidden; }
-[data-decorative-slot] > img { width: 100%; height: 100%; object-fit: cover; }
+@layer components {
+  /* Botón principal: teja con texto oscuro. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    border-radius: 9999px;
+    padding: 8px 12px;
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    font-weight: 500;
+    transition:
+      background-color 700ms var(--ease-fluid),
+      color 700ms var(--ease-fluid),
+      transform 700ms var(--ease-fluid);
+  }
 
-/* Top progress bar carries navigation feedback (default root cross-fade disabled). */
-::view-transition-old(root),
-::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+  /* El texto va en un <span> recortado a la altura de las mayúsculas para que quede centrado ópticamente. */
+  .btn > span {
+    text-box: trim-both cap alphabetic;
+  }
 
-.nav-progress {
-  position: fixed;
-  inset-inline: 0;
-  top: 0;
-  z-index: 1000;
-  height: 2px;
-  background: var(--color-accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  opacity: 0;
-  pointer-events: none;
+  /* Sin text-box, las mayúsculas de Zen Kaku Gothic New caen 0.086em por debajo del centro. */
+  @supports not (text-box: trim-both cap alphabetic) {
+    .btn > span {
+      translate: 0 -0.086em;
+    }
+  }
+
+  .btn-sm {
+    min-height: 36px;
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+  }
+
+  .btn-primary {
+    background-color: var(--color-teja);
+    color: var(--color-bg);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-crema);
+    transform: scale(1.02);
+  }
+
+  .btn-ghost {
+    color: var(--color-crema);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-crema) 30%, transparent);
+  }
+
+  .btn-ghost:hover {
+    background-color: var(--color-crema);
+    color: var(--color-bg);
+    transform: scale(1.02);
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .link {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    text-decoration-color: color-mix(in oklab, var(--color-crema) 35%, transparent);
+    transition:
+      color 700ms var(--ease-fluid),
+      text-decoration-color 700ms var(--ease-fluid);
+  }
+
+  .link:hover {
+    color: var(--color-teja);
+    text-decoration-color: var(--color-teja);
+  }
+
+  /* Máscaras: arco, óvalo y espejo de borde orgánico. */
+  .mask-arch {
+    border-radius: 9999px 9999px 0 0;
+  }
+
+  .mask-oval {
+    border-radius: 50%;
+  }
+
+  .mask-mirror {
+    border-radius: 46% 54% 41% 59% / 57% 44% 56% 43%;
+  }
+
+  .mask-mirror-alt {
+    border-radius: 58% 42% 52% 48% / 44% 58% 42% 56%;
+  }
+
+  /* Marco de espejo: aro crema fino con 8px de aire. */
+  .mirror-frame {
+    padding: 8px;
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-crema) 28%, transparent);
+  }
+
+  /* Entrada al hacer scroll: sube, enfoca y aparece. */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(4rem);
+    filter: blur(12px);
+    transition:
+      opacity 1000ms var(--ease-fluid),
+      transform 1000ms var(--ease-fluid),
+      filter 1000ms var(--ease-fluid);
+    transition-delay: var(--d, 0ms);
+  }
+
+  .js [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  /* Acordeón de preguntas. */
+  .faq::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    transition:
+      block-size 700ms var(--ease-fluid),
+      content-visibility 700ms allow-discrete;
+  }
+
+  .faq[open]::details-content {
+    block-size: auto;
+  }
+
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq .faq-icon {
+    transition: transform 700ms var(--ease-fluid);
+  }
+
+  .faq[open] .faq-icon {
+    transform: rotate(45deg);
+  }
 }
-.nav-progress[data-state="loading"] {
-  opacity: 1;
-  transform: scaleX(0.85);
-  transition: transform 1.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 120ms ease;
-}
-.nav-progress[data-state="done"] {
-  opacity: 0;
-  transform: scaleX(1);
-  transition: transform 200ms ease, opacity 240ms ease 60ms;
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] {
+    transform: none;
+    filter: none;
+    transition: opacity 400ms var(--ease-fluid);
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
 }

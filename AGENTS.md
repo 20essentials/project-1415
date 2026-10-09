@@ -1,6 +1,9 @@
 - Nos inspiraremos en la web de: https://www.mintlify.com/
 - Un punto de referencia es la documentation de Wix Managed Headless: https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/about-the-astro-integration
 
+# GENERAL
+- Todo file adentro de src/* debe estar escrito en kebab-case.
+
 
 ## Typescript
 - No debes usar any, a menos que no tengas de otra. Trata de crear los tipos usando las docs de Wix:  https://dev.wix.com/docs/api-reference y https://dev.wix.com/docs/sdk y

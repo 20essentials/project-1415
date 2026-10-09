@@ -1,114 +1,86 @@
 ---
-import '@/styles/global.css';
-import { ClientRouter } from 'astro:transitions';
-import Navigation from '@/components/navigation.astro';
-import Footer from '@/components/footer.astro';
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import LogoSymbol from '../components/LogoSymbol.astro';
+import { ogImage } from '../data/imagenes';
 
 interface Props {
-  title?: string;
-  description?: string;
-  hasSeoTags?: boolean;
+  title: string;
+  description: string;
+  noindex?: boolean;
+  header?: boolean;
 }
-const { title, description, hasSeoTags = false } = Astro.props;
+
+const { title, description, noindex = false, header = true } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogUrl = new URL(ogImage.src, Astro.site);
+const robots = noindex
+  ? 'noindex, follow'
+  : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 ---
+
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" />
-    <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
-    {!hasSeoTags && (
-      <>
-        <title>{title ? `${title} · Petals & Predators` : "Petals & Predators"}</title>
-        {description && <meta name="description" content={description} />}
-      </>
-    )}
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <meta name="theme-color" content="#131209" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+    {
+      !noindex && (
+        <>
+          <link rel="canonical" href={canonical} />
+          <link rel="alternate" hreflang="en" href={canonical} />
+          <link rel="alternate" hreflang="x-default" href={canonical} />
+        </>
+      )
+    }
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Petals & Predators" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:secure_url" content={ogUrl} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImage.alt} />
+    {/* Sin twitter:site: su web no enlaza ninguna cuenta de X y @arko.barcelona es su Instagram. */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:url" content={canonical} />
+    <meta name="twitter:image" content={ogUrl} />
+    <meta name="twitter:image:alt" content={ogImage.alt} />
+
+    <Font cssVariable="--font-hina" preload />
+    <Font cssVariable="--font-zen" preload />
+
     <slot name="head" />
-    <ClientRouter />
   </head>
-  <body>
-    <div class="nav-progress" data-nav-progress aria-hidden="true"></div>
-    <Navigation />
-    <main><slot /></main>
+  <body class="min-h-svh overflow-x-clip">
+    <LogoSymbol />
+    {header && <Header />}
+    <main id="contenido" tabindex="-1" class="outline-none">
+      <slot />
+    </main>
     <Footer />
     <script>
-      function syncCategoryRail() {
-        const path = window.location.pathname;
-        const activeSlug = path.startsWith("/category/")
-          ? path.slice("/category/".length).replace(/\/$/, "")
-          : path === "/products" || path === "/products/"
-            ? ""
-            : null;
-        if (activeSlug === null) return;
-        const pills = document.querySelectorAll<HTMLAnchorElement>(
-          "[data-category-rail] .category-pill",
-        );
-        for (const pill of pills) {
-          const slug = pill.dataset.categorySlug ?? "";
-          if (slug === activeSlug) pill.setAttribute("aria-current", "page");
-          else pill.removeAttribute("aria-current");
-        }
-      }
-      // Eager click feedback — flip aria-current before the network call.
-      document.addEventListener("click", (event) => {
-        const target = event.target as HTMLElement | null;
-        const pill = target?.closest<HTMLAnchorElement>(
-          "[data-category-rail] .category-pill",
-        );
-        if (!pill) return;
-        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        const pills = document.querySelectorAll<HTMLAnchorElement>(
-          "[data-category-rail] .category-pill",
-        );
-        for (const p of pills) p.removeAttribute("aria-current");
-        pill.setAttribute("aria-current", "page");
-      }, true);
-      const progress = document.querySelector<HTMLElement>("[data-nav-progress]");
-      function startProgress() {
-        if (!progress) return;
-        progress.dataset.state = "loading";
-        document.body.dataset.navigating = "true";
-      }
-      function endProgress() {
-        if (!progress) return;
-        progress.dataset.state = "done";
-        delete document.body.dataset.navigating;
-        window.setTimeout(() => {
-          if (progress.dataset.state === "done") delete progress.dataset.state;
-        }, 320);
-      }
-      // Re-equalize the rail's viewport position across listing-to-listing swaps.
-      const isListing = (p: string) =>
-        p === "/products" || p === "/products/" || p.startsWith("/category/");
-      let railAnchorTop: number | null = null;
-      document.addEventListener("astro:before-preparation", (event: any) => {
-        const from = window.location.pathname;
-        const to = event?.to?.pathname ?? from;
-        const rail = document.querySelector<HTMLElement>("[data-category-rail]");
-        railAnchorTop =
-          rail && isListing(from) && isListing(to)
-            ? rail.getBoundingClientRect().top
-            : null;
-        startProgress();
-      });
-      document.addEventListener("astro:after-swap", () => {
-        syncCategoryRail();
-        if (railAnchorTop !== null) {
-          const rail = document.querySelector<HTMLElement>("[data-category-rail]");
-          if (rail) {
-            const delta = rail.getBoundingClientRect().top - railAnchorTop;
-            if (Math.abs(delta) > 0.5) {
-              window.scrollBy({ top: delta, left: 0, behavior: "instant" as ScrollBehavior });
-            }
-          }
-        }
-        railAnchorTop = null;
-        endProgress();
-      });
-      document.addEventListener("astro:page-load", endProgress);
-      syncCategoryRail();
+      import '../scripts/motion';
     </script>
   </body>
 </html>
