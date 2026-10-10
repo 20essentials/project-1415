@@ -10,7 +10,14 @@ const world = {
   crossfade: 0.07,
   diveScroll: 0.9,
   connScroll: 1.0,
-  connectors: ['/videos/v1.mp4', '/videos/v2.mp4', '/videos/v3.mp4', '/videos/v4.mp4', '/videos/v5.mp4', null],
+  connectors: [
+    '/videos/v1.mp4',
+    '/videos/v2.mp4',
+    '/videos/v3.mp4',
+    '/videos/v4.mp4',
+    '/videos/v5.mp4',
+    null
+  ],
   sections: stops.map((stop, i) => ({
     id: stop.id,
     label: stop.label,
@@ -24,14 +31,18 @@ const world = {
     cta: stop.cta ? { primary: stop.cta } : undefined,
     scroll: stop.scroll,
     linger: stop.linger,
-    accent: 'var(--color-accent)',
-  })),
+    accent: 'var(--color-accent)'
+  }))
 };
 ---
 
-<div data-world class="sw-wrap"></div>
+<div data-world class='sw-wrap'></div>
 
-<script id="world-config" type="application/json" set:html={JSON.stringify(world).replace(/</g, '\\u003c')}></script>
+<script
+  id='world-config'
+  type='application/json'
+  set:html={JSON.stringify(world).replace(/</g, '\\u003c')}
+/>
 
 <script>
   import { mountScrollWorld } from '../scripts/scroll-world.js';
@@ -42,13 +53,15 @@ const world = {
     const config = document.getElementById('world-config');
     if (!config) return;
     const parsed = JSON.parse(config.textContent || '{}');
-    document.querySelectorAll<HTMLElement>('[data-world]').forEach((el) => {
+    document.querySelectorAll<HTMLElement>('[data-world]').forEach(el => {
       if (el.dataset.mounted) return;
       el.dataset.mounted = 'true';
       mountScrollWorld(el, parsed);
       const dots = el.querySelectorAll<HTMLButtonElement>('.sw-route__dot');
       (window as SwWindow).__swGoTo = (id: string) => {
-        const index = (parsed.sections || []).findIndex((section: { id: string }) => section.id === id);
+        const index = (parsed.sections || []).findIndex(
+          (section: { id: string }) => section.id === id
+        );
         if (index < 0 || !dots[index]) return false;
         dots[index].click();
         return true;

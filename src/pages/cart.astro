@@ -1,0 +1,10 @@
+---
+import Layout from "@/layouts/layout.astro";
+import CartView from "@/components/cart-view.tsx";
+---
+
+<Layout title="Cart — Petals & Predators" description="Review your cart.">
+  <main>
+    <CartView client:load />
+  </main>
+</Layout>

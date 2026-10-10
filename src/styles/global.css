@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "lenis/dist/lenis.css";
+@import "./components-ecom.css";
 
 @theme {
   --font-display: Fraunces, Georgia, serif;

@@ -13,8 +13,8 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `done` (eje
 | 3 | Seed del catálogo (5 plantas, variantes, categorías, imágenes) | done | `step-3-seed-plant-catalog.md` |
 | 4 | Home landing scroll-world con los 6 clips de `public/videos/` | done | `step-4-create-home-page.md` (+ receta en `.opencode/references/higgsfield-landing-prompts.md`) |
 | 5 | Shop + páginas de categoría | done | `step-5-create-shop-page.md` |
-| 6 | Product detail (variantes + add-to-cart) | materialized | `step-6-create-product-detail.md` |
-| 7 | Cart + checkout nativo Wix + badge en nav | materialized | `step-7-create-cart-and-checkout.md` |
+| 6 | Product detail (variantes + add-to-cart) | done | `step-6-create-product-detail.md` |
+| 7 | Cart + checkout nativo Wix + badge en nav | done | `step-7-create-cart-and-checkout.md` |
 | 8 | About + Contact (Wix Forms) | materialized | `step-8-create-about-and-contact.md` |
 | 9 | SEO + accesibilidad + polish | materialized | `step-9-seo-and-accessibility.md` |
 | 10 | Build + release (sitio en vivo) | materialized | `step-10-build-and-release.md` |

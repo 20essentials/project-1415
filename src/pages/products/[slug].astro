@@ -1,0 +1,323 @@
+---
+import Layout from '@/layouts/layout.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import ProductPurchase from '@/components/product-purchase';
+import type { PurchaseProduct, VariantStock } from '@/components/product-purchase';
+import { productsV3, inventoryItemsV3 } from '@wix/stores';
+import { listProductsInCategory } from '@/utils/categories';
+import { renderRicos } from '@/utils/ricos';
+import { resolveWixImageUrl } from '@/utils/wix-image';
+
+export const wixMetadata = {
+  appDefId: '1380b703-ce81-ff05-f115-39571d94dfcd',
+  pageIdentifier: 'wix.stores.sub_pages.product',
+  identifiers: { slug: 'STORES.PRODUCT.SLUG' },
+};
+
+type V3Product = NonNullable<Awaited<ReturnType<typeof productsV3.getProductBySlug>>['product']>;
+
+interface CardProduct {
+  _id?: string;
+  name?: string;
+  slug?: string;
+  ribbon?: { name?: string };
+  media?: { main?: { image?: string; url?: string; altText?: string } };
+  actualPriceRange?: { minValue?: { formattedAmount?: string } };
+}
+
+const PRODUCT_FIELDS = [
+  'CURRENCY',
+  'PLAIN_DESCRIPTION',
+  'DESCRIPTION',
+  'MEDIA_ITEMS_INFO',
+  'DIRECT_CATEGORIES_INFO',
+  'BREADCRUMBS_INFO',
+] as const;
+
+const { slug } = Astro.params;
+
+let product: V3Product | null = null;
+try {
+  const response = await productsV3.getProductBySlug(slug ?? '', {
+    fields: PRODUCT_FIELDS,
+  });
+  product = response.product ?? null;
+} catch (error) {
+  console.error(`[product] getProductBySlug("${slug}") failed:`, error);
+}
+
+if (!product) {
+  return new Response('Product not found', { status: 404 });
+}
+
+const inventoryByVariantRaw = new Map<
+  string,
+  { quantity?: number; trackQuantity?: boolean; preorderEnabled?: boolean }
+>();
+try {
+  const result = await inventoryItemsV3
+    .queryInventoryItems()
+    .eq('productId', product._id ?? '')
+    .limit(100)
+    .find();
+  for (const item of result.items ?? []) {
+    inventoryByVariantRaw.set(item.variantId ?? '', {
+      quantity: item.quantity ?? 0,
+      trackQuantity: item.trackQuantity ?? false,
+      preorderEnabled: item.preorderInfo?.enabled ?? false,
+    });
+  }
+} catch (error) {
+  console.error(`[product] inventory query for "${slug}" failed:`, error);
+}
+
+const gallery: { full: string; thumb: string; alt: string }[] = [];
+for (const item of product.media?.itemsInfo?.items ?? []) {
+  if (item.video || !item.image) continue;
+  const full = resolveWixImageUrl(item.image, 1000, 1250);
+  if (!full) continue;
+  gallery.push({
+    full,
+    thumb: resolveWixImageUrl(item.image, 160, 200) ?? full,
+    alt: item.altText ?? product.name ?? 'Product photo',
+  });
+}
+if (gallery.length === 0 && product.media?.main) {
+  const main = product.media.main;
+  const image = main.image ?? main.url;
+  const full = resolveWixImageUrl(image, 1000, 1250);
+  if (full) gallery.push({ full, thumb: full, alt: main.altText ?? product.name ?? 'Product photo' });
+}
+
+const options: PurchaseProduct['options'] = (product.options ?? [])
+  .map((option) => ({
+    id: option._id ?? '',
+    name: option.name ?? '',
+    choices: (option.choicesSettings?.choices ?? [])
+      .map((choice) => ({ id: choice.choiceId ?? '', name: choice.name ?? '' }))
+      .filter((choice) => choice.id && choice.name),
+  }))
+  .filter((option) => option.id && option.name && option.choices.length > 0);
+
+const variants: PurchaseProduct['variants'] = (product.variantsInfo?.variants ?? [])
+  .map((variant) => ({
+    id: variant._id ?? '',
+    choices: (variant.choices ?? [])
+      .map((choice) => ({
+        optionId: choice.optionChoiceIds?.optionId ?? '',
+        choiceId: choice.optionChoiceIds?.choiceId ?? '',
+      }))
+      .filter((c) => c.optionId && c.choiceId),
+    priceAmount: variant.price?.actualPrice?.amount,
+    formattedPrice: variant.price?.actualPrice?.formattedAmount,
+  }))
+  .filter((variant) => variant.id);
+
+const purchaseProduct: PurchaseProduct = {
+  id: product._id ?? '',
+  name: product.name ?? '',
+  currency: product.actualPriceRange?.minValue?.currency,
+  options,
+  variants,
+  minFormattedPrice: product.actualPriceRange?.minValue?.formattedAmount,
+  maxFormattedPrice: product.actualPriceRange?.maxValue?.formattedAmount,
+};
+
+const inventoryByVariant: Record<string, VariantStock> = {};
+for (const [variantId, inv] of inventoryByVariantRaw) {
+  if (!variantId) continue;
+  inventoryByVariant[variantId] = {
+    quantity: inv.quantity ?? 0,
+    trackQuantity: inv.trackQuantity ?? false,
+    preorderEnabled: inv.preorderEnabled ?? false,
+  };
+}
+
+const richDescription = renderRicos(product.description);
+const descriptionHtml = richDescription || product.plainDescription?.trim() || null;
+
+const metaDescription = (descriptionHtml ?? `Shop ${product.name} — grown and shipped alive by Petals & Predators.`)
+  .replace(/<[^>]+>/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim()
+  .slice(0, 160);
+
+const crumbs = product.breadcrumbsInfo?.breadcrumbs ?? [];
+const inStock = product.inventory?.availabilityStatus !== 'OUT_OF_STOCK';
+
+let related: CardProduct[] = [];
+const categoryId = product.directCategoriesInfo?.categories?.[0]?._id;
+if (categoryId) {
+  const relatedPage = await listProductsInCategory(categoryId, { limit: 8 });
+  related = (relatedPage.items ?? [])
+    .filter((item) => item._id !== product._id)
+    .filter((item) => item.ribbon?.name !== 'Gift Card')
+    .slice(0, 3);
+}
+---
+
+<Layout title={`${product.name} — Petals & Predators`} description={metaDescription}>
+  <section class="relative z-2 bg-paper px-4 py-10 text-ink sm:px-8 lg:px-20 lg:py-16">
+    <div class="mx-auto max-w-6xl">
+      <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">
+        <a href="/" class="transition-colors hover:text-accent">Home</a>
+        <span aria-hidden="true"> · </span>
+        <a href="/products" class="transition-colors hover:text-accent">Shop</a>
+        {
+          crumbs.map((crumb) => (
+            <Fragment>
+              <span aria-hidden="true"> · </span>
+              {crumb.categorySlug && crumb.categoryName ? (
+                <a href={`/category/${crumb.categorySlug}`} class="transition-colors hover:text-accent">
+                  {crumb.categoryName}
+                </a>
+              ) : (
+                <span>{crumb.categoryName}</span>
+              )}
+            </Fragment>
+          ))
+        }
+        <span aria-hidden="true"> · </span>
+        <span aria-current="page" class="text-ink">{product.name}</span>
+      </nav>
+
+      <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+        <div class="flex flex-col-reverse gap-4 lg:flex-col">
+          <div class="flex gap-4 overflow-x-auto pb-1 lg:flex-wrap">
+            {gallery.map((image, index) => (
+              <button
+                type="button"
+                data-thumb={image.full}
+                data-alt={image.alt}
+                aria-label={`View image ${index + 1} of ${gallery.length}`}
+                aria-current={index === 0 ? 'true' : undefined}
+                class="shrink-0 rounded-sm ring-1 ring-rule transition-opacity duration-500 ease-fluid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent hover:opacity-80"
+              >
+                <img src={image.thumb} alt="" width="160" height="200" loading="lazy" class="h-24 w-20 rounded-sm object-cover sm:h-28 sm:w-24" />
+              </button>
+            ))}
+          </div>
+          <div class="relative aspect-4/5 overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule">
+            {
+              gallery[0] ? (
+                <img
+                  id="pg-main"
+                  src={gallery[0].full}
+                  alt={gallery[0].alt}
+                  width="1000"
+                  height="1250"
+                  fetchpriority={gallery[0].alt === '' ? undefined : 'high'}
+                  class="h-full w-full object-cover"
+                />
+              ) : (
+                <span class="flex h-full w-full items-center justify-center text-xs text-mute">
+                  Photo coming soon
+                </span>
+              )
+            }
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <div>
+            <div class="flex items-center gap-2.5">
+              <span class={`inline-block size-2 rounded-full ${inStock ? 'bg-accent' : 'bg-error'}`}></span>
+              <p class="text-xs font-medium tracking-widest text-mute uppercase">{inStock ? 'In stock' : 'Out of stock'}</p>
+              <span aria-hidden="true" class="text-rule">·</span>
+              <p class="text-xs font-medium tracking-widest text-mute uppercase">Ships in 48h</p>
+            </div>
+            <h1 class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">{product.name}</h1>
+          </div>
+
+          <ProductPurchase client:load product={purchaseProduct} inventoryByVariant={inventoryByVariant} />
+
+          {
+            descriptionHtml && (
+              <div class="border-t border-rule pt-5">
+                <h2 class="font-display text-lg text-ink">About this plant</h2>
+                <div class="pg-description mt-3 max-w-prose text-sm leading-6 text-ink-soft">
+                  <Fragment set:html={descriptionHtml} />
+                </div>
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {
+    related.length > 0 && (
+      <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
+        <div class="mx-auto max-w-6xl">
+          <div class="flex items-end justify-between gap-4">
+            <div>
+              <p class="text-xs font-medium tracking-widest text-accent uppercase">Keep it growing</p>
+              <h2 class="mt-3 font-display text-2xl text-ink lg:text-3xl">You may also like</h2>
+            </div>
+            <a href="/products" class="text-sm text-ink-soft transition-colors hover:text-accent">View all →</a>
+          </div>
+          <ul class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+            {related.map((item, index) => (
+              <ProductCard product={item} index={index} />
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+</Layout>
+
+<script>
+  const thumbs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-thumb]'));
+  const mainImage = document.getElementById('pg-main') as HTMLImageElement | null;
+
+  for (const thumb of thumbs) {
+    thumb.addEventListener('click', () => {
+      if (!mainImage || !thumb.dataset.thumb) return;
+      mainImage.src = thumb.dataset.thumb;
+      mainImage.alt = thumb.dataset.alt ?? '';
+      for (const other of thumbs) other.removeAttribute('aria-current');
+      thumb.setAttribute('aria-current', 'true');
+    });
+  }
+</script>
+
+<style is:global>
+  .pg-description h1,
+  .pg-description h2,
+  .pg-description h3 {
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--color-ink);
+  }
+  .pg-description p + p {
+    margin-top: 0.5rem;
+  }
+  .pg-description ul {
+    margin-top: 0.5rem;
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+  .pg-description ol {
+    margin-top: 0.5rem;
+    padding-left: 1.25rem;
+    list-style: decimal;
+  }
+  .pg-description li {
+    margin-top: 0.25rem;
+  }
+  .pg-description blockquote {
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--color-accent);
+    color: var(--color-ink-soft);
+  }
+  .pg-description a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>
