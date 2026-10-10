@@ -15,7 +15,7 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `done` (eje
 | 5 | Shop + páginas de categoría | done | `step-5-create-shop-page.md` |
 | 6 | Product detail (variantes + add-to-cart) | done | `step-6-create-product-detail.md` |
 | 7 | Cart + checkout nativo Wix + badge en nav | done | `step-7-create-cart-and-checkout.md` |
-| 8 | About + Contact (Wix Forms) | materialized | `step-8-create-about-and-contact.md` |
+| 8 | About + Contact (Wix Forms) | done | `step-8-create-about-and-contact.md` |
 | 9 | SEO + accesibilidad + polish | materialized | `step-9-seo-and-accessibility.md` |
 | 10 | Build + release (sitio en vivo) | materialized | `step-10-build-and-release.md` |
 | 11 | Plant care journal (CMS) | pending | Colección Wix CMS `care-guides` (title, slug, intro, body, plantTag) + rutas `/journal` y `/journal/[slug]` + link "Journal" en el nav + featured guide en home |
