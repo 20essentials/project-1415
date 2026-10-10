@@ -1,0 +1,22 @@
+{
+  "name": "Petals & Predators",
+  "short_name": "Petals & Predators",
+  "description": "Carnivorous plants and flowers, greenhouse-grown and shipped alive.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#08090a",
+  "theme_color": "#08090a",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

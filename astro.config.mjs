@@ -10,7 +10,7 @@ import tailwindcss from "@tailwindcss/vite";
 // https://astro.build/config
 export default defineConfig({
   vite: { plugins: [tailwindcss()] },
-  integrations: [wix(), wixPages(), react()],
+  integrations: [wix({ robots: { enable: false } }), wixPages(), react()],
   security: { checkOrigin: false },
   adapter: wixHostingAdapter(),
 

@@ -83,7 +83,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-teja);
+    outline: 2px solid var(--color-accent);
     outline-offset: 4px;
   }
 }
@@ -237,6 +237,19 @@
     transform: none;
     filter: none;
     transition: opacity 400ms var(--ease-fluid);
+  }
+
+  .btn-primary:hover,
+  .btn-ghost:hover,
+  .btn:active,
+  .cart-badge:hover {
+    transform: none;
+  }
+
+  .link,
+  .faq::details-content,
+  .faq .faq-icon {
+    transition: none;
   }
 
   *,

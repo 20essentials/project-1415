@@ -1,6 +1,6 @@
-import ogImageAsset from '../assets/world/v3.webp';
-
 export const ogImage = {
-  src: ogImageAsset,
+  src: '/og.jpg',
+  width: 1200,
+  height: 630,
   alt: 'Petals & Predators — carnivorous plants and flowers',
 };

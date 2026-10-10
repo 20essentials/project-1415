@@ -2,17 +2,23 @@
 import Layout from "@/layouts/layout.astro";
 ---
 
-<Layout title="Thank you — Petals & Predators" description="Thank you for your order.">
-  <main class="cart-shell">
-    <div class="cart-header">
-      <h1>Thank you</h1>
-      <p class="cart-subtle">Your order has been received.</p>
+<Layout
+  title="Thank you — Petals & Predators"
+  description="Your Petals & Predators order has been received — we'll email you the next steps."
+  noindex
+>
+  <div class="relative z-2 bg-paper px-4 pt-24 pb-16 text-ink sm:px-8 lg:px-20">
+    <div class="cart-shell">
+      <div class="cart-header">
+        <h1>Thank you</h1>
+        <p class="cart-subtle">Your order has been received.</p>
+      </div>
+      <div class="cart-empty">
+        <p>We’ll send you an email with the next steps.</p>
+        <a class="btn btn-primary" href="/products">
+          <span class="text-trim">Continue shopping</span>
+        </a>
+      </div>
     </div>
-    <div class="cart-empty">
-      <p>We’ll send you an email with the next steps.</p>
-      <a class="btn btn-primary" href="/products">
-        <span class="text-trim">Continue shopping</span>
-      </a>
-    </div>
-  </main>
+  </div>
 </Layout>

@@ -164,6 +164,14 @@ const { nav, links } = site;
   .nav-indicator[data-instant] {
     transition: opacity 700ms var(--ease-fluid);
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-item,
+    .nav-indicator {
+      transform: none;
+      transition: none;
+    }
+  }
 </style>
 
 <script>
