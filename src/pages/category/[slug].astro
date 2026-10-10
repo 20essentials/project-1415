@@ -1,0 +1,85 @@
+---
+import Layout from '@/layouts/layout.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import CategoryRail from '@/components/CategoryRail.astro';
+import {
+  getCategoryBySlug,
+  listProductsInCategory,
+  listStoreCategories,
+} from '@/utils/categories';
+
+const PAGE_SIZE = 24;
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/products');
+}
+
+const category = await getCategoryBySlug(slug);
+if (!category) {
+  return new Response('Category not found', { status: 404 });
+}
+
+const cursor = Astro.url.searchParams.get('cursor') ?? undefined;
+const page = await listProductsInCategory(category.id, { limit: PAGE_SIZE, cursor });
+
+const productList = page.items.filter(
+  (product: { ribbon?: { name?: string } }) => product.ribbon?.name !== 'Gift Card',
+);
+
+const categories = await listStoreCategories();
+
+function pageHref(next: string | null): string | null {
+  if (!next) return null;
+  return `/category/${category!.slug}?cursor=${encodeURIComponent(next)}`;
+}
+---
+
+<Layout
+  title={`${category.name} — Petals & Predators`}
+  description={category.description ?? `Browse our ${category.name.toLowerCase()} collection — grown and shipped alive.`}
+>
+  <section class="relative z-2 bg-paper px-4 pt-24 pb-10 text-ink sm:px-8 lg:px-20 lg:pt-28">
+    <div class="mx-auto max-w-6xl">
+      <nav class="text-xs text-ink-soft" aria-label="Breadcrumb">
+        <a href="/" class="transition-colors hover:text-accent">Home</a>
+        <span aria-hidden="true"> &middot; </span>
+        <a href="/products" class="transition-colors hover:text-accent">Shop</a>
+        <span aria-hidden="true"> &middot; </span>
+        <span class="text-ink" aria-current="page">{category.name}</span>
+      </nav>
+      <h1 class="mt-6 font-display text-4xl leading-tight text-ink lg:text-5xl">{category.name}</h1>
+      {
+        category.description && (
+          <p class="mt-4 max-w-xl text-sm leading-6 text-ink-soft">{category.description}</p>
+        )
+      }
+    </div>
+  </section>
+
+  <CategoryRail
+    categories={categories}
+    activeSlug={category.slug}
+    prevHref={pageHref(page.prevCursor)}
+    nextHref={pageHref(page.nextCursor)}
+  />
+
+  <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
+    <div class="mx-auto max-w-6xl">
+      {
+        productList.length > 0 ? (
+          <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+            {productList.map((product, index) => (
+              <ProductCard product={product} index={index} />
+            ))}
+          </ul>
+        ) : (
+          <p class="max-w-xl text-sm leading-6 text-ink-soft">
+            Nothing in {category.name} just now —{' '}
+            <a href="/products" class="text-accent underline">browse all plants</a> instead.
+          </p>
+        )
+      }
+    </div>
+  </section>
+</Layout>

@@ -1,14 +1,12 @@
 ---
-import Logo from './Logo.astro';
-import Icon from './Icon.astro';
+import Logo from './logo.astro';
 import { site } from '../data/site';
 const { nav, links } = site;
-const contacto = { telefono: '+34 000 000 000', calle: 'Online store', horario: 'Worldwide shipping' };
 ---
 
 <a
   href="#contenido"
-  class="btn btn-primary btn-sm fixed top-4 left-4 z-[60] -translate-y-24 focus-visible:translate-y-0"
+  class="btn btn-primary btn-sm fixed top-4 left-4 z-60 -translate-y-24 focus-visible:translate-y-0"
 >
   <span>Skip to content</span>
 </a>
@@ -17,14 +15,15 @@ const contacto = { telefono: '+34 000 000 000', calle: 'Online store', horario: 
   class="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-6 lg:justify-start lg:px-8 xl:px-20"
 >
   <div
-    class="pointer-events-auto flex w-max items-center gap-6 rounded-full bg-bg/60 p-2 pl-6 ring-1 ring-crema/10 backdrop-blur-xl lg:gap-5"
+    class="pointer-events-auto flex w-max items-center gap-6 rounded-full bg-paper/60 p-2 pl-6 ring-1 ring-rule backdrop-blur-xl lg:gap-5"
   >
-    <a href="#inicio" class="flex h-9 items-center rounded-full text-crema" aria-label="Petals Arko, volver al inicio Predators, back to home">
-      <Logo class="h-4 w-auto" />
+    <a href="#inicio" class="flex h-9 items-center rounded-full text-ink" aria-label="Petals & Predators, back to home">
+      <Logo class="text-sm" />
     </a>
 
-    <nav aria-label="Principal" class="relative hidden lg:block">
-      <span aria-hidden="true" class="nav-indicator absolute top-0 left-0 h-9 rounded-full bg-crema/[0.07]"></span>
+    <!-- nav:links -->
+    <nav aria-label="Primary" class="relative hidden xl:block">
+      <span aria-hidden="true" class="nav-indicator absolute top-0 left-0 h-9 rounded-full bg-ink/10"></span>
       <ul class="relative flex items-center text-sm">
         {
           nav.map((item) => (
@@ -32,7 +31,7 @@ const contacto = { telefono: '+34 000 000 000', calle: 'Online store', horario: 
               <a
                 href={item.href}
                 data-nav-link
-                class="flex h-9 items-center rounded-full px-3 text-crema/70 transition-colors duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:text-crema aria-[current=true]:text-crema"
+                class="flex h-9 items-center rounded-full px-3 text-ink-soft transition-colors duration-700 ease-fluid hover:text-ink aria-[current=true]:text-ink"
               >
                 <span class="text-trim">{item.label}</span>
               </a>
@@ -42,13 +41,17 @@ const contacto = { telefono: '+34 000 000 000', calle: 'Online store', horario: 
       </ul>
     </nav>
 
-    <div class="flex items-center gap-1">
-      <a href={links.shop} class="btn btn-primary btn-sm px-4">
-        <span>Shop</span>
+    <div class="flex items-center gap-6 lg:gap-5">
+      <!-- nav:actions -->
+      <a
+        href={links.shop}
+        class="inline-flex h-9 items-center justify-center rounded-full bg-accent px-4 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream"
+      >
+        <span class="text-trim">Shop the collection</span>
       </a>
       <button
         type="button"
-        class="menu-toggle relative size-9 rounded-full text-crema transition-colors duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-crema/10 lg:hidden"
+        class="menu-toggle relative size-9 rounded-full text-ink transition-colors duration-700 ease-fluid hover:bg-ink/10 xl:hidden"
         aria-expanded="false"
         aria-controls="menu"
         aria-label="Open menu"
@@ -62,32 +65,34 @@ const contacto = { telefono: '+34 000 000 000', calle: 'Online store', horario: 
 
 <div
   id="menu"
-  class="menu invisible fixed inset-0 z-40 flex flex-col justify-between bg-bg/80 px-4 pt-32 pb-12 opacity-0 backdrop-blur-3xl transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] lg:hidden"
+  class="menu invisible fixed inset-0 z-40 flex flex-col justify-between bg-paper/80 px-4 pt-32 pb-12 opacity-0 backdrop-blur-3xl transition-all duration-700 ease-fluid xl:hidden"
   inert
 >
-  <nav aria-label="Menú móvil">
+  <nav aria-label="Mobile menu">
     <ul class="flex flex-col items-center gap-6 text-center">
       {
         nav.map((item, i) => (
           <li class="menu-item" style={`--i:${i}`}>
-            <a href={item.href} data-menu-link class="font-display text-4xl text-crema">
+            <a href={item.href} data-menu-link class="font-display text-4xl text-ink">
               {item.label}
             </a>
           </li>
         ))
       }
       <li class="menu-item pt-6" style={`--i:${nav.length}`}>
-        <a href={links.shop} class="btn btn-primary"><span>Shop mesa</span></a>
+        <a
+          href={links.shop}
+          class="inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 font-medium text-paper"
+        >
+          <span class="text-trim">Shop the collection</span>
+        </a>
       </li>
     </ul>
   </nav>
 
-  <div class="menu-item flex flex-col items-center gap-2 text-sm text-crema/70" style={`--i:${nav.length + 1}`}>
-    <a href={links.telefono} class="link inline-flex items-center gap-2">
-      <Icon name="phone" />
-      {contacto.telefono}
-    </a>
-    <p>{contacto.calle} · {contacto.horario}</p>
+  <div class="menu-item flex flex-col items-center gap-2 text-sm text-ink-soft" style={`--i:${nav.length + 1}`}>
+    <a href="/contact" class="link">Contact us</a>
+    <p>Greenhouse-grown · shipped alive worldwide</p>
   </div>
 </div>
 
@@ -160,6 +165,8 @@ const contacto = { telefono: '+34 000 000 000', calle: 'Online store', horario: 
 </style>
 
 <script>
+  type SwWindow = Window & { __swGoTo?: (id: string) => boolean };
+
   const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
   const menu = document.getElementById('menu');
   const main = document.getElementById('contenido');
@@ -168,16 +175,13 @@ const contacto = { telefono: '+34 000 000 000', calle: 'Online store', horario: 
   const setOpen = (open: boolean) => {
     if (!toggle || !menu) return;
     toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Open menu');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     menu.toggleAttribute('data-open', open);
     menu.inert = !open;
     if (main) main.inert = open;
     if (footer) footer.inert = open;
     if (open) {
-      window.lenis?.stop();
       menu.querySelector<HTMLAnchorElement>('a')?.focus({ preventScroll: true });
-    } else {
-      window.lenis?.start();
     }
   };
 
@@ -190,18 +194,29 @@ const contacto = { telefono: '+34 000 000 000', calle: 'Online store', horario: 
     }
   });
 
+  // Stops of the scroll-world engine have no DOM element, so in-page links are
+  // handed to the engine (exposed as window.__swGoTo) which scrolls to the stop.
+  document.addEventListener('click', (event) => {
+    const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href^="#"]');
+    if (!link) return;
+    const id = link.getAttribute('href')?.slice(1);
+    if (id && (window as SwWindow).__swGoTo?.(id)) {
+      event.preventDefault();
+      setOpen(false);
+    }
+  });
+
   menu?.querySelectorAll<HTMLAnchorElement>('[data-menu-link]').forEach((link) => {
     link.addEventListener('click', (event) => {
       const target = document.querySelector<HTMLElement>(link.hash);
       if (!target) return;
       event.preventDefault();
       setOpen(false);
-      if (window.lenis) window.lenis.scrollTo(target);
-      else target.scrollIntoView();
+      target.scrollIntoView();
     });
   });
 
-  window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
+  window.matchMedia('(min-width: 1280px)').addEventListener('change', (event) => {
     if (event.matches) setOpen(false);
   });
 

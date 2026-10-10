@@ -1,15 +1,25 @@
 @import "tailwindcss";
 @import "lenis/dist/lenis.css";
 
-@theme inline {
-  --font-display: var(--font-hina), serif;
-  --font-sans: var(--font-zen), sans-serif;
-}
-
 @theme {
+  --font-display: Fraunces, Georgia, serif;
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-body: Inter, ui-sans-serif, system-ui, sans-serif;
+
   --color-bg: #131209;
   --color-crema: #f3eadb;
   --color-teja: #d0703a;
+
+  --color-paper: #08090a;
+  --color-paper-warm: #0f0f12;
+  --color-ink: #faf8f5;
+  --color-ink-soft: #d9d7d4;
+  --color-mute: #969e9b;
+  --color-rule: #1e1f21;
+  --color-accent: #18e299;
+  --color-cream: #ffffff;
+  --color-error: #ea4335;
+
   --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
 }
 

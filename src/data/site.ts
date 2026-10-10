@@ -1,10 +1,3 @@
-import inicioPoster from '../assets/world/v1.webp';
-import instinctPoster from '../assets/world/v2.webp';
-import collectionPoster from '../assets/world/v3.webp';
-import proofPoster from '../assets/world/v4.webp';
-import carePoster from '../assets/world/v5.webp';
-import tuCasaPoster from '../assets/world/tu-casa.webp';
-
 export const site = {
   seo: {
     title: 'Petals & Predators — Carnivorous plants and flowers',
@@ -13,9 +6,13 @@ export const site = {
   },
   nav: [
     { href: '#inicio', label: 'Home' },
+    { href: '#instinct', label: 'Instinct' },
     { href: '#collection', label: 'Collection' },
+    { href: '#proof', label: 'Proof' },
     { href: '#care', label: 'Care' },
-    { href: '/products', label: 'Shop' },
+    { href: '#como-funciona', label: 'How it works' },
+    { href: '#tu-casa', label: 'Your space' },
+    { href: '/products', label: 'All plants' },
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' },
   ],
@@ -27,97 +24,110 @@ export const site = {
     stops: [
       {
         id: 'inicio',
-        poster: inicioPoster,
-        clip: '/videos/v1.mp4',
-        focus: 70,
+        label: 'Home',
+        eyebrow: 'Petals & Predators',
         title: 'Plants with teeth.',
         subtitle:
           'Carnivorous specimens, show-stopping blooms, and care-tested kits — greenhouse-grown and shipped alive to your door.',
+        poster: '/world/inicio.webp',
+        focus: 50,
+        claims: ['greenhouse-grown', 'shipped alive', 'care guide'],
         cta: { href: '/products', label: 'Shop the collection' },
-        pills: ['greenhouse-grown', 'shipped alive', 'care guide'],
+        scroll: 1.5,
+        linger: 0.35,
       },
       {
         id: 'instinct',
-        poster: instinctPoster,
-        clip: '/videos/v2.mp4',
-        focus: 60,
-        title: 'Instinct in every trap.',
-        subtitle: 'Nature evolved these plants to capture what they need. We grow them with care and ship them alive.',
-        bullets: [
-          'Carnivorous — they catch insects to thrive',
-          'Low-maintenance when given the right light & water',
-          'A living conversation starter for any space',
-        ],
+        label: 'Instinct',
+        eyebrow: 'Instinct',
+        title: 'Nature built the trap.',
+        subtitle:
+          'Carnivorous plants evolved to catch insects — a quiet, patient hunt in a pot on your windowsill.',
+        poster: '/world/instinct.webp',
+        focus: 55,
+        claims: ['Carnivorous', 'Low-maintenance', 'Conversation starter'],
       },
       {
         id: 'collection',
-        poster: collectionPoster,
-        clip: '/videos/v3.mp4',
-        focus: 55,
-        title: 'The collection.',
-        subtitle: 'A curated selection of carnivorous plants and flowers, grown by hand.',
-        bullets: [
-          'Venus Flytrap, Nepenthes, Cape Sundew, Moonlight Orchid',
-          'Starter Kit for those just getting started',
-          'Care-tested for first-time growers',
-        ],
+        label: 'Collection',
+        eyebrow: 'The collection',
+        title: 'Five plants, one standard.',
+        subtitle:
+          'Venus Flytrap $24 · Nepenthes $24–52 · Cape Sundew $18 · Moonlight Orchid $32 · Starter Kit $45. Care-tested for first-time growers.',
+        poster: '/world/collection.webp',
+        focus: 50,
+        claims: ['Carnivorous', 'Orchids', 'Starter kits'],
       },
       {
         id: 'proof',
-        poster: proofPoster,
-        clip: '/videos/v4.mp4',
-        focus: 55,
-        title: 'Proof in every order.',
-        subtitle: 'What matters most: they arrive alive and ready to grow.',
-        bullets: [
-          'greenhouse-grown',
-          'shipped alive',
-          '30-day arrival guarantee',
-        ],
+        label: 'Proof',
+        eyebrow: 'Proof',
+        title: 'Shipped alive, guaranteed.',
+        subtitle: 'Greenhouse-grown, packed by hand, and protected by our 30-day arrival guarantee.',
+        poster: '/world/proof.webp',
+        focus: 50,
+        claims: ['greenhouse-grown', 'shipped alive', '30-day guarantee'],
       },
       {
         id: 'care',
-        poster: carePoster,
-        clip: '/videos/v5.mp4',
-        focus: 55,
-        title: 'Care made simple.',
-        subtitle: "We don't just ship you a plant — we set you up to keep it thriving.",
-        bullets: [
-          'Care guide included with every order',
-          'Choose — Arrives alive — Grow with our guide',
-          'No green thumb required',
-        ],
+        label: 'Care',
+        eyebrow: 'Care',
+        title: 'No green thumb needed.',
+        subtitle:
+          'Every order includes a care guide covering light, water and humidity. We ship you the plant AND the confidence to keep it growing.',
+        poster: '/world/care.webp',
+        focus: 50,
+        claims: ['care guide included', 'Starter Kit', 'low-maintenance'],
+      },
+      {
+        id: 'como-funciona',
+        label: 'How it works',
+        eyebrow: 'How it works',
+        title: 'From our greenhouse to your shelf.',
+        subtitle: '',
+        poster: '/world/como-funciona.webp',
+        focus: 50,
+        steps: ['Choose your plant', 'It arrives alive', 'Grow with the care guide'],
       },
       {
         id: 'tu-casa',
-        poster: tuCasaPoster,
-        focus: 50,
+        label: 'Your space',
+        eyebrow: 'Your space',
         title: 'Bring one home.',
-        subtitle: 'Pick a plant and watch it come alive in your space.',
+        subtitle: 'Pick a plant, skip the guesswork, and watch it come alive in your space.',
+        poster: '/world/tu-casa.webp',
+        focus: 50,
         cta: { href: '/products', label: 'Shop the collection' },
+        scroll: 1.4,
+        linger: 0.3,
       },
     ],
   },
   faqs: [
     {
       question: 'Will my plant arrive alive?',
-      answer: 'Yes. We ship greenhouse-grown plants carefully packed and guarantee live arrival.',
+      answer:
+        'Yes. We ship greenhouse-grown plants carefully packed and guarantee live arrival for 30 days.',
     },
     {
       question: 'What do carnivorous plants eat?',
-      answer: 'They catch small insects naturally. Indoors, they often catch enough on their own — no feeding required.',
+      answer:
+        'They catch small insects naturally. Indoors, they often catch enough on their own — no feeding required.',
     },
     {
       question: 'Do I need a green thumb?',
-      answer: "No. Each order includes a care guide covering light, water, and humidity — it's easier than you think.",
+      answer:
+        "No. Each order includes a care guide covering light, water, and humidity — it's easier than you think.",
     },
     {
       question: 'Which plant should I choose as a beginner?',
-      answer: 'Our Starter Kit is perfect for first-time growers. Venus Flytrap and Cape Sundew are also great options.',
+      answer:
+        'Our Starter Kit is perfect for first-time growers. Venus Flytrap and Cape Sundew are also great options.',
     },
     {
-      question: 'Do you offer shipping and returns info?',
-      answer: 'See Shipping & Returns in our Contact page for the latest details.',
+      question: 'Shipping & returns?',
+      answer:
+        'We ship worldwide. If your plant does not arrive alive, contact us within 30 days and we will make it right.',
     },
   ],
 } as const;

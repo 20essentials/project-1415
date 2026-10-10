@@ -1,0 +1,71 @@
+---
+import type { StoreCategory } from '@/utils/categories';
+
+interface Props {
+  categories: StoreCategory[];
+  activeSlug: string | null;
+  prevHref: string | null;
+  nextHref: string | null;
+}
+
+const { categories, activeSlug, prevHref, nextHref } = Astro.props;
+
+const pillBase =
+  'inline-flex h-9 items-center rounded-full px-4 text-sm font-medium whitespace-nowrap transition-colors duration-500 ease-fluid';
+const pillActive = 'bg-accent text-paper';
+const pillIdle = 'border border-rule text-ink-soft hover:border-accent/40 hover:text-ink';
+---
+
+{
+  categories.length > 0 && (
+    <nav class="relative z-2 bg-paper px-4 py-4 sm:px-8 lg:px-20" aria-label="Browse by category" data-category-rail>
+      <div class="mx-auto flex max-w-6xl gap-2 overflow-x-auto pb-1">
+        <a
+          href="/products"
+          class={`${pillBase} ${activeSlug ? pillIdle : pillActive}`}
+          data-category-slug=""
+          aria-current={activeSlug ? undefined : 'page'}
+        >
+          All
+        </a>
+        {categories.map((cat) => (
+          <a
+            href={`/category/${cat.slug}`}
+            class={`${pillBase} ${activeSlug === cat.slug ? pillActive : pillIdle}`}
+            data-category-slug={cat.slug}
+            aria-current={activeSlug === cat.slug ? 'page' : undefined}
+          >
+            {cat.name}
+          </a>
+        ))}
+      </div>
+    </nav>
+  )
+}
+
+{
+  (prevHref || nextHref) && (
+    <nav class="relative z-2 bg-paper px-4 pb-8 sm:px-8 lg:px-20" aria-label="Listing pagination">
+      <div class="mx-auto flex max-w-6xl items-center justify-between text-sm">
+        {prevHref ? (
+          <a href={prevHref} class="text-ink-soft transition-colors hover:text-accent" rel="prev">
+            &larr; Previous
+          </a>
+        ) : (
+          <span class="text-mute/50" aria-disabled="true">
+            &larr; Previous
+          </span>
+        )}
+        {nextHref ? (
+          <a href={nextHref} class="text-ink-soft transition-colors hover:text-accent" rel="next">
+            Next &rarr;
+          </a>
+        ) : (
+          <span class="text-mute/50" aria-disabled="true">
+            Next &rarr;
+          </span>
+        )}
+      </div>
+    </nav>
+  )
+}

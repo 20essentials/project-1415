@@ -1,0 +1,85 @@
+---
+import Layout from '@/layouts/layout.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import CategoryRail from '@/components/CategoryRail.astro';
+import { productsV3 } from '@wix/stores';
+import { listStoreCategories } from '@/utils/categories';
+
+const PAGE_SIZE = 24;
+
+let productList: {
+  _id?: string;
+  name?: string;
+  slug?: string;
+  ribbon?: { name?: string };
+}[] = [];
+let nextCursor: string | null = null;
+let prevCursor: string | null = null;
+
+try {
+  const result = await productsV3
+    .queryProducts({ fields: ['CURRENCY'] })
+    .limit(PAGE_SIZE)
+    .find();
+  productList = result.items ?? [];
+  nextCursor = result.cursors?.next ?? null;
+  prevCursor = result.cursors?.prev ?? null;
+} catch (error) {
+  console.error('[products] listing query failed:', error);
+}
+
+productList = productList.filter((product) => product.ribbon?.name !== 'Gift Card');
+
+const categories = await listStoreCategories();
+
+function pageHref(cursor: string | null): string | null {
+  if (!cursor) return null;
+  return `/products?cursor=${encodeURIComponent(cursor)}`;
+}
+---
+
+<Layout
+  title="All plants — Petals & Predators"
+  description="Browse every carnivorous plant, bloom and starter kit in the greenhouse — grown and shipped alive."
+>
+  <section class="relative z-2 bg-paper px-4 pt-24 pb-10 text-ink sm:px-8 lg:px-20 lg:pt-32">
+    <div class="mx-auto max-w-6xl">
+      <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">
+        <a href="/" class="transition-colors hover:text-accent">Home</a>
+        <span aria-hidden="true"> · </span>
+        <span aria-current="page" class="text-ink">Shop</span>
+      </nav>
+      <p class="mt-6 text-xs font-medium tracking-widest text-accent uppercase">The shop</p>
+      <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">All plants</h1>
+      <p class="mt-4 max-w-xl text-sm leading-6 text-ink-soft">
+        Every specimen is greenhouse-grown, packed by hand, and protected by our 30-day
+        live-arrival guarantee.
+      </p>
+    </div>
+  </section>
+
+  <CategoryRail
+    categories={categories}
+    activeSlug={null}
+    prevHref={pageHref(prevCursor)}
+    nextHref={pageHref(nextCursor)}
+  />
+
+  <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
+    <div class="mx-auto max-w-6xl">
+      {
+        productList.length > 0 ? (
+          <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+            {productList.map((product, index) => (
+              <ProductCard product={product} index={index} />
+            ))}
+          </ul>
+        ) : (
+          <p class="max-w-xl text-sm leading-6 text-ink-soft">
+            The shop is being replanted. <a href="/" class="text-accent underline">Back home</a>.
+          </p>
+        )
+      }
+    </div>
+  </section>
+</Layout>

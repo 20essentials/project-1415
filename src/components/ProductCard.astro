@@ -1,0 +1,58 @@
+---
+import { resolveWixImageUrl } from '@/utils/wix-image';
+
+interface Props {
+  product: {
+    _id?: string;
+    name?: string;
+    slug?: string;
+    media?: { main?: { image?: string; url?: string; altText?: string } };
+    actualPriceRange?: { minValue?: { formattedAmount?: string } };
+  };
+  index?: number;
+}
+
+const { product, index } = Astro.props;
+
+const imageUrl = resolveWixImageUrl(
+  product.media?.main?.image ?? product.media?.main?.url,
+  640,
+  800,
+);
+const imageAlt = product.media?.main?.altText ?? product.name ?? 'Carnivorous plant';
+const price = product.actualPriceRange?.minValue?.formattedAmount;
+const indexLabel =
+  typeof index === 'number' ? String(index + 1).padStart(2, '0') : null;
+---
+
+<li>
+  <a href={`/products/${product.slug}`} class="group block">
+    <div class="relative aspect-4/5 overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule">
+      {
+        imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={imageAlt}
+            width="640"
+            height="800"
+            loading="lazy"
+            class="h-full w-full object-cover transition-transform duration-700 ease-fluid group-hover:scale-105"
+          />
+        ) : (
+          <span class="flex h-full w-full items-center justify-center px-4 text-center text-xs text-mute">
+            Photo coming soon
+          </span>
+        )
+      }
+      {
+        indexLabel && (
+          <span class="absolute top-3 left-3 rounded-full bg-paper/80 px-2.5 py-1 text-xs font-medium text-ink-soft backdrop-blur">
+            N°&nbsp;{indexLabel}
+          </span>
+        )
+      }
+    </div>
+    <h3 class="mt-4 font-display text-base text-ink lg:text-lg">{product.name}</h3>
+    {price && <p class="mt-1 text-sm font-medium text-ink-soft">{price}</p>}
+  </a>
+</li>
