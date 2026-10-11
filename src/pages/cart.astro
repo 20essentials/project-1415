@@ -1,14 +1,14 @@
 ---
-import Layout from "@/layouts/layout.astro";
-import CartView from "@/components/cart-view.tsx";
+import Layout from '@/layouts/layout.astro';
+import CartView from '@/components/cart-view.tsx';
 ---
 
 <Layout
-  title="Cart — Petals & Predators"
-  description="Review the carnivorous plants and flowers in your cart, then check out securely with Petals & Predators."
+  title='Cart — Petals & Predators'
+  description='Review the carnivorous plants and flowers in your cart, then check out securely with Petals & Predators.'
   noindex
 >
-  <div class="relative z-2 bg-paper px-4 pt-24 pb-16 text-ink sm:px-8 lg:px-20">
+  <div class='relative z-2 bg-paper px-4 pt-24 pb-16 text-ink sm:px-8 lg:px-20'>
     <CartView client:load />
   </div>
 </Layout>
