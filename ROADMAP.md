@@ -17,7 +17,7 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `done` (eje
 | 7 | Cart + checkout nativo Wix + badge en nav | done | `step-7-create-cart-and-checkout.md` |
 | 8 | About + Contact (Wix Forms) | done | `step-8-create-about-and-contact.md` |
 | 9 | SEO + accesibilidad + polish | done | `step-9-seo-and-accessibility.md` |
-| 10 | Build + release (sitio en vivo) | materialized | `step-10-build-and-release.md` |
+| 10 | Member login + account (Wix Members Area) | materialized | `step-10-member-login-and-account.md` · app Wix Members Area + `@wix/members`; nav "Log in"/"Account" + `/account` (perfil + logout) |
 | 11 | Plant care journal (CMS) | pending | Colección Wix CMS `care-guides` (title, slug, intro, body, plantTag) + rutas `/journal` y `/journal/[slug]` + link "Journal" en el nav + featured guide en home |
 | 12 | Lookbook estacional | pending | Landing `/lookbook` con grid editorial (CMS items + fotos), CTA desde home y nav |
 | 13 | Reseñas de producto | pending | Ratings/reviews de Wix Stores en PDP + sección "What growers say" en home |
@@ -28,6 +28,8 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `done` (eje
 | 18 | Analytics + consent | pending | Wix Analytics, eventos de compra, banner de consent si aplica |
 | 19 | i18n (español) | pending | Versión `/es/*` con el mismo design system |
 | 20 | Performance audit | pending | Lighthouse, formatos de imagen, carga de fuentes, bundle |
+| 21 | Build + release (sitio en vivo) | materialized | `step-21-build-and-release.md` |
+| 22 | Historial de órdenes (miembros) | pending | Feature a futuro. No hay API member-scoped de órdenes de tienda en headless (solo Pricing Plans); requeriría `orders.searchOrders()` con auth elevada (`ECOM.READ_ORDERS`) — riesgo de seguridad, evaluar antes. |
 
 ---
 

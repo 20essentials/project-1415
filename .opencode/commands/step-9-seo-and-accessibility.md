@@ -3,7 +3,7 @@ description: Step 9 — SEO + accesibilidad + polish · Petals & Predators
 ---
 # Step 9 — SEO + accesibilidad + polish
 
-> **Siguiente:** `/step-10-build-and-release`
+> **Siguiente:** `/step-10-member-login-and-account`
 
 ## Objetivo
 
@@ -62,4 +62,4 @@ alt de imágenes, navegación por teclado, contraste y comportamiento responsive
 ## Al terminar
 
 1. Marca el paso 9 como `done` en `ROADMAP.md`.
-2. Siguiente: `/step-10-build-and-release`
+2. Siguiente: `/step-10-member-login-and-account`

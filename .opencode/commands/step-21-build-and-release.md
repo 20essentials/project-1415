@@ -1,7 +1,7 @@
 ---
-description: Step 10 — Build + release (sitio en vivo) · Petals & Predators
+description: Step 21 — Build + release (sitio en vivo) · Petals & Predators
 ---
-# Step 10 — Build + release (sitio en vivo)
+# Step 21 — Build + release (sitio en vivo)
 
 > **Siguiente:** no hay — si el proyecto continúa, ejecuta `/generate-next-steps`
 > para materializar los próximos pasos del ROADMAP.
@@ -39,7 +39,7 @@ dashboard) actualizando `AGENTS.md`.
 4. **Actualizar `AGENTS.md`** (raíz): descripción final del sitio — páginas,
    features (Stores, checkout nativo, Forms), design system, comandos de
    build/release, y el estado del roadmap.
-5. **ROADMAP:** marca el paso 10 como `done`.
+5. **ROADMAP:** marca el paso 21 como `done`.
 
 ## Verificación
 
