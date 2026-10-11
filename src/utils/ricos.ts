@@ -48,7 +48,7 @@ interface RicosNode {
   [key: string]: unknown;
 }
 
-interface RicosDocument {
+export interface RicosDocument {
   nodes?: RicosNode[];
   [key: string]: unknown;
 }

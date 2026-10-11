@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { productsV3 } from '@wix/stores';
 import { listStoreCategories } from '@/utils/categories';
+import { queryGuides } from '@/utils/journal';
 
 interface SitemapEntry {
   loc: string;
@@ -22,6 +23,7 @@ export const GET: APIRoute = async ({ url }) => {
   const entries: SitemapEntry[] = [
     { loc: '/', priority: '1.0', changefreq: 'weekly' },
     { loc: '/products', priority: '0.9', changefreq: 'weekly' },
+    { loc: '/journal', priority: '0.6', changefreq: 'weekly' },
     { loc: '/about', priority: '0.5', changefreq: 'monthly' },
     { loc: '/contact', priority: '0.5', changefreq: 'monthly' },
   ];
@@ -43,6 +45,15 @@ export const GET: APIRoute = async ({ url }) => {
     }
   } catch (error) {
     console.error('[sitemap] product lookup failed:', error);
+  }
+
+  try {
+    const guides = await queryGuides();
+    for (const guide of guides) {
+      entries.push({ loc: `/journal/${guide.slug}`, priority: '0.6', changefreq: 'monthly' });
+    }
+  } catch (error) {
+    console.error('[sitemap] guide lookup failed:', error);
   }
 
   const body = [

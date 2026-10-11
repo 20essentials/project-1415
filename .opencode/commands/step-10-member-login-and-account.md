@@ -3,7 +3,7 @@ description: Step 10 — Member login + account (Wix Members Area) · Petals & P
 ---
 # Step 10 — Member login + account (Wix Members Area)
 
-> **Siguiente:** `/step-11-plant-care-journal` (aún no existe → `/generate-next-steps`)
+> **Siguiente:** `/step-11-plant-care-journal`
 
 ## Objetivo
 
@@ -77,4 +77,4 @@ el perfil del miembro y permite cerrar sesión.
 ## Al terminar
 
 1. Marca el paso 10 como `done` en `ROADMAP.md`.
-2. Siguiente: `/step-11-plant-care-journal` (o `/generate-next-steps`).
+2. Siguiente: `/step-11-plant-care-journal`.

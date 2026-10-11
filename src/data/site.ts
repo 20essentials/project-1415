@@ -13,6 +13,7 @@ export const site = {
     { href: '#como-funciona', label: 'How it works' },
     { href: '#tu-casa', label: 'Your space' },
     { href: '/products', label: 'All plants' },
+    { href: '/journal', label: 'Journal' },
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' },
   ],

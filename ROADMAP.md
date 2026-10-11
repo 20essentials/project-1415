@@ -17,10 +17,10 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `done` (eje
 | 7 | Cart + checkout nativo Wix + badge en nav | done | `step-7-create-cart-and-checkout.md` |
 | 8 | About + Contact (Wix Forms) | done | `step-8-create-about-and-contact.md` |
 | 9 | SEO + accesibilidad + polish | done | `step-9-seo-and-accessibility.md` |
-| 10 | Member login + account (Wix Members Area) | materialized | `step-10-member-login-and-account.md` · app Wix Members Area + `@wix/members`; nav "Log in"/"Account" + `/account` (perfil + logout) |
-| 11 | Plant care journal (CMS) | pending | Colección Wix CMS `care-guides` (title, slug, intro, body, plantTag) + rutas `/journal` y `/journal/[slug]` + link "Journal" en el nav + featured guide en home |
-| 12 | Lookbook estacional | pending | Landing `/lookbook` con grid editorial (CMS items + fotos), CTA desde home y nav |
-| 13 | Reseñas de producto | pending | Ratings/reviews de Wix Stores en PDP + sección "What growers say" en home |
+| 10 | Member login + account (Wix Members Area) | done | `step-10-member-login-and-account.md` · app Wix Members Area + `@wix/members`; nav "Log in"/"Account" + `/account` (perfil + logout) |
+| 11 | Plant care journal (CMS) | done | `step-11-plant-care-journal.md` · Colección Wix CMS `care-guides` (title, slug, intro, body, plantTag, coverImage) + 4 guías seeded + rutas `/journal` y `/journal/[slug]` (404 si no existe) + link "Journal" en el nav + featured guide en home + sitemap |
+| 12 | Lookbook estacional | materialized | `step-12-seasonal-lookbook.md` · Landing `/lookbook` con grid editorial (CMS items + fotos), CTA desde home y nav |
+| 13 | Reseñas de producto | materialized | `step-13-product-reviews.md` · Ratings/reviews de Wix Stores en PDP + sección "What growers say" en home |
 | 14 | Gift cards landing | pending | Activar el pack `gift-cards` (hoy en `disabledPacks`): `/gift-cards` + nav link + mount en home |
 | 15 | Newsletter signup | pending | Formulario Wix Forms "Newsletter" en footer (receta wix-manage `references/forms/create-form.md`) + confirmación |
 | 16 | Site search | pending | Overlay de búsqueda de productos (`queryProducts` search) en nav, atclado a `/` |

@@ -3,6 +3,14 @@ import Logo from './logo.astro';
 import CartBadge from './cart-badge.tsx';
 import { site } from '../data/site';
 const { nav, links } = site;
+
+interface Props {
+  loggedIn?: boolean;
+}
+
+const { loggedIn = false } = Astro.props;
+const accountHref = loggedIn ? '/account' : '/api/auth/login?returnToUrl=/account';
+const accountLabel = loggedIn ? 'Account' : 'Log in';
 ---
 
 <a
@@ -45,6 +53,12 @@ const { nav, links } = site;
     <div class="flex items-center gap-6 lg:gap-5">
       <!-- nav:actions -->
       <CartBadge client:only="react" />
+      <a
+        href={accountHref}
+        class="hidden h-9 items-center rounded-full px-3 text-sm text-ink-soft transition-colors duration-700 ease-fluid hover:text-ink xl:inline-flex"
+      >
+        <span class="text-trim">{accountLabel}</span>
+      </a>
       <a
         href={links.shop}
         class="inline-flex h-9 items-center justify-center rounded-full bg-accent px-4 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream"
@@ -93,6 +107,7 @@ const { nav, links } = site;
   </nav>
 
   <div class="menu-item flex flex-col items-center gap-2 text-sm text-ink-soft" style={`--i:${nav.length + 1}`}>
+    <a href={accountHref} class="link">{accountLabel}</a>
     <a href="/contact" class="link">Contact us</a>
     <p>Greenhouse-grown · shipped alive worldwide</p>
   </div>
