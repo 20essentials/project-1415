@@ -66,6 +66,8 @@ const world = {
         dots[index].click();
         return true;
       };
+      // Links like /#care arrive from other pages; land on the matching stop.
+      (window as SwWindow).__swGoTo(decodeURIComponent(window.location.hash.slice(1)));
     });
   }
 

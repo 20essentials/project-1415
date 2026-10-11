@@ -219,13 +219,17 @@ const accountLabel = loggedIn ? 'Account' : 'Log in';
     }
   });
 
-  // Stops of the scroll-world engine have no DOM element, so in-page links are
-  // handed to the engine (exposed as window.__swGoTo) which scrolls to the stop.
+  // Stops of the scroll-world engine have no DOM element, so links to them are
+  // handed to the engine (exposed as window.__swGoTo). Only the home page owns
+  // those stops: elsewhere the browser follows the link to /#id and the engine
+  // picks up the hash on load.
   document.addEventListener('click', (event) => {
-    const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href^="#"]');
+    const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href]');
     if (!link) return;
-    const id = link.getAttribute('href')?.slice(1);
-    if (id && (window as SwWindow).__swGoTo?.(id)) {
+    const url = new URL(link.href, window.location.href);
+    const id = url.hash.slice(1);
+    if (!id || url.pathname !== '/' || window.location.pathname !== '/') return;
+    if ((window as SwWindow).__swGoTo?.(id)) {
       event.preventDefault();
       setOpen(false);
     }
