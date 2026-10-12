@@ -1,9 +1,9 @@
 ---
-description: Step 13 — Reseñas de producto (Wix Reviews) · Petals & Predators
+description: Step 14 — Reseñas de producto (Wix Reviews) · Petals & Predators
 ---
-# Step 13 — Reseñas de producto (Wix Reviews)
+# Step 14 — Reseñas de producto (Wix Reviews)
 
-> **Siguiente:** `/step-14-gift-cards-landing` (aún no existe → `/generate-next-steps`)
+> **Siguiente:** `/step-15-gift-cards-landing` (aún no existe → `/generate-next-steps`)
 
 ## Objetivo
 
@@ -19,6 +19,8 @@ sección "What growers say" en el home.
 - **API:** `reviews.queryReviews(query, options)` con `auth.elevate`; namespace
   `"stores"`, `entityId` = GUID del producto (`product._id`); sort por `_createdDate`
   desc. Aquí es **solo lectura** (crear reseñas exige `contactId` → fuera de alcance).
+- **i18n (step-12):** los headings nuevos ("What growers say", "N reviews") salen de
+  `src/translations.json` vía `t()`.
 - **Estado:** PDP en `src/pages/products/[slug].astro` (ya tiene `product._id`); home en
   `src/pages/index.astro` (markers `<!-- home:* -->`).
 
@@ -35,7 +37,7 @@ sección "What growers say" en el home.
    `getFeaturedReviews()` (todas las de `stores`, top por rating/recencia, limit 6).
    Ambas con `auth.elevate(reviews.queryReviews)` y `try/catch` → `[]`.
 3. **`src/components/RatingStars.astro`** — estrellas accesibles (SVG), props `rating`
-   (0-5, admite medias) y `count?`; `aria-label="Rated X out of 5"`.
+   (0-5, admite medias) y `count?`; `aria-label` desde `t('reviews.ratedOutOf')`.
 4. **PDP (`products/[slug].astro`):**
    - Bajo el título, fila de rating (estrellas + `N reviews`) **solo** cuando hay reseñas.
    - Sección "What growers say" antes de "You may also like" con hasta 3 reseñas (autor,
@@ -43,7 +45,9 @@ sección "What growers say" en el home.
 5. **Home (`index.astro`)** — sección "What growers say" con `getFeaturedReviews()`:
    grid de quote-cards (estrellas + body + autor), insertada antes de
    `<!-- home:gift-cards -->`. Sin reseñas → no aparece.
-6. **Sitemap:** sin cambios (no crea rutas nuevas).
+6. **i18n:** añadir `reviews.sectionTitle`, `reviews.count` y `reviews.ratedOutOf` a
+   `src/translations.json` y renderizarlos con `t()`.
+7. **Sitemap:** sin cambios (no crea rutas nuevas).
 
 ## Pages / Sections
 
@@ -71,8 +75,9 @@ sección "What growers say" en el home.
 - [ ] Con reseñas sembradas, la PDP muestra el promedio y su lista (autor, estrellas, fecha)
 - [ ] El home muestra "What growers say" cuando hay reseñas
 - [ ] Un producto sin reseñas no imprime la sección ni rompe el build
+- [ ] Los headings nuevos responden al idioma activo (`t()`)
 
 ## Al terminar
 
-1. Marca el paso 13 como `done` en `ROADMAP.md`.
-2. Siguiente: `/step-14-gift-cards-landing` (aún no existe → `/generate-next-steps`).
+1. Marca el paso 14 como `done` en `ROADMAP.md`.
+2. Siguiente: `/step-15-gift-cards-landing` (aún no existe → `/generate-next-steps`).

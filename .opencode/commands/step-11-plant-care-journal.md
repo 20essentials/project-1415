@@ -3,7 +3,7 @@ description: Step 11 — Plant care journal (CMS) · Petals & Predators
 ---
 # Step 11 — Plant care journal (CMS)
 
-> **Siguiente:** `/step-12-seasonal-lookbook`
+> **Siguiente:** `/step-12-multilingual-support`
 
 ## Objetivo
 
@@ -83,4 +83,4 @@ una guía destacada en el home.
 ## Al terminar
 
 1. Marca el paso 11 como `done` en `ROADMAP.md`.
-2. Siguiente: `/step-12-seasonal-lookbook`.
+2. Siguiente: `/step-12-multilingual-support`.

@@ -1,9 +1,9 @@
 ---
-description: Step 12 — Lookbook estacional · Petals & Predators
+description: Step 13 — Lookbook estacional · Petals & Predators
 ---
-# Step 12 — Lookbook estacional
+# Step 13 — Lookbook estacional
 
-> **Siguiente:** `/step-13-product-reviews`
+> **Siguiente:** `/step-14-product-reviews`
 
 ## Objetivo
 
@@ -17,8 +17,12 @@ fotos y productos destacados, más un CTA desde el home y un link en el nav.
   (`references/astro/cms/CMS_FOUNDATIONS.md`) · wix-manage =
   `C:\Users\amoil\.agents\skills\wix-manage` (`references/cms/cms-schema-management.md`,
   `references/cms/cms-data-items-crud.md`, `references/media/*`).
-- **SDK:** `@wix/data` (instalado en step-11) + `@wix/essentials`; imágenes con
+- **SDK:** `@wix/data` (instalado en step-11) y `@wix/essentials`; imágenes con
   `src/utils/wix-image.ts` y productos con `productsV3` (`@wix/stores`).
+- **i18n (step-12):** el copy de UI sale de `src/translations.json` vía `t()`
+  (`src/utils/i18n.ts`); los enlaces internos pasan por `localize()`. El texto de la
+  colección es contenido CMS y se traduce con el mecanismo por-app de Wix Multilingual
+  (fuera del alcance de este step).
 - **Estado:** nav en `src/data/site.ts`; home en `src/pages/index.astro` (markers
   `<!-- home:* -->`); el catálogo ya se consulta con `productsV3.queryProducts`.
 
@@ -41,16 +45,18 @@ fotos y productos destacados, más un CTA desde el home y un link en el nav.
      → no usar filtros no soportados por la query v3; si un `productSlug` no matchea, se
      omite sin romper la página.
    - Estado vacío cálido si no hay items.
-4. **Nav:** `{ href: '/lookbook', label: 'Lookbook' }` en `site.nav`, antes de `Journal`.
+4. **Nav:** `{ href: '/lookbook', label: 'nav.lookbook' }` en `site.nav`, antes de
+   `Journal`, y añadir la clave `nav.lookbook` ("Lookbook") a `src/translations.json`.
 5. **Home:** bloque CTA "Shop the lookbook" en `src/pages/index.astro` antes de
-   `<!-- home:gift-cards -->`.
+   `<!-- home:gift-cards -->`, con el label desde `t('home.lookbookCta')` (añadir la clave).
 6. **Sitemap:** añadir `/lookbook` a `src/pages/sitemap.xml.ts`.
 
 ## Pages / Sections
 
 - `src/pages/lookbook.astro` — hero + mosaicos por estación + productos destacados.
 - `src/pages/index.astro` — CTA "Shop the lookbook".
-- `src/components/header.astro` — sin cambios (link desde `site.nav`).
+- `src/data/site.ts` + `src/translations.json` — link `nav.lookbook`.
+- `src/components/header.astro` — sin cambios (el link llega desde `site.nav`).
 
 ## Design
 
@@ -74,10 +80,10 @@ fotos y productos destacados, más un CTA desde el home y un link en el nav.
 - [ ] `npx @wix/cli@latest build` en verde
 - [ ] `/lookbook` renderiza las estaciones sembradas con su galería y story (rich text)
 - [ ] Los productos destacados aparecen cuando el `slug` existe y se omiten si no
-- [ ] "Lookbook" en el nav y el CTA del home navegan a `/lookbook`
+- [ ] "Lookbook" en el nav y el CTA del home navegan a `/lookbook` (y respetan el locale)
 - [ ] `/lookbook` está en el sitemap; sin items el estado vacío no rompe la página
 
 ## Al terminar
 
-1. Marca el paso 12 como `done` en `ROADMAP.md`.
-2. Siguiente: `/step-13-product-reviews`.
+1. Marca el paso 13 como `done` en `ROADMAP.md`.
+2. Siguiente: `/step-14-product-reviews`.
