@@ -13,6 +13,19 @@
 - Crear el proyecto se puede con pnpm: `pnpm create @wix/new@latest headless --skip-install`
 - Instalar dependencias requiere npm: `pnpm install` falla con la plantilla de `@wix/cli` (conflictos de peer-deps). Usar siempre: `npm install --legacy-peer-deps`
 
+## Build en Windows y parches de dependencias
+
+- `@wix/astro@2.75.2` emite `export * from '<ruta>'` sin escapar; en Windows la ruta lleva backslashes y `astro build` falla con `Rollup failed to resolve import "C:Users..."`. El fix vive en `patches/@wix+astro+2.75.2.patch`.
+- El parche se aplica solo: `package.json` tiene `"postinstall": "patch-package"` (devDep `patch-package`). **No** editar `node_modules/@wix/astro` a mano.
+- Si se sube la versión de `@wix/astro`, regenerar el parche (`npx patch-package @wix/astro`) y renombrarlo a la versión nueva.
+
+## Testing
+
+- Stack: Vitest + `@testing-library/react` (jsdom). Correr con `npm test` (alias `npm run test:unit`); watch: `npm run test:watch`.
+- Tests en `tests/**` (`tests/unit/*`, `tests/components/*`). `tests/setup.ts` registra `@testing-library/jest-dom` y limpia el DOM tras cada test.
+- `vitest.config.ts` aliasa los módulos virtuales que no resuelven en Node: `wix:astro:i18n`, `astro:env/client`, `@wix/essentials` (mocks en `tests/mocks/`). Al testear código que los importe, extender los alias.
+- Componentes React que llaman al SDK de Wix (p. ej. `cart-badge.tsx`) se testean mockeando el módulo (`vi.mock('@wix/ecom', ...)`).
+
 ## Reglas de trabajo (lecciones aprendidas — no repetir)
 
 Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
@@ -70,3 +83,4 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 - Cuando no exista el siguiente `step-N`, ejecutar `/generate-next-steps`: materializa los próximos items `pending` del roadmap con la plantilla fija.
 - **Marca:** Petals & Predators — e-commerce en inglés (plantas carnívoras + flores). Design system en `DESIGN.md` (frontmatter = tokens canónicos; body = captura de referencia).
 - **Recetas Wix:** skill `wix-headless` (`C:\Users\amoil\.agents\skills\wix-headless`) y skill `wix-manage` (apps + seeding).
+- **Traducciones:** `wix translation push` requiere terminal interactivo (TTY) y `wix translation pull` requiere contenido ya publicado en el dashboard de Wix Multilingual; ninguno corre en un shell no interactivo.

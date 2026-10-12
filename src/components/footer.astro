@@ -1,32 +1,34 @@
 ---
 import Logo from '@/components/logo.astro';
 import { site } from '@/data/site';
+import { useTranslation, localize } from '@/utils/i18n';
 
 const year = new Date().getFullYear();
 const { links } = site;
+const { t } = useTranslation();
 
 const columns = [
   {
-    title: 'Shop',
+    title: 'footer.shop',
     items: [
-      { href: links.shop, label: 'All plants' },
-      { href: '/category/carnivorous', label: 'Carnivorous' },
-      { href: '/category/flowers', label: 'Flowers' },
-      { href: '/category/kits-accessories', label: 'Kits & accessories' },
+      { href: links.shop, label: 'nav.all-plants' },
+      { href: '/category/carnivorous', label: 'footer.carnivorous' },
+      { href: '/category/flowers', label: 'footer.flowers' },
+      { href: '/category/kits-accessories', label: 'footer.kits' },
     ],
   },
   {
-    title: 'Company',
+    title: 'footer.company',
     items: [
-      { href: '/about', label: 'About' },
-      { href: '/contact', label: 'Contact' },
+      { href: '/about', label: 'nav.about' },
+      { href: '/contact', label: 'nav.contact' },
     ],
   },
   {
-    title: 'Care',
+    title: 'footer.care',
     items: [
-      { href: '/contact#shipping', label: 'Shipping & returns' },
-      { href: '/contact#care', label: 'Plant care 101' },
+      { href: '/contact#shipping', label: 'footer.shipping' },
+      { href: '/contact#care', label: 'footer.plant-care' },
     ],
   },
 ];
@@ -37,26 +39,25 @@ const columns = [
     <div class="flex flex-col gap-4 lg:col-span-2">
       <Logo class="text-base" />
       <p class="max-w-xs text-sm leading-6 text-ink-soft">
-        Carnivorous specimens, show-stopping blooms, and care-tested kits — greenhouse-grown and shipped alive to your
-        door.
+        {t('footer.about')}
       </p>
       <a
-        href={links.shop}
+        href={localize(links.shop)}
         class="mt-2 inline-flex h-10 w-fit items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream"
       >
-        <span class="text-trim">Shop the collection</span>
+        <span class="text-trim">{t('common.shop-the-collection')}</span>
       </a>
     </div>
 
     {
       columns.map((column) => (
         <div class="flex flex-col gap-3 text-sm">
-          <h2 class="text-xs font-medium tracking-widest text-mute uppercase">{column.title}</h2>
+          <h2 class="text-xs font-medium tracking-widest text-mute uppercase">{t(column.title)}</h2>
           <ul class="flex flex-col gap-2">
             {column.items.map((item) => (
               <li>
-                <a href={item.href} class="link text-ink-soft hover:text-ink">
-                  {item.label}
+                <a href={localize(item.href)} class="link text-ink-soft hover:text-ink">
+                  {t(item.label)}
                 </a>
               </li>
             ))}
@@ -67,7 +68,7 @@ const columns = [
   </div>
 
   <div class="mx-auto mt-16 flex max-w-6xl flex-col gap-3 border-t border-rule pt-8 text-xs text-mute sm:flex-row sm:items-center sm:justify-between">
-    <p>© {year} Petals & Predators. All rights reserved.</p>
-    <p>Greenhouse-grown in-house · shipped worldwide.</p>
+    <p>{t('footer.rights', { year })}</p>
+    <p>{t('footer.tagline')}</p>
   </div>
 </footer>

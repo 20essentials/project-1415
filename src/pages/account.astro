@@ -2,6 +2,7 @@
 import Layout from '@/layouts/layout.astro';
 import { members } from '@wix/members';
 import { resolveWixImageUrl } from '@/utils/wix-image';
+import { localize, currentLanguage } from '@/utils/i18n';
 
 type CurrentMember = NonNullable<Awaited<ReturnType<typeof members.getCurrentMember>>['member']>;
 
@@ -14,7 +15,7 @@ try {
 }
 
 if (!member) {
-  return Astro.redirect('/api/auth/login?returnToUrl=/account');
+  return Astro.redirect(localize(`/login?returnToUrl=${localize('/account')}`));
 }
 
 const contactName = [member.contact?.firstName, member.contact?.lastName]
@@ -27,7 +28,7 @@ const photoUrl = resolveWixImageUrl(member.profile?.photo?.url ?? member.profile
 const createdDate = member._createdDate ? new Date(member._createdDate) : null;
 const memberSince =
   createdDate && !Number.isNaN(createdDate.getTime())
-    ? new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' }).format(createdDate)
+    ? new Intl.DateTimeFormat(currentLanguage(), { month: 'long', year: 'numeric' }).format(createdDate)
     : null;
 ---
 
@@ -93,7 +94,7 @@ const memberSince =
           </div>
         </dl>
 
-        <form method="POST" action="/api/auth/logout?returnToUrl=/" class="mt-8 border-t border-rule pt-6">
+        <form method="POST" action={`/api/auth/logout?returnToUrl=${localize('/')}`} class="mt-8 border-t border-rule pt-6">
           <button type="submit" class="btn btn-ghost">
             <span class="text-trim">Log out</span>
           </button>

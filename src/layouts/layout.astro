@@ -4,6 +4,7 @@ import Header from '../components/header.astro';
 import Footer from '../components/footer.astro';
 import { ogImage } from '../data/imagenes';
 import { members } from '@wix/members';
+import { currentLanguage, localeUrl, LOCALES } from '../utils/i18n';
 
 const googleFontsHref =
   'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600&display=swap';
@@ -26,15 +27,19 @@ try {
 }
 
 const base = Astro.site ?? Astro.url;
-const canonical = new URL(Astro.url.pathname, base);
+const lang = currentLanguage();
+const cleanPath = Astro.url.pathname;
+const canonical = new URL(localeUrl(cleanPath, lang), base);
 const ogUrl = new URL(ogImage.src, base).href;
+const ogLocales: Record<string, string> = { en: 'en_US', es: 'es_ES', it: 'it_IT' };
+const alternates = LOCALES.map((locale) => ({ locale, href: new URL(localeUrl(cleanPath, locale), base).href }));
 const robots = noindex
   ? 'noindex, follow'
   : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -53,14 +58,23 @@ const robots = noindex
       !noindex && (
         <>
           <link rel="canonical" href={canonical} />
-          <link rel="alternate" hreflang="en" href={canonical} />
-          <link rel="alternate" hreflang="x-default" href={canonical} />
+          {alternates.map((alt) => (
+            <link rel="alternate" hreflang={alt.locale} href={alt.href} />
+          ))}
+          <link
+            rel="alternate"
+            hreflang="x-default"
+            href={alternates.find((alt) => alt.locale === 'en')?.href ?? canonical}
+          />
         </>
       )
     }
 
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={ogLocales[lang] ?? 'en_US'} />
+    {LOCALES.filter((locale) => locale !== lang).map((locale) => (
+      <meta property="og:locale:alternate" content={ogLocales[locale]} />
+    ))}
     <meta property="og:site_name" content="Petals & Predators" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

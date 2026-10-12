@@ -1,7 +1,24 @@
 ---
 import { site } from '@/data/site';
+import { useTranslation, localize } from '@/utils/i18n';
 
-const stops = site.paseo.stops;
+const { t } = useTranslation();
+
+const stops = site.paseo.stops.map((stop) => {
+  const claims = 'claims' in stop ? stop.claims.map((claim) => t(claim)) : undefined;
+  const steps = 'steps' in stop ? stop.steps.map((step) => t(step)) : undefined;
+  const cta = 'cta' in stop ? { href: localize(stop.cta.href), label: t(stop.cta.label) } : undefined;
+  return {
+    ...stop,
+    label: t(stop.label),
+    eyebrow: t(stop.eyebrow),
+    title: t(stop.title),
+    subtitle: stop.subtitle ? t(stop.subtitle) : '',
+    claims,
+    steps,
+    cta,
+  };
+});
 
 const world = {
   nav: false,

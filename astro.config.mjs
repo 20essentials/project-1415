@@ -1,22 +1,26 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import wix from "@wix/astro";
-import wixPages from "@wix/astro-pages";
+import wix from '@wix/astro';
+import wixPages from '@wix/astro-pages';
 
-import react from "@astrojs/react";
-import wixHostingAdapter from "@wix/astro-wix-hosting-adapter";
-import tailwindcss from "@tailwindcss/vite";
+import react from '@astrojs/react';
+import wixHostingAdapter from '@wix/astro-wix-hosting-adapter';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
   vite: { plugins: [tailwindcss()] },
-  integrations: [wix({ robots: { enable: false } }), wixPages(), react()],
+  integrations: [
+    wix({ robots: { enable: false }, essentials: true, translations: true }),
+    wixPages(),
+    react()
+  ],
   security: { checkOrigin: false },
   adapter: wixHostingAdapter(),
 
   image: {
-    domains: ["static.wixstatic.com"],
+    domains: ['static.wixstatic.com']
   },
 
-  output: "server",
+  output: 'server'
 });

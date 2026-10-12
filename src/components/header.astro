@@ -1,23 +1,26 @@
 ---
 import Logo from './logo.astro';
 import CartBadge from './cart-badge.tsx';
+import LanguageSelector from './language-selector.astro';
 import { site } from '../data/site';
-const { nav, links } = site;
+import { useTranslation, localize } from '@/utils/i18n';
+const { nav, navPrimary, links } = site;
+const { t } = useTranslation();
 
 interface Props {
   loggedIn?: boolean;
 }
 
 const { loggedIn = false } = Astro.props;
-const accountHref = loggedIn ? '/account' : '/api/auth/login?returnToUrl=/account';
-const accountLabel = loggedIn ? 'Account' : 'Log in';
+const accountHref = loggedIn ? localize('/account') : localize('/login?returnToUrl=/account');
+const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
 ---
 
 <a
   href="#contenido"
   class="btn btn-primary btn-sm fixed top-4 left-4 z-60 -translate-y-24 focus-visible:translate-y-0"
 >
-  <span>Skip to content</span>
+  <span>{t('header.skip')}</span>
 </a>
 
 <header
@@ -26,23 +29,23 @@ const accountLabel = loggedIn ? 'Account' : 'Log in';
   <div
     class="pointer-events-auto flex w-max items-center gap-6 rounded-full bg-paper/60 p-2 pl-6 ring-1 ring-rule backdrop-blur-xl lg:gap-5"
   >
-    <a href="/" class="flex h-9 items-center rounded-full text-ink" aria-label="Petals & Predators, back to home">
+    <a href="/" class="flex h-9 items-center rounded-full text-ink" aria-label={t('header.logo')}>
       <Logo class="text-sm" />
     </a>
 
     <!-- nav:links -->
-    <nav aria-label="Primary" class="relative hidden xl:block">
+    <nav aria-label={t('header.primary')} class="relative hidden xl:block">
       <span aria-hidden="true" class="nav-indicator absolute top-0 left-0 h-9 rounded-full bg-ink/10"></span>
       <ul class="relative flex items-center text-sm">
         {
-          nav.map((item) => (
+          navPrimary.map((item) => (
             <li>
               <a
-                href={item.href}
+                href={localize(item.href)}
                 data-nav-link
                 class="flex h-9 items-center rounded-full px-3 text-ink-soft transition-colors duration-700 ease-fluid hover:text-ink aria-[current=true]:text-ink"
               >
-                <span class="text-trim">{item.label}</span>
+                <span class="text-trim">{t(item.label)}</span>
               </a>
             </li>
           ))
@@ -52,6 +55,7 @@ const accountLabel = loggedIn ? 'Account' : 'Log in';
 
     <div class="flex items-center gap-6 lg:gap-5">
       <!-- nav:actions -->
+      <LanguageSelector class="hidden xl:block" />
       <CartBadge client:only="react" />
       <a
         href={accountHref}
@@ -60,17 +64,19 @@ const accountLabel = loggedIn ? 'Account' : 'Log in';
         <span class="text-trim">{accountLabel}</span>
       </a>
       <a
-        href={links.shop}
+        href={localize(links.shop)}
         class="inline-flex h-9 items-center justify-center rounded-full bg-accent px-4 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream"
       >
-        <span class="text-trim">Shop the collection</span>
+        <span class="text-trim">{t('common.shop-the-collection')}</span>
       </a>
       <button
         type="button"
         class="menu-toggle relative size-9 rounded-full text-ink transition-colors duration-700 ease-fluid hover:bg-ink/10 xl:hidden"
         aria-expanded="false"
         aria-controls="menu"
-        aria-label="Open menu"
+        aria-label={t('header.open-menu')}
+        data-open-label={t('header.open-menu')}
+        data-close-label={t('header.close-menu')}
       >
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
@@ -84,32 +90,33 @@ const accountLabel = loggedIn ? 'Account' : 'Log in';
   class="menu invisible fixed inset-0 z-40 flex flex-col justify-between bg-paper/80 px-4 pt-32 pb-12 opacity-0 backdrop-blur-3xl transition-all duration-700 ease-fluid xl:hidden"
   inert
 >
-  <nav aria-label="Mobile menu">
+  <nav aria-label={t('header.mobile-menu')}>
     <ul class="flex flex-col items-center gap-6 text-center">
       {
         nav.map((item, i) => (
           <li class="menu-item" style={`--i:${i}`}>
-            <a href={item.href} data-menu-link class="font-display text-4xl text-ink">
-              {item.label}
+            <a href={localize(item.href)} data-menu-link class="font-display text-4xl text-ink">
+              {t(item.label)}
             </a>
           </li>
         ))
       }
       <li class="menu-item pt-6" style={`--i:${nav.length}`}>
         <a
-          href={links.shop}
+          href={localize(links.shop)}
           class="inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 font-medium text-paper"
         >
-          <span class="text-trim">Shop the collection</span>
+          <span class="text-trim">{t('common.shop-the-collection')}</span>
         </a>
       </li>
     </ul>
   </nav>
 
   <div class="menu-item flex flex-col items-center gap-2 text-sm text-ink-soft" style={`--i:${nav.length + 1}`}>
+    <LanguageSelector />
     <a href={accountHref} class="link">{accountLabel}</a>
-    <a href="/contact" class="link">Contact us</a>
-    <p>Greenhouse-grown · shipped alive worldwide</p>
+    <a href={localize('/contact')} class="link">{t('header.contact')}</a>
+    <p>{t('header.tagline')}</p>
   </div>
 </div>
 
@@ -200,7 +207,7 @@ const accountLabel = loggedIn ? 'Account' : 'Log in';
   const setOpen = (open: boolean) => {
     if (!toggle || !menu) return;
     toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    toggle.setAttribute('aria-label', open ? (toggle.dataset.closeLabel ?? 'Close menu') : (toggle.dataset.openLabel ?? 'Open menu'));
     menu.toggleAttribute('data-open', open);
     menu.inert = !open;
     if (main) main.inert = open;
@@ -223,12 +230,13 @@ const accountLabel = loggedIn ? 'Account' : 'Log in';
   // handed to the engine (exposed as window.__swGoTo). Only the home page owns
   // those stops: elsewhere the browser follows the link to /#id and the engine
   // picks up the hash on load.
+  const homePaths = new Set(['/', '/es', '/es/', '/it', '/it/']);
   document.addEventListener('click', (event) => {
     const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href]');
     if (!link) return;
     const url = new URL(link.href, window.location.href);
     const id = url.hash.slice(1);
-    if (!id || url.pathname !== '/' || window.location.pathname !== '/') return;
+    if (!id || !homePaths.has(url.pathname) || !homePaths.has(window.location.pathname)) return;
     if ((window as SwWindow).__swGoTo?.(id)) {
       event.preventDefault();
       setOpen(false);

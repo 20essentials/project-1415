@@ -1,0 +1,26 @@
+diff --git a/node_modules/@wix/astro/build/dependencies/astro-translations/integration/index.mjs b/node_modules/@wix/astro/build/dependencies/astro-translations/integration/index.mjs
+index ec3694d..e433189 100644
+--- a/node_modules/@wix/astro/build/dependencies/astro-translations/integration/index.mjs
++++ b/node_modules/@wix/astro/build/dependencies/astro-translations/integration/index.mjs
+@@ -246,7 +246,7 @@ const wixAstroI18nPlugin = ({ astroConfig, initialTranslations }) => {
+ 		},
+ 		enforce: "pre",
+ 		load(id) {
+-			if (id === RESOLVED_I18N_MODULE_ID) return `export * from '${i18nRuntimePath}';`;
++			if (id === RESOLVED_I18N_MODULE_ID) return `export * from ${JSON.stringify(i18nRuntimePath)};`;
+ 			if (id === RESOLVED_I18N_INTERNAL_MODULE_ID) {
+ 				this.addWatchFile(primaryTranslationsPath);
+ 				return [
+diff --git a/node_modules/@wix/astro/build/integration/index.mjs b/node_modules/@wix/astro/build/integration/index.mjs
+index 300b95f..c4b333b 100644
+--- a/node_modules/@wix/astro/build/integration/index.mjs
++++ b/node_modules/@wix/astro/build/integration/index.mjs
+@@ -28551,7 +28551,7 @@ const wixAstroI18nPlugin = ({ astroConfig, initialTranslations }) => {
+ 		},
+ 		enforce: "pre",
+ 		load(id) {
+-			if (id === RESOLVED_I18N_MODULE_ID) return `export * from '${i18nRuntimePath}';`;
++			if (id === RESOLVED_I18N_MODULE_ID) return `export * from ${JSON.stringify(i18nRuntimePath)};`;
+ 			if (id === RESOLVED_I18N_INTERNAL_MODULE_ID) {
+ 				this.addWatchFile(primaryTranslationsPath);
+ 				return [

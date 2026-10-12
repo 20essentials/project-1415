@@ -6,6 +6,15 @@ import { resolveWixImageUrl } from "@/utils/wix-image";
 
 const CART_CACHE_KEY = "cart:last-snapshot";
 
+// Wix sets the `wixLanguage` cookie for the visitor's current locale (see the
+// Astro localization middleware); its language is passed to Wix-hosted
+// redirect sessions so checkout renders in the same language.
+function readSiteLanguage(): string {
+  if (typeof document === "undefined") return "en";
+  const match = /(?:^|;\s*)wixLanguage=([a-z]{2,3})/i.exec(document.cookie);
+  return match?.[1] ?? "en";
+}
+
 type CartFromSDK = Awaited<ReturnType<typeof currentCart.getCurrentCart>>;
 type Cart = CartFromSDK & {
   lineItems?: Array<{
@@ -165,6 +174,7 @@ export default function CartView() {
       }
       const redirectRes = await redirects.createRedirectSession({
         ecomCheckout: { checkoutId },
+        preferences: { additionalQueryParameters: { lang: readSiteLanguage() } },
         callbacks: {
           postFlowUrl: typeof window !== "undefined" ? `${window.location.origin}/thank-you` : "/thank-you",
         },
