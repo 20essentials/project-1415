@@ -5,6 +5,12 @@ text-just-for-me.txt
 # build output
 dist/
 
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # generated types
 .astro/
 

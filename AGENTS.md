@@ -26,6 +26,11 @@
 - `vitest.config.ts` aliasa los módulos virtuales que no resuelven en Node: `wix:astro:i18n`, `astro:env/client`, `@wix/essentials` (mocks en `tests/mocks/`). Al testear código que los importe, extender los alias.
 - Componentes React que llaman al SDK de Wix (p. ej. `cart-badge.tsx`) se testean mockeando el módulo (`vi.mock('@wix/ecom', ...)`).
 
+E2E con Playwright (`@playwright/test`, Chromium ya instalado):
+- Correr con `npm run test:e2e`; UI: `npm run test:e2e:ui`.
+- `playwright.config.ts` levanta `astro dev` en `:4321` (webServer con `reuseExistingServer`). Los tests viven en `tests/e2e/*.spec.ts` (vitest ignora `*.spec.ts`, no pisarlos con `*.test.*`).
+- El login usa los endpoints integrados de `@wix/astro` (`/api/auth/login`, `/api/auth/logout`): no crear `src/pages/login.ts` propio — `getContextualAuth()` fuera del contexto Wix tira 500 "Wix context is not available". Si el flujo necesita redirigir no autenticado, apuntar a `localize('/api/auth/login?returnToUrl=…')`.
+
 ## Reglas de trabajo (lecciones aprendidas — no repetir)
 
 Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.

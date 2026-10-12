@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { loggedIn = false } = Astro.props;
-const accountHref = loggedIn ? localize('/account') : localize('/login?returnToUrl=/account');
+const accountHref = loggedIn ? localize('/account') : localize(`/api/auth/login?returnToUrl=${localize('/account')}`);
 const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
 ---
 

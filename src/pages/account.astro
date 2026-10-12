@@ -15,7 +15,7 @@ try {
 }
 
 if (!member) {
-  return Astro.redirect(localize(`/login?returnToUrl=${localize('/account')}`));
+  return Astro.redirect(localize(`/api/auth/login?returnToUrl=${localize('/account')}`));
 }
 
 const contactName = [member.contact?.firstName, member.contact?.lastName]
