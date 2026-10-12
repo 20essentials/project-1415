@@ -90,12 +90,12 @@ carpetas en `src/pages`.
 
 ## Verificación
 
-- [ ] `npx @wix/cli@latest build` en verde (tras `npm run wix translation pull`)
-- [ ] `npm run wix translation push` sube las claves y aparecen en el Translation Manager (Headless)
-- [ ] Con es/it habilitados, `/` sirve en, `/es` sirve es y `/it` sirve it (nav, footer y hero traducidos)
-- [ ] `<html lang>` y los `hreflang` cambian por locale; los enlaces internos conservan el prefijo
-- [ ] Login y checkout se abren en el idioma activo (`lang` en la redirect session)
-- [ ] AGENTS.md documenta que `npm run wix translation pull` es requisito previo al build
+- [x] `npx @wix/cli@latest build` en verde (tras `npm run wix translation pull`)
+- [x] `npm run wix translation push` sube las claves y aparecen en el Translation Manager (Headless)
+- [x] Con es/it habilitados, `/` sirve en, `/es` sirve es y `/it` sirve it (nav, footer y hero traducidos)
+- [x] `<html lang>` y los `hreflang` cambian por locale; los enlaces internos conservan el prefijo
+- [x] Login y checkout se abren en el idioma activo (`lang` en la redirect session)
+- [x] AGENTS.md documenta que `npm run wix translation pull` es requisito previo al build
 
 ## Al terminar
 
