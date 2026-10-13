@@ -63,7 +63,7 @@ que AGENTS.md queda inconsistente y actualiza AGENTS.md tambien.
    ciegas sobre nombres antiguos).
 5. Verifica que no quede ningun nombre con CamelCase, `_` o
    espacios dentro del alcance (glob + grep) y reporta.
-6. Corre `pnpm run build` y confirma que termina en
+6. Corre `npm run build` y confirma que termina en
    `[build] Complete!`. Si falla, corrige las referencias
    rotas y repite.
 7. Reporta la lista de renombrados (antes -> despues) y los

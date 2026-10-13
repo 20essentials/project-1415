@@ -14,9 +14,9 @@ Convierte el proyecto vanilla que está en la carpeta `$ARGUMENTS` (si no se pas
 
 ## Instalación
 
-- Usa siempre `pnpm`. Instala las dependencias que hagan falta:
+- Usa siempre `npm`. Instala las dependencias que hagan falta:
   ```
-  pnpm add three simplex-noise
+  npm install three simplex-noise
   ```
   (y cualquier otra que el `script.js` original use vía CDN, como `three@r185` para contrapartes modernas de libs viejas).
 
@@ -47,6 +47,6 @@ El stack suele ser Three.js antiguo (r8x, CDN) + CDN de más libs. Migra conserv
 
 ## Verificación
 
-- Corre `pnpm build` y asegúrate de que termina sin errores (revisa también que `index.html` generado contenga el `<script>` con el bundle y `music.mp3`/assets copiados en `dist/`).
-- Si hay `pnpm astro check` disponible (requiere `@astrojs/check`), úsalo; si no está instalado, no lo instales automáticamente.
+- Corre `npm run build` y asegúrate de que termina sin errores (revisa también que `index.html` generado contenga el `<script>` con el bundle y `music.mp3`/assets copiados en `dist/`).
+- Si hay `npx astro check` disponible (requiere `@astrojs/check`), úsalo; si no está instalado, no lo instales automáticamente.
 - Reporta en una línea qué dependencias añadiste, qué API modernizaste (con referencias `file:línea`) y el resultado del build.

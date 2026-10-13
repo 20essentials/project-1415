@@ -35,7 +35,7 @@ Target: `$ARGUMENTS` (si no se pasa ruta, usa `tsconfig.json` en la raíz del pr
 
 ## Verificación
 
-- Ejecuta `pnpm build` (o `npm run build`) y confirma que termina sin errores.
-- Si existe script de typecheck (`pnpm astro check`, `pnpm tsc --noEmit`, `pnpm typecheck`), ejecútalo y confirma que no aparecen errores de resolución de módulos.
+- Ejecuta `npm run build` y confirma que termina sin errores.
+- Si existe script de typecheck (`npx astro check`, `npx tsc --noEmit`, `npm run typecheck`), ejecútalo y confirma que no aparecen errores de resolución de módulos.
 - Si hay tests, ejecútalos para verificar que los alias siguen resolviendo en el runner.
 - Reporta en una línea qué archivos cambiaste y el resultado del build/typecheck.

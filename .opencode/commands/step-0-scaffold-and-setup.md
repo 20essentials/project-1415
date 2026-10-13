@@ -30,9 +30,9 @@ autenticada, proyecto scaffolded y aplanado en CWD, dependencias instaladas con
    bash "C:\Users\amoil\.agents\skills\wix-headless\scripts\scaffold.sh" "petals-predators" "Petals & Predators" --frontend astro
    ```
    (Corre `npm create @wix/new@latest headless --business-name "Petals & Predators" --folder-name petals-predators --site-template --no-publish --skip-install` + flatten. Exit ≠ 0 → muestra stderr y detente.)
-3. **Instalar dependencias** — **npm obligatorio** (`pnpm install` falla con la plantilla de `@wix/cli`):
+3. **Instalar dependencias** — npm (`.npmrc` aplica `legacy-peer-deps`):
    ```bash
-   npm install --no-fund --no-audit --legacy-peer-deps \
+   npm install --no-fund --no-audit \
      @wix/sdk @wix/stores @wix/ecom @wix/redirects @wix/forms \
      tailwindcss @tailwindcss/vite
    ```

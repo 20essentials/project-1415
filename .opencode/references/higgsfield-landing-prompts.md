@@ -43,7 +43,7 @@ Intake:
 - Prioridad móvil: sí.
 - Layout: scroll world con las fotos del local. Vídeo vertical 9:16 fijado a la derecha a toda la altura, con la parte de arriba en arco, y el texto a la izquierda, un bloque por cada una de las seis paradas del recorrido. La cabecera es tu píldora flotante: alineada a la izquierda en escritorio, con el logo a la altura del texto, y centrada en móvil.
 
-Stack: proyecto Astro ya creado con pnpm create astro@latest, con Tailwind, GSAP (ScrollTrigger), Lenis y sharp. Imágenes con <Picture> de astro:assets.
+Stack: proyecto Astro ya creado con npm create astro@latest, con Tailwind, GSAP (ScrollTrigger), Lenis y sharp. Imágenes con <Picture> de astro:assets.
 
 Antes de escribir código, mira las fotos de public/photos/ y devuélveme lo que pide tu Output format, más qué foto va en cada sección.
 ```
@@ -137,9 +137,9 @@ Los clips son tramos ENTRE paradas, no "dives" dentro de una escena. El texto de
 
 ## QA (Step 8)
 
-- Arranca con `pnpm astro dev --background` y páralo con `pnpm astro dev stop`.
+- Arranca con `npx astro dev --background` y páralo con `npx astro dev stop`.
 - Prueba con agent-browser o Playwright, nunca con mi Chrome. Mejor snapshots que screenshots.
 - Captura justo antes y justo después de cada una de las 12 costuras (parada→clip y clip→parada) y compara la composición.
 - Consola sin errores, video.seekable.end(0) > 0, currentTime siguiendo al scroll en cada tramo, un viewport de móvil (390×844) y reduced-motion.
-- `pnpm build` sin errores.
+- `npm run build` sin errores.
 ```

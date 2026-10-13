@@ -13,14 +13,14 @@ paso a paso vive en `.opencode/commands/step-N-*.md` y el backlog en `ROADMAP.md
 | Backend Wix | Wix Stores (catálogo) + checkout nativo de Wix + Wix Forms (contact/newsletter) |
 | Flujo | Los comandos `step-N` reemplazan al conductor de la skill `wix-headless` (PLAN/BUILD); la skill se usa como **proveedor de recetas** (SETUP, SEED, guías astro, scripts) |
 | SKILL_ROOT | `C:\Users\amoil\.agents\skills\wix-headless` · upstream: `C:\Users\amoil\.agents\skills\wix-manage` |
-| Gestor de paquetes | Crear: pnpm/`scaffold.sh` (usa `npm create`); instalar: **siempre** `npm install --legacy-peer-deps` (ver AGENTS.md) |
+| Gestor de paquetes | **Solo npm** (`.npmrc`: `legacy-peer-deps=true` + `min-release-age=1`); crear con `scaffold.sh` (usa `npm create @wix/new`); instalar con `npm install` (ver AGENTS.md) |
 
 ## 2. Arquitectura de archivos
 
 ```
 garden-store/
 ├── DESIGN.md                      # existe; step-1 añade YAML frontmatter (captura intacta = body)
-├── AGENTS.md                      # flujo por comandos + nota pnpm/npm
+├── AGENTS.md                      # flujo por comandos + npm-only (gestor de paquetes)
 ├── PLAN.md                        # este archivo
 ├── ROADMAP.md                      # backlog completo + estado (fuente de verdad del QUÉ sigue)
 └── .opencode/commands/

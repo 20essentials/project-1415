@@ -1,5 +1,5 @@
 ---
-import { LOCALES, useTranslation } from '@/utils/i18n';
+import { LOCALES, localeUrl, currentLanguage, useTranslation } from '@/utils/i18n';
 
 interface Props {
   class?: string;
@@ -8,25 +8,7 @@ interface Props {
 const { class: className = '' } = Astro.props;
 const { t } = useTranslation();
 const pathname = Astro.url.pathname;
-
-const getLocaleFromPath = (p: string) => {
-  const [, first] = p.split('/');
-  if (first === 'es' || first === 'it') return first as 'es' | 'it';
-  return 'en';
-};
-
-const current = getLocaleFromPath(pathname);
-
-const buildHref = (locale: string) => {
-  let clean = pathname;
-  const parts = clean.split('/');
-  if (parts[1] === 'es' || parts[1] === 'it') {
-    clean = '/' + parts.slice(2).join('/');
-  }
-  if (clean === '') clean = '/';
-  if (locale === 'en') return clean;
-  return clean === '/' ? `/${locale}` : `/${locale}${clean}`;
-};
+const current = currentLanguage();
 
 const names: Record<string, string> = { en: 'English', es: 'Español', it: 'Italiano' };
 const codes: Record<string, string> = { en: 'EN', es: 'ES', it: 'IT' };
@@ -61,7 +43,7 @@ const codes: Record<string, string> = { en: 'EN', es: 'ES', it: 'IT' };
       LOCALES.map((locale) => (
         <li>
           <a
-            href={buildHref(locale)}
+            href={localeUrl(pathname, locale)}
             hreflang={locale}
             lang={locale}
             aria-current={locale === current ? 'true' : undefined}

@@ -8,10 +8,12 @@
 ## Typescript
 - No debes usar any, a menos que no tengas de otra. Trata de crear los tipos usando las docs de Wix:  https://dev.wix.com/docs/api-reference y https://dev.wix.com/docs/sdk y
 
-## Gestor de paquetes al crear el proyecto
+## Gestor de paquetes (solo npm)
 
-- Crear el proyecto se puede con pnpm: `pnpm create @wix/new@latest headless --skip-install`
-- Instalar dependencias requiere npm: `pnpm install` falla con la plantilla de `@wix/cli` (conflictos de peer-deps). Usar siempre: `npm install --legacy-peer-deps`
+- **Solo npm.** No usar pnpm: no hay `pnpm-lock.yaml` ni `pnpm-workspace.yaml`; el único lockfile es `package-lock.json` y `node_modules` se instala flat (sin store `.pnpm`).
+- `.npmrc` (raíz) fija dos defaults: `legacy-peer-deps=true` (evita los conflictos de peer-deps de la plantilla `@wix/cli`) y `min-release-age=1` (cooldown de 1 día a versiones recién publicadas; requiere **npm ≥ 11.10.0**).
+- Instalar dependencias: `npm install` (ya no hace falta pasar `--legacy-peer-deps` a mano; lo aplica `.npmrc`).
+- Crear el proyecto: mismo inicializador `@wix/new` (con npm: `npm create @wix/new@latest headless`).
 
 ## Build en Windows y parches de dependencias
 
@@ -37,7 +39,7 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 
 ### Verificación honesta (nunca decir "verificado" sin verificar)
 
-- Un build verde (`pnpm astro build`) **no** valida lint, clases canónicas de Tailwind, ni el HTML renderizado. Es solo compilación.
+- Un build verde (`npx astro build`) **no** valida lint, clases canónicas de Tailwind, ni el HTML renderizado. Es solo compilación.
 - "Verificar" exige ejecutar la comprobación concreta de lo que se afirma: si digo que no quedan clases no canónicas, tengo que correr el chequeo que las detecta (diagnósticos del language server de Tailwind) o revisar el CSS compilado, no mi memoria.
 - Antes de reportar, declarar **qué** se verificó y **cómo** (comando + resultado). Si algo no se pudo verificar, decirlo explícitamente en vez de presentarlo como hecho.
 - No afirmar hechos de los que no estoy seguro (p. ej. "esta clase no tiene equivalente canónico") sin comprobarlos. Un dato inventado presentado como certeza es peor que admitir la duda.

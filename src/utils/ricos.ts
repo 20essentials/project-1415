@@ -28,12 +28,22 @@
  *   <div class="prose" set:html={html} />
  */
 
+interface RicosLinkData {
+  link?: { url?: string; target?: string; rel?: string };
+}
+
 type RicosTextDecoration =
   | { type: "BOLD" }
   | { type: "ITALIC" }
   | { type: "UNDERLINE" }
-  | { type: "LINK"; linkData?: { link?: { url?: string; target?: string; rel?: string } } }
+  | { type: "LINK"; linkData?: RicosLinkData }
   | { type: string; [key: string]: unknown };
+
+function getLinkData(decoration: RicosTextDecoration): RicosLinkData | undefined {
+  const raw = (decoration as { linkData?: unknown }).linkData;
+  if (raw && typeof raw === "object" && "link" in raw) return raw as RicosLinkData;
+  return undefined;
+}
 
 interface RicosTextData {
   text?: string;
@@ -139,10 +149,11 @@ function renderInlineNode(node: RicosNode): string {
         html = `<u>${html}</u>`;
         break;
       case "LINK": {
-        const url = decoration.linkData?.link?.url;
+        const data = getLinkData(decoration);
+        const url = data?.link?.url;
         if (url) {
-          const target = decoration.linkData?.link?.target;
-          const rel = decoration.linkData?.link?.rel ?? (target === "_blank" ? "noopener noreferrer" : undefined);
+          const target = data.link?.target;
+          const rel = data.link?.rel ?? (target === "_blank" ? "noopener noreferrer" : undefined);
           linkOpen = `<a href="${escapeAttr(url)}"${target ? ` target="${escapeAttr(target)}"` : ""}${rel ? ` rel="${escapeAttr(rel)}"` : ""}>`;
           linkClose = "</a>";
         }

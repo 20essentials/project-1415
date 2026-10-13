@@ -1,0 +1,44 @@
+diff --git a/node_modules/@wix/headless-localization-utils/build/index.cjs b/node_modules/@wix/headless-localization-utils/build/index.cjs
+index b91dd70..0f9cf93 100644
+--- a/node_modules/@wix/headless-localization-utils/build/index.cjs
++++ b/node_modules/@wix/headless-localization-utils/build/index.cjs
+@@ -135,7 +135,7 @@ var getLanguageIfExists = (languageCode, availableLocales) => {
+   }
+   const lowerCasedCode = languageCode.toLowerCase();
+   return availableLocales.find(
+-    (locale) => locale.locale?.languageCode?.toLowerCase() === lowerCasedCode
++    (locale) => locale.languageCode?.toLowerCase() === lowerCasedCode
+   );
+ };
+ 
+@@ -187,7 +187,7 @@ function getLocalizationData(url, header, siteProperties) {
+   const primaryLanguage = siteProperties?.multilingual?.supportedLanguages?.find(
+     ({ isPrimary }) => isPrimary
+   );
+-  const resolvedLanguage = explicitRequestedLocale ?? cookieLocale ?? visitorPrimaryLanguage ?? primaryLanguage;
++  const resolvedLanguage = explicitRequestedLocale ?? visitorPrimaryLanguage ?? primaryLanguage;
+   const language = resolvedLanguage?.languageCode ?? siteProperties?.language ?? void 0;
+   const resolvedLocale = resolvedLanguage?.locale ?? siteProperties?.locale ?? void 0;
+   const locale = buildLocaleString(resolvedLocale);
+diff --git a/node_modules/@wix/headless-localization-utils/build/index.js b/node_modules/@wix/headless-localization-utils/build/index.js
+index ea27fdf..a2f279d 100644
+--- a/node_modules/@wix/headless-localization-utils/build/index.js
++++ b/node_modules/@wix/headless-localization-utils/build/index.js
+@@ -104,7 +104,7 @@ var getLanguageIfExists = (languageCode, availableLocales) => {
+   }
+   const lowerCasedCode = languageCode.toLowerCase();
+   return availableLocales.find(
+-    (locale) => locale.locale?.languageCode?.toLowerCase() === lowerCasedCode
++    (locale) => locale.languageCode?.toLowerCase() === lowerCasedCode
+   );
+ };
+ 
+@@ -156,7 +156,7 @@ function getLocalizationData(url, header, siteProperties) {
+   const primaryLanguage = siteProperties?.multilingual?.supportedLanguages?.find(
+     ({ isPrimary }) => isPrimary
+   );
+-  const resolvedLanguage = explicitRequestedLocale ?? cookieLocale ?? visitorPrimaryLanguage ?? primaryLanguage;
++  const resolvedLanguage = explicitRequestedLocale ?? visitorPrimaryLanguage ?? primaryLanguage;
+   const language = resolvedLanguage?.languageCode ?? siteProperties?.language ?? void 0;
+   const resolvedLocale = resolvedLanguage?.locale ?? siteProperties?.locale ?? void 0;
+   const locale = buildLocaleString(resolvedLocale);
