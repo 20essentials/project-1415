@@ -28,11 +28,11 @@ El catálogo navegable: grid de productos en `/products`, páginas de categoría
 2. **`src/pages/category/[slug].astro`** — `getStaticPaths` desde
    `stores.categoryIds` (carnivorous, flowers, kits-accessories); título de
    categoría, lede, grid filtrado por categoría.
-3. **`src/components/CategoryRail.astro`** — pills "All / Carnivorous / Flowers /
+3. **`src/components/category-rail.astro`** — pills "All / Carnivorous / Flowers /
    Kits & Accessories" con `aria-current` (el script de `layout.astro` ya lo
    sincroniza en `/products` y `/category/*` — no re-implementarlo, solo usar los
    atributos `data-category-rail` / `data-category-slug`).
-4. **`src/components/ProductCard.astro`** — componente único reutilizado por home
+4. **`src/components/product-card.astro`** — componente único reutilizado por home
    y shop (si el de step-4 es inline, extráelo y reutiliza).
 5. Volver navegables: los links del nav (`Shop`, `Carnivorous`, `Flowers`) y los
    CTAs del home y footer.

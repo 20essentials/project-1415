@@ -43,7 +43,7 @@ export function srcSet(img: WixImage, widths: number[]): string {
 }
 
 // Consumed by every vertical that renders a Wix image at a specific size
-// (stores ProductCard + detail page, blog post hero, cms list thumbnails).
+// (stores product-card + detail page, blog post hero, cms list thumbnails).
 // Kept alongside resolveWixImage so verticals do not ship their own copy.
 export function resolveWixImageUrl(
   image: string | { id?: string; url?: string } | undefined,

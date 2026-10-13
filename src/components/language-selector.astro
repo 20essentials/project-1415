@@ -1,5 +1,5 @@
 ---
-import { LOCALES, currentLanguage, localeUrl, useTranslation } from '@/utils/i18n';
+import { LOCALES, useTranslation } from '@/utils/i18n';
 
 interface Props {
   class?: string;
@@ -7,8 +7,26 @@ interface Props {
 
 const { class: className = '' } = Astro.props;
 const { t } = useTranslation();
-const current = currentLanguage();
-const path = Astro.url.pathname;
+const pathname = Astro.url.pathname;
+
+const getLocaleFromPath = (p: string) => {
+  const [, first] = p.split('/');
+  if (first === 'es' || first === 'it') return first as 'es' | 'it';
+  return 'en';
+};
+
+const current = getLocaleFromPath(pathname);
+
+const buildHref = (locale: string) => {
+  let clean = pathname;
+  const parts = clean.split('/');
+  if (parts[1] === 'es' || parts[1] === 'it') {
+    clean = '/' + parts.slice(2).join('/');
+  }
+  if (clean === '') clean = '/';
+  if (locale === 'en') return clean;
+  return clean === '/' ? `/${locale}` : `/${locale}${clean}`;
+};
 
 const names: Record<string, string> = { en: 'English', es: 'Español', it: 'Italiano' };
 const codes: Record<string, string> = { en: 'EN', es: 'ES', it: 'IT' };
@@ -16,7 +34,7 @@ const codes: Record<string, string> = { en: 'EN', es: 'ES', it: 'IT' };
 
 <details class:list={['lang-selector relative', className]}>
   <summary
-    class="flex h-9 cursor-pointer list-none items-center gap-1 rounded-full px-3 text-sm text-ink-soft transition-colors duration-700 ease-fluid hover:text-ink"
+    class="group flex h-9 cursor-pointer list-none items-center gap-1.5 rounded-full border border-transparent px-3 text-sm text-ink-soft transition-all duration-500 ease-fluid hover:border-rule/60 hover:bg-ink/5 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     aria-label={`${t('header.language')}: ${names[current]}`}
   >
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-4" aria-hidden="true">
@@ -29,7 +47,7 @@ const codes: Record<string, string> = { en: 'EN', es: 'ES', it: 'IT' };
       fill="none"
       stroke="currentColor"
       stroke-width="1.5"
-      class="lang-chevron size-3 transition-transform duration-300 ease-fluid"
+      class="lang-chevron size-3 transition-transform duration-500 ease-fluid"
       aria-hidden="true"
     >
       <path d="m4 6 4 4 4-4"></path>
@@ -37,20 +55,20 @@ const codes: Record<string, string> = { en: 'EN', es: 'ES', it: 'IT' };
   </summary>
 
   <ul
-    class="absolute top-[calc(100%+0.5rem)] right-0 z-50 min-w-40 rounded-md border border-rule bg-paper p-1 shadow-lg"
+    class="lang-menu invisible absolute top-[calc(100%+0.5rem)] right-0 z-50 min-w-40 translate-y-1 scale-95 rounded-md border border-rule/80 bg-paper/95 p-1 opacity-0 shadow-lg shadow-paper/40 ring-1 ring-paper-warm/40 backdrop-blur-xl transition-all duration-500 ease-fluid will-change-transform"
   >
     {
       LOCALES.map((locale) => (
         <li>
           <a
-            href={localeUrl(path, locale)}
+            href={buildHref(locale)}
             hreflang={locale}
             lang={locale}
             aria-current={locale === current ? 'true' : undefined}
-            class="flex items-center justify-between rounded-sm px-3 py-2 text-sm text-ink-soft transition-colors hover:bg-ink/5 hover:text-ink aria-[current=true]:text-ink"
+            class="group flex items-center justify-between rounded-sm px-3 py-2 text-sm text-ink-soft transition-all duration-300 ease-fluid hover:bg-ink/5 hover:text-ink focus-visible:bg-ink/5 focus-visible:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-[current=true]:bg-accent/10 aria-[current=true]:text-ink aria-[current=true]:ring-1 aria-[current=true]:ring-accent/30"
           >
             <span>{names[locale]}</span>
-            <span class="text-xs text-mute">{codes[locale]}</span>
+            <span class="text-xs text-mute transition-colors duration-300 ease-fluid group-hover:text-ink-soft group-aria-[current=true]:text-ink/80">{codes[locale]}</span>
           </a>
         </li>
       ))
@@ -65,6 +83,22 @@ const codes: Record<string, string> = { en: 'EN', es: 'ES', it: 'IT' };
 
   .lang-selector[open] .lang-chevron {
     transform: rotate(180deg);
+  }
+
+  .lang-selector[open] .lang-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0) scale(100%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lang-selector summary,
+    .lang-selector a,
+    .lang-selector span,
+    .lang-menu,
+    .lang-chevron {
+      transition-duration: 1ms !important;
+    }
   }
 </style>
 
