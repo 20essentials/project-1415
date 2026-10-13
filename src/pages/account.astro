@@ -1,7 +1,7 @@
 ---
 import Layout from '@/layouts/layout.astro';
 import { members } from '@wix/members';
-import { resolveWixImageUrl } from '@/utils/wix-image';
+import { resolveMemberAvatarUrl } from '@/utils/member-avatar';
 import { localize, currentLanguage, useTranslation } from '@/utils/i18n';
 
 const { t } = useTranslation();
@@ -25,7 +25,7 @@ const contactName = [member.contact?.firstName, member.contact?.lastName]
   .join(' ');
 const displayName = member.profile?.nickname?.trim() || contactName || member.loginEmail || t('account.member');
 const initials = displayName.charAt(0).toUpperCase();
-const photoUrl = resolveWixImageUrl(member.profile?.photo?.url ?? member.profile?.photo?._id, 192, 192);
+const photoUrl = await resolveMemberAvatarUrl(member, 192, 192);
 
 const createdDate = member._createdDate ? new Date(member._createdDate) : null;
 const memberSince =
@@ -58,24 +58,26 @@ const memberSince =
       <div class="mt-10 rounded-md border border-rule bg-paper-warm/40 p-6 sm:p-8">
         <div class="flex items-center gap-5">
           {
-            photoUrl ? (
+            photoUrl && (
               <img
                 src={photoUrl}
                 width="96"
                 height="96"
                 alt=""
                 loading="lazy"
+                referrerpolicy="no-referrer"
+                onerror="this.hidden=true;this.nextElementSibling.hidden=false"
                 class="size-24 shrink-0 rounded-full border border-rule object-cover"
               />
-            ) : (
-              <span
-                aria-hidden="true"
-                class="flex size-24 shrink-0 items-center justify-center rounded-full border border-rule bg-paper font-display text-3xl text-accent"
-              >
-                {initials}
-              </span>
             )
           }
+          <span
+            aria-hidden="true"
+            hidden={Boolean(photoUrl)}
+            class="flex size-24 shrink-0 items-center justify-center rounded-full border border-rule bg-paper font-display text-3xl text-accent"
+          >
+            {initials}
+          </span>
           <div class="min-w-0">
             <h2 class="font-display text-2xl text-ink">{displayName}</h2>
             {contactName && contactName !== displayName && (
