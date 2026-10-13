@@ -56,7 +56,11 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
     <div class="flex items-center gap-6 lg:gap-5">
       <!-- nav:actions -->
       <LanguageSelector class="hidden xl:block" />
-      <CartBadge client:only="react" />
+      <CartBadge
+        client:only="react"
+        href={localize('/cart')}
+        labels={{ empty: t('cart.badge'), withCount: t('cart.badge-count') }}
+      />
       <a
         href={accountHref}
         class="hidden h-9 items-center rounded-full px-3 text-sm text-ink-soft transition-colors duration-700 ease-fluid hover:text-ink xl:inline-flex"

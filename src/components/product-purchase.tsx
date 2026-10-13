@@ -39,12 +39,48 @@ export interface VariantStock {
   preorderEnabled: boolean;
 }
 
+export interface PurchaseLabels {
+  stockLeft: string;
+  inStock: string;
+  decreaseQty: string;
+  increaseQty: string;
+  added: string;
+  adding: string;
+  tryAgain: string;
+  addToCart: string;
+  viewCart: string;
+  outOfStock: string;
+  selectOptions: string;
+}
+
+const DEFAULT_LABELS: PurchaseLabels = {
+  stockLeft: "{{count}} left in stock",
+  inStock: "In stock",
+  decreaseQty: "Decrease quantity",
+  increaseQty: "Increase quantity",
+  added: "Added ✓",
+  adding: "Adding…",
+  tryAgain: "Try again",
+  addToCart: "Add to cart",
+  viewCart: "Added to your cart — view cart →",
+  outOfStock: "Out of stock",
+  selectOptions: "Select options",
+};
+
 interface ProductPurchaseProps {
   product: PurchaseProduct;
   inventoryByVariant?: Record<string, VariantStock>;
+  labels?: Partial<PurchaseLabels>;
+  cartHref?: string;
 }
 
-export default function ProductPurchase({ product, inventoryByVariant = {} }: ProductPurchaseProps) {
+export default function ProductPurchase({
+  product,
+  inventoryByVariant = {},
+  labels: labelOverrides,
+  cartHref = "/cart",
+}: ProductPurchaseProps) {
+  const labels = { ...DEFAULT_LABELS, ...labelOverrides };
   const meaningfulOptions = product.options.filter((option) => option.choices.length > 1);
   const hasOptions = meaningfulOptions.length > 0;
 
@@ -105,8 +141,8 @@ export default function ProductPurchase({ product, inventoryByVariant = {} }: Pr
 
   const stockNote =
     stock && stock.trackQuantity && !stock.preorderEnabled && stock.quantity > 0 && stock.quantity < 10
-      ? `${stock.quantity} left in stock`
-      : "In stock";
+      ? labels.stockLeft.replace("{{count}}", String(stock.quantity))
+      : labels.inStock;
 
   const [quantity, setQuantity] = useState(1);
   useEffect(() => {
@@ -193,7 +229,7 @@ export default function ProductPurchase({ product, inventoryByVariant = {} }: Pr
             <div className="inline-flex items-center rounded-sm border border-rule">
               <button
                 type="button"
-                aria-label="Decrease quantity"
+                aria-label={labels.decreaseQty}
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 disabled={quantity <= 1}
                 className="flex size-10 items-center justify-center text-ink-soft transition-colors duration-500 ease-fluid hover:text-ink disabled:opacity-40"
@@ -205,7 +241,7 @@ export default function ProductPurchase({ product, inventoryByVariant = {} }: Pr
               </span>
               <button
                 type="button"
-                aria-label="Increase quantity"
+                aria-label={labels.increaseQty}
                 onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
                 disabled={quantity >= maxQuantity}
                 className="flex size-10 items-center justify-center text-ink-soft transition-colors duration-500 ease-fluid hover:text-ink disabled:opacity-40"
@@ -222,24 +258,24 @@ export default function ProductPurchase({ product, inventoryByVariant = {} }: Pr
             disabled={status === "adding" || status === "added"}
             className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-accent px-6 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
-            {status === "added" ? "Added ✓" : status === "adding" ? "Adding…" : status === "error" ? "Try again" : "Add to cart"}
+            {status === "added" ? labels.added : status === "adding" ? labels.adding : status === "error" ? labels.tryAgain : labels.addToCart}
           </button>
 
           {status === "added" && (
-            <a href="/cart" className="text-sm text-accent underline-offset-4 hover:underline">
-              Added to your cart — view cart →
+            <a href={cartHref} className="text-sm text-accent underline-offset-4 hover:underline">
+              {labels.viewCart}
             </a>
           )}
         </div>
       ) : resolvedVariant && soldOut ? (
-        <p className="text-sm text-ink-soft">Out of stock</p>
+        <p className="text-sm text-ink-soft">{labels.outOfStock}</p>
       ) : (
         <button
           type="button"
           disabled
           className="inline-flex h-11 w-full cursor-not-allowed items-center justify-center rounded-full border border-rule px-6 text-sm font-medium text-mute disabled:opacity-60 sm:w-auto"
         >
-          Select options
+          {labels.selectOptions}
         </button>
       )}
     </div>

@@ -84,7 +84,58 @@ function formatCurrency(amount: number | null | undefined, currency: string | nu
   }
 }
 
-export default function CartView() {
+export interface CartLabels {
+  title: string;
+  loading: string;
+  empty: string;
+  continueShopping: string;
+  errorLoad: string;
+  errorUpdate: string;
+  errorRemove: string;
+  errorCheckout: string;
+  quantityFor: string;
+  decreaseQty: string;
+  increaseQty: string;
+  remove: string;
+  summary: string;
+  subtotal: string;
+  redirecting: string;
+  checkout: string;
+  product: string;
+}
+
+const DEFAULT_LABELS: CartLabels = {
+  title: "Cart",
+  loading: "Loading your cart…",
+  empty: "Your cart is empty.",
+  continueShopping: "Continue shopping",
+  errorLoad: "Failed to load cart",
+  errorUpdate: "Failed to update cart",
+  errorRemove: "Failed to remove item",
+  errorCheckout: "Failed to start checkout",
+  quantityFor: "Quantity for {{name}}",
+  decreaseQty: "Decrease quantity",
+  increaseQty: "Increase quantity",
+  remove: "Remove",
+  summary: "Order summary",
+  subtotal: "Subtotal",
+  redirecting: "Redirecting…",
+  checkout: "Check out securely",
+  product: "Product",
+};
+
+interface CartViewProps {
+  labels?: Partial<CartLabels>;
+  continueHref?: string;
+  thankYouPath?: string;
+}
+
+export default function CartView({
+  labels: labelOverrides,
+  continueHref = "/products",
+  thankYouPath = "/thank-you",
+}: CartViewProps) {
+  const labels = { ...DEFAULT_LABELS, ...labelOverrides };
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -99,7 +150,7 @@ export default function CartView() {
       setCart(data);
       publishCartUpdate(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load cart");
+      setError(err instanceof Error ? err.message : labels.errorLoad);
     } finally {
       setLoading(false);
     }
@@ -132,7 +183,7 @@ export default function CartView() {
         await refreshCart();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update cart");
+      setError(err instanceof Error ? err.message : labels.errorUpdate);
     } finally {
       setUpdating(false);
     }
@@ -154,7 +205,7 @@ export default function CartView() {
         await refreshCart();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to remove item");
+      setError(err instanceof Error ? err.message : labels.errorRemove);
     } finally {
       setUpdating(false);
     }
@@ -176,7 +227,7 @@ export default function CartView() {
         ecomCheckout: { checkoutId },
         preferences: { additionalQueryParameters: { lang: readSiteLanguage() } },
         callbacks: {
-          postFlowUrl: typeof window !== "undefined" ? `${window.location.origin}/thank-you` : "/thank-you",
+          postFlowUrl: typeof window !== "undefined" ? `${window.location.origin}${thankYouPath}` : thankYouPath,
         },
       });
       const fullUrl = redirectRes?.redirectSession?.fullUrl || redirectRes?.redirectSession?.urlDetails?.endpoint || redirectRes?.redirectSession?.shortUrl;
@@ -186,7 +237,7 @@ export default function CartView() {
       trackEvent("cart_checkout_started", { checkoutId });
       window.location.href = fullUrl;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to start checkout");
+      setError(err instanceof Error ? err.message : labels.errorCheckout);
       setCheckoutLoading(false);
     }
   };
@@ -195,8 +246,8 @@ export default function CartView() {
     return (
       <div className="cart-shell">
         <div className="cart-header">
-          <h1>Cart</h1>
-          <p className="cart-subtle">Loading your cart…</p>
+          <h1>{labels.title}</h1>
+          <p className="cart-subtle">{labels.loading}</p>
         </div>
       </div>
     );
@@ -206,12 +257,12 @@ export default function CartView() {
     return (
       <div className="cart-shell">
         <div className="cart-header">
-          <h1>Cart</h1>
+          <h1>{labels.title}</h1>
         </div>
         <div className="cart-empty">
-          <p>Your cart is empty.</p>
-          <a className="btn btn-primary" href="/products">
-            <span className="text-trim">Continue shopping</span>
+          <p>{labels.empty}</p>
+          <a className="btn btn-primary" href={continueHref}>
+            <span className="text-trim">{labels.continueShopping}</span>
           </a>
         </div>
       </div>
@@ -221,7 +272,7 @@ export default function CartView() {
   return (
     <div className="cart-shell">
       <div className="cart-header">
-        <h1>Cart</h1>
+        <h1>{labels.title}</h1>
       </div>
 
       {error && <div className="cart-error" role="alert">{error}</div>}
@@ -239,7 +290,7 @@ export default function CartView() {
               <article key={item._id} className="cart-row">
                 <div className="cart-row-image">
                   {imageUrl ? (
-                    <img src={imageUrl} alt={item.name ?? "Product"} loading="lazy" />
+                    <img src={imageUrl} alt={item.name ?? labels.product} loading="lazy" />
                   ) : (
                     <div className="cart-row-image-placeholder" aria-hidden="true" />
                   )}
@@ -250,13 +301,13 @@ export default function CartView() {
                   <div className="cart-row-price">{formatCurrency(price, currency)}</div>
                 </div>
                 <div className="cart-row-actions">
-                  <div className="cart-stepper" role="group" aria-label={`Quantity for ${item.name ?? "product"}`}>
+                  <div className="cart-stepper" role="group" aria-label={labels.quantityFor.replace("{{name}}", item.name ?? labels.product)}>
                     <button
                       type="button"
                       className="cart-stepper-btn"
                       onClick={() => handleQuantityChange(item._id, Math.max(1, qty - 1))}
                       disabled={updating || qty <= 1}
-                      aria-label="Decrease quantity"
+                      aria-label={labels.decreaseQty}
                     >
                       −
                     </button>
@@ -266,7 +317,7 @@ export default function CartView() {
                       className="cart-stepper-btn"
                       onClick={() => handleQuantityChange(item._id, Math.min(maxQty, qty + 1))}
                       disabled={updating || qty >= maxQty}
-                      aria-label="Increase quantity"
+                      aria-label={labels.increaseQty}
                     >
                       +
                     </button>
@@ -277,7 +328,7 @@ export default function CartView() {
                     onClick={() => handleRemove(item._id)}
                     disabled={updating}
                   >
-                    Remove
+                    {labels.remove}
                   </button>
                 </div>
               </article>
@@ -286,9 +337,9 @@ export default function CartView() {
         </div>
 
         <aside className="cart-summary">
-          <h2>Order summary</h2>
+          <h2>{labels.summary}</h2>
           <div className="cart-summary-row">
-            <span>Subtotal</span>
+            <span>{labels.subtotal}</span>
             <span className="cart-summary-subtotal">{formatCurrency(subtotal, currency)}</span>
           </div>
           <button
@@ -297,7 +348,7 @@ export default function CartView() {
             onClick={handleCheckout}
             disabled={checkoutLoading || updating}
           >
-            <span className="text-trim">{checkoutLoading ? "Redirecting…" : "Check out securely"}</span>
+            <span className="text-trim">{checkoutLoading ? labels.redirecting : labels.checkout}</span>
           </button>
         </aside>
       </div>

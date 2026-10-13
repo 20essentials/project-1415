@@ -1,5 +1,6 @@
 ---
 import { resolveWixImageUrl } from '@/utils/wix-image';
+import { useTranslation, localize } from '@/utils/i18n';
 
 interface Props {
   product: {
@@ -13,20 +14,21 @@ interface Props {
 }
 
 const { product, index } = Astro.props;
+const { t } = useTranslation();
 
 const imageUrl = resolveWixImageUrl(
   product.media?.main?.image ?? product.media?.main?.url,
   640,
   800,
 );
-const imageAlt = product.media?.main?.altText ?? product.name ?? 'Carnivorous plant';
+const imageAlt = product.media?.main?.altText ?? product.name ?? t('product.photo-alt');
 const price = product.actualPriceRange?.minValue?.formattedAmount;
 const indexLabel =
   typeof index === 'number' ? String(index + 1).padStart(2, '0') : null;
 ---
 
 <li>
-  <a href={`/products/${product.slug}`} class="group block">
+  <a href={localize(`/products/${product.slug}`)} class="group block">
     <div class="relative aspect-4/5 overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule">
       {
         imageUrl ? (
@@ -40,7 +42,7 @@ const indexLabel =
           />
         ) : (
           <span class="flex h-full w-full items-center justify-center px-4 text-center text-xs text-mute">
-            Photo coming soon
+            {t('home.photo-coming')}
           </span>
         )
       }

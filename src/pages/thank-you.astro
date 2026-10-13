@@ -1,22 +1,25 @@
 ---
 import Layout from "@/layouts/layout.astro";
+import { useTranslation, localize } from '@/utils/i18n';
+
+const { t } = useTranslation();
 ---
 
 <Layout
-  title="Thank you — Petals & Predators"
-  description="Your Petals & Predators order has been received — we'll email you the next steps."
+  title={t('thank-you.meta-title')}
+  description={t('thank-you.meta-description')}
   noindex
 >
   <div class="relative z-2 bg-paper px-4 pt-24 pb-16 text-ink sm:px-8 lg:px-20">
     <div class="cart-shell">
       <div class="cart-header">
-        <h1>Thank you</h1>
-        <p class="cart-subtle">Your order has been received.</p>
+        <h1>{t('thank-you.title')}</h1>
+        <p class="cart-subtle">{t('thank-you.received')}</p>
       </div>
       <div class="cart-empty">
-        <p>We’ll send you an email with the next steps.</p>
-        <a class="btn btn-primary" href="/products">
-          <span class="text-trim">Continue shopping</span>
+        <p>{t('thank-you.next-steps')}</p>
+        <a class="btn btn-primary" href={localize('/products')}>
+          <span class="text-trim">{t('thank-you.continue')}</span>
         </a>
       </div>
     </div>

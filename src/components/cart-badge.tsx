@@ -18,6 +18,21 @@ interface CartUpdateDetail {
   delta?: number;
 }
 
+interface CartBadgeLabels {
+  empty: string;
+  withCount: string;
+}
+
+interface CartBadgeProps {
+  labels?: CartBadgeLabels;
+  href?: string;
+}
+
+const DEFAULT_LABELS: CartBadgeLabels = {
+  empty: "Cart",
+  withCount: "Cart, {{count}} items",
+};
+
 function countItems(lineItems: CachedLineItem[] | null | undefined): number {
   return (lineItems ?? []).reduce((sum, item) => sum + (item?.quantity ?? 0), 0);
 }
@@ -34,7 +49,7 @@ function readCachedCount(): number {
   }
 }
 
-export default function CartBadge() {
+export default function CartBadge({ labels = DEFAULT_LABELS, href = "/cart" }: CartBadgeProps = {}) {
   const [count, setCount] = useState(() => readCachedCount());
 
   const fetchCount = async () => {
@@ -66,9 +81,9 @@ export default function CartBadge() {
 
   return (
     <a
-      href="/cart"
+      href={href}
       className="cart-badge"
-      aria-label={count > 0 ? `Cart, ${count} items` : "Cart"}
+      aria-label={count > 0 ? labels.withCount.replace("{{count}}", String(count)) : labels.empty}
     >
       <svg
         className="cart-badge-icon"

@@ -1,6 +1,9 @@
 ---
 import Layout from '@/layouts/layout.astro';
 import { queryGuides } from '@/utils/journal';
+import { useTranslation, localize, currentLanguage } from '@/utils/i18n';
+
+const { t } = useTranslation();
 
 const guides = await queryGuides();
 const featured = guides[0] ?? null;
@@ -8,25 +11,22 @@ const rest = guides.slice(1);
 
 const formatDate = (date: Date | null): string =>
   date
-    ? new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(date)
+    ? new Intl.DateTimeFormat(currentLanguage(), { month: 'short', day: 'numeric', year: 'numeric' }).format(date)
     : '';
 ---
 
-<Layout
-  title="Journal — Petals & Predators"
-  description="Care guides for carnivorous plants and blooms — watering, humidity, light and repotting, from the Petals & Predators greenhouse."
->
+<Layout title={t('journal.meta-title')} description={t('journal.meta-description')}>
   <section class="relative z-2 bg-paper px-4 pt-24 pb-12 text-ink sm:px-8 lg:px-20 lg:pt-32">
     <div class="mx-auto max-w-6xl">
       <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">
-        <a href="/" class="transition-colors hover:text-accent">Home</a>
+        <a href={localize('/')} class="transition-colors hover:text-accent">{t('nav.home')}</a>
         <span aria-hidden="true"> · </span>
-        <span aria-current="page" class="text-ink">Journal</span>
+        <span aria-current="page" class="text-ink">{t('nav.journal')}</span>
       </nav>
-      <p class="mt-6 text-xs font-medium tracking-widest text-accent uppercase">The journal</p>
-      <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">Plant care journal</h1>
+      <p class="mt-6 text-xs font-medium tracking-widest text-accent uppercase">{t('journal.eyebrow')}</p>
+      <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">{t('journal.title')}</h1>
       <p class="mt-4 max-w-xl text-sm leading-6 text-ink-soft">
-        Short, honest guides to keeping carnivorous plants and blooms alive — written for first-time growers.
+        {t('journal.intro')}
       </p>
     </div>
   </section>
@@ -36,9 +36,9 @@ const formatDate = (date: Date | null): string =>
       {
         guides.length === 0 ? (
           <p class="max-w-xl text-sm leading-6 text-ink-soft">
-            The journal is still being written. In the meantime,{' '}
-            <a href="/products" class="text-accent underline">
-              browse the plants
+            {t('journal.empty')}{' '}
+            <a href={localize('/products')} class="text-accent underline">
+              {t('journal.browse-plants')}
             </a>
             .
           </p>
@@ -46,7 +46,7 @@ const formatDate = (date: Date | null): string =>
           <>
             {featured && (
               <a
-                href={`/journal/${featured.slug}`}
+                href={localize(`/journal/${featured.slug}`)}
                 class="group grid gap-6 rounded-lg border border-rule bg-paper-warm/40 p-6 transition-colors duration-500 ease-fluid hover:border-accent/40 sm:grid-cols-2 sm:items-center lg:gap-10 lg:p-8"
               >
                 <div class="relative aspect-4/5 overflow-hidden rounded-md bg-paper ring-1 ring-rule">
@@ -60,20 +60,20 @@ const formatDate = (date: Date | null): string =>
                     />
                   ) : (
                     <span class="flex h-full w-full items-center justify-center text-xs text-mute">
-                      Photo coming soon
+                      {t('home.photo-coming')}
                     </span>
                   )}
                 </div>
                 <div>
                   <p class="text-xs font-medium tracking-widest text-accent uppercase">
-                    {featured.tag || 'Care guide'}
+                    {featured.tag || t('journal.care-guide')}
                   </p>
                   <h2 class="mt-3 font-display text-2xl leading-tight text-ink lg:text-3xl">
                     {featured.title}
                   </h2>
                   <p class="mt-3 text-sm leading-6 text-ink-soft">{featured.intro}</p>
                   <span class="mt-5 inline-flex items-center gap-2 text-sm font-medium text-accent">
-                    Read the guide <span aria-hidden="true">→</span>
+                    {t('home.read-guide')} <span aria-hidden="true">→</span>
                   </span>
                 </div>
               </a>
@@ -83,7 +83,7 @@ const formatDate = (date: Date | null): string =>
               <ul class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
                 {rest.map((guide) => (
                   <li>
-                    <a href={`/journal/${guide.slug}`} class="group block">
+                    <a href={localize(`/journal/${guide.slug}`)} class="group block">
                       <div class="relative aspect-4/5 overflow-hidden rounded-md bg-paper-warm ring-1 ring-rule">
                         {guide.cover ? (
                           <img
@@ -96,12 +96,12 @@ const formatDate = (date: Date | null): string =>
                           />
                         ) : (
                           <span class="flex h-full w-full items-center justify-center text-xs text-mute">
-                            Photo coming soon
+                            {t('home.photo-coming')}
                           </span>
                         )}
                       </div>
                       <p class="mt-4 text-xs font-medium tracking-widest text-accent uppercase">
-                        {guide.tag || 'Care guide'}
+                        {guide.tag || t('journal.care-guide')}
                       </p>
                       <h3 class="mt-2 font-display text-xl leading-snug text-ink">{guide.title}</h3>
                       <p class="mt-2 text-sm leading-6 text-ink-soft">{guide.intro}</p>

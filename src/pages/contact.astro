@@ -3,6 +3,9 @@ import Layout from '@/layouts/layout.astro';
 import ContactForm, { type ContactFormField } from '@/components/contact-form.tsx';
 import { forms } from '@wix/forms';
 import { auth } from '@wix/essentials';
+import { useTranslation, localize } from '@/utils/i18n';
+
+const { t } = useTranslation();
 
 const elevatedListForms = auth.elevate(forms.listForms);
 
@@ -41,62 +44,46 @@ try {
 }
 
 const contactDetails: { label: string; value: string; href?: string }[] = [
-  { label: 'Email', value: 'hello@petalsandpredators.com', href: 'mailto:hello@petalsandpredators.com' },
-  { label: 'Greenhouse hours', value: 'Mon–Fri · 9:00–17:00 CET' },
-  { label: 'Instagram', value: '@petalsandpredators', href: 'https://www.instagram.com/petalsandpredators' },
+  { label: t('account.email'), value: 'hello@petalsandpredators.com', href: 'mailto:hello@petalsandpredators.com' },
+  { label: t('contact.hours-label'), value: 'Mon–Fri · 9:00–17:00 CET' },
+  { label: t('contact.instagram-label'), value: '@petalsandpredators', href: 'https://www.instagram.com/petalsandpredators' },
 ];
 
 const shipping = [
-  {
-    title: 'Shipped within 48 hours',
-    body: 'Orders leave the greenhouse within 48 hours, packed by hand in ventilated boxes with a moisture collar.',
-  },
-  {
-    title: 'Live-arrival guarantee',
-    body: 'Every plant is guaranteed to arrive alive. If it does not, send a photo and we replace it — no questions asked.',
-  },
-  {
-    title: '30-day returns',
-    body: 'Changed your mind? Return any healthy plant within 30 days for a full refund of the plant price.',
-  },
+  { title: 'contact.shipping.1.title', body: 'contact.shipping.1.body' },
+  { title: 'contact.shipping.2.title', body: 'contact.shipping.2.body' },
+  { title: 'contact.shipping.3.title', body: 'contact.shipping.3.body' },
 ];
 
 const careTips = [
-  {
-    title: 'Light',
-    body: 'Bright, indirect light for most species. Carnivorous plants love a sunny windowsill — just avoid harsh midday sun.',
-  },
-  {
-    title: 'Water',
-    body: 'Use rainwater or distilled water for carnivorous plants. Keep the soil damp, never bone-dry, and skip tap water when you can.',
-  },
-  {
-    title: 'Substrate',
-    body: 'We grow in peat-based, nutrient-poor mixes. Repot with the same blend — regular potting soil burns their roots.',
-  },
-  {
-    title: 'Feeding',
-    body: 'Let them hunt. Indoors they usually catch enough on their own, so resist the urge to feed them by hand.',
-  },
+  { title: 'contact.care.tip-1.title', body: 'contact.care.tip-1.body' },
+  { title: 'contact.care.tip-2.title', body: 'contact.care.tip-2.body' },
+  { title: 'contact.care.tip-3.title', body: 'contact.care.tip-3.body' },
+  { title: 'contact.care.tip-4.title', body: 'contact.care.tip-4.body' },
 ];
+
+const formLabels = {
+  successTitle: t('contact-form.success-title'),
+  successBody: t('contact-form.success-body'),
+  sending: t('contact-form.sending'),
+  send: t('contact-form.send'),
+  error: t('contact-form.error'),
+  invalid: t('contact-form.invalid'),
+};
 ---
 
-<Layout
-  title="Contact — Petals & Predators"
-  description="Questions about an order or a plant? Reach the Petals & Predators greenhouse — plus shipping, returns and care answers."
->
+<Layout title={t('contact.meta-title')} description={t('contact.meta-description')}>
   <section class="relative z-2 bg-paper px-4 pt-24 pb-10 text-ink sm:px-8 lg:px-20 lg:pt-32">
     <div class="mx-auto max-w-6xl">
       <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">
-        <a href="/" class="transition-colors hover:text-accent">Home</a>
+        <a href={localize('/')} class="transition-colors hover:text-accent">{t('nav.home')}</a>
         <span aria-hidden="true"> · </span>
-        <span aria-current="page" class="text-ink">Contact</span>
+        <span aria-current="page" class="text-ink">{t('nav.contact')}</span>
       </nav>
-      <p class="mt-6 text-xs font-medium tracking-widest text-accent uppercase">Contact</p>
-      <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">Say hello to the greenhouse.</h1>
+      <p class="mt-6 text-xs font-medium tracking-widest text-accent uppercase">{t('nav.contact')}</p>
+      <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">{t('contact.hero.title')}</h1>
       <p class="mt-4 max-w-xl text-sm leading-6 text-ink-soft">
-        Questions about an order, a plant, or how to keep it thriving? Send us a note — a real
-        person from the greenhouse writes back within one business day.
+        {t('contact.hero.body')}
       </p>
     </div>
   </section>
@@ -104,16 +91,16 @@ const careTips = [
   <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
     <div class="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:gap-16">
       <div class="rounded-lg border border-rule bg-paper-warm/40 p-6 sm:p-8">
-        <h2 class="font-display text-2xl text-ink">Send us a message</h2>
+        <h2 class="font-display text-2xl text-ink">{t('contact.form-title')}</h2>
         <p class="mt-2 mb-6 text-sm leading-6 text-ink-soft">
-          Fill in the form and we will get back to you. Fields marked with * are required.
+          {t('contact.form-intro')}
         </p>
         {
           formId ? (
-            <ContactForm client:load formId={formId} fields={fields} />
+            <ContactForm client:load formId={formId} fields={fields} labels={formLabels} />
           ) : (
             <p class="text-sm leading-6 text-ink-soft">
-              Our contact form is being repotted. Email us at{' '}
+              {t('contact.form-empty')}{' '}
               <a href="mailto:hello@petalsandpredators.com" class="text-accent underline">
                 hello@petalsandpredators.com
               </a>
@@ -125,10 +112,9 @@ const careTips = [
 
       <aside class="flex flex-col gap-8">
         <div>
-          <h2 class="font-display text-2xl text-ink">The greenhouse</h2>
+          <h2 class="font-display text-2xl text-ink">{t('contact.greenhouse-title')}</h2>
           <p class="mt-2 text-sm leading-6 text-ink-soft">
-            We are a small grow-house team. Email is the fastest way to reach us; greenhouse
-            visits are by appointment only.
+            {t('contact.greenhouse-body')}
           </p>
         </div>
         <dl class="flex flex-col gap-4">
@@ -159,14 +145,14 @@ const careTips = [
 
   <section id="shipping" class="relative z-2 scroll-mt-28 border-t border-rule bg-paper px-4 py-24 sm:px-8 lg:px-20 lg:py-32">
     <div class="mx-auto max-w-6xl">
-      <p class="text-xs font-medium tracking-widest text-accent uppercase">Shipping & returns</p>
-      <h2 class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">Shipped alive, guaranteed.</h2>
+      <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('contact.shipping.eyebrow')}</p>
+      <h2 class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">{t('contact.shipping.title')}</h2>
       <ul class="mt-10 grid gap-6 sm:grid-cols-3">
         {
           shipping.map((item) => (
             <li class="rounded-md border border-rule bg-paper-warm/40 p-6">
-              <h3 class="font-display text-lg text-ink">{item.title}</h3>
-              <p class="mt-2 text-sm leading-6 text-ink-soft">{item.body}</p>
+              <h3 class="font-display text-lg text-ink">{t(item.title)}</h3>
+              <p class="mt-2 text-sm leading-6 text-ink-soft">{t(item.body)}</p>
             </li>
           ))
         }
@@ -176,18 +162,17 @@ const careTips = [
 
   <section id="care" class="relative z-2 border-t border-rule bg-paper px-4 py-24 sm:px-8 lg:px-20 lg:py-32">
     <div class="mx-auto max-w-6xl">
-      <p class="text-xs font-medium tracking-widest text-accent uppercase">Plant Care 101</p>
-      <h2 class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">No green thumb needed.</h2>
+      <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('contact.care.eyebrow')}</p>
+      <h2 class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">{t('contact.care.title')}</h2>
       <p class="mt-4 max-w-xl text-sm leading-6 text-ink-soft">
-        A few habits keep carnivorous plants and blooms thriving. Every order also ships with a
-        printed guide in the box.
+        {t('contact.care.body')}
       </p>
       <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {
           careTips.map((tip) => (
             <li class="rounded-md border border-rule bg-paper-warm/40 p-6">
-              <h3 class="font-display text-lg text-ink">{tip.title}</h3>
-              <p class="mt-2 text-sm leading-6 text-ink-soft">{tip.body}</p>
+              <h3 class="font-display text-lg text-ink">{t(tip.title)}</h3>
+              <p class="mt-2 text-sm leading-6 text-ink-soft">{t(tip.body)}</p>
             </li>
           ))
         }

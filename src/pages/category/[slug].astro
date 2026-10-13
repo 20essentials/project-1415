@@ -7,12 +7,15 @@ import {
   listProductsInCategory,
   listStoreCategories,
 } from '@/utils/categories';
+import { useTranslation, localize } from '@/utils/i18n';
+
+const { t } = useTranslation();
 
 const PAGE_SIZE = 24;
 const { slug } = Astro.params;
 
 if (!slug) {
-  return Astro.redirect('/products');
+  return Astro.redirect(localize('/products'));
 }
 
 const category = await getCategoryBySlug(slug);
@@ -31,20 +34,20 @@ const categories = await listStoreCategories();
 
 function pageHref(next: string | null): string | null {
   if (!next) return null;
-  return `/category/${category!.slug}?cursor=${encodeURIComponent(next)}`;
+  return `${localize(`/category/${category!.slug}`)}?cursor=${encodeURIComponent(next)}`;
 }
 ---
 
 <Layout
-  title={`${category.name} — Petals & Predators`}
-  description={category.description ?? `Browse our ${category.name.toLowerCase()} collection — grown and shipped alive.`}
+  title={t('category.meta-title', { name: category.name })}
+  description={category.description ?? t('category.meta-description', { name: category.name })}
 >
   <section class="relative z-2 bg-paper px-4 pt-24 pb-10 text-ink sm:px-8 lg:px-20 lg:pt-28">
     <div class="mx-auto max-w-6xl">
       <nav class="text-xs text-ink-soft" aria-label="Breadcrumb">
-        <a href="/" class="transition-colors hover:text-accent">Home</a>
+        <a href={localize('/')} class="transition-colors hover:text-accent">{t('nav.home')}</a>
         <span aria-hidden="true"> &middot; </span>
-        <a href="/products" class="transition-colors hover:text-accent">Shop</a>
+        <a href={localize('/products')} class="transition-colors hover:text-accent">{t('shop.eyebrow')}</a>
         <span aria-hidden="true"> &middot; </span>
         <span class="text-ink" aria-current="page">{category.name}</span>
       </nav>
@@ -66,7 +69,7 @@ function pageHref(next: string | null): string | null {
 
   <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
     <div class="mx-auto max-w-6xl">
-      <h2 class="sr-only">Plants in {category.name}</h2>
+      <h2 class="sr-only">{t('category.plants-in', { name: category.name })}</h2>
       {
         productList.length > 0 ? (
           <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
@@ -76,8 +79,8 @@ function pageHref(next: string | null): string | null {
           </ul>
         ) : (
           <p class="max-w-xl text-sm leading-6 text-ink-soft">
-            Nothing in {category.name} just now —{' '}
-            <a href="/products" class="text-accent underline">browse all plants</a> instead.
+            {t('category.empty', { name: category.name })}{' '}
+            <a href={localize('/products')} class="text-accent underline">{t('category.browse-all')}</a>.
           </p>
         )
       }

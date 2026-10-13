@@ -10,9 +10,28 @@ export interface ContactFormField {
   options?: { value: string; label: string }[];
 }
 
+export interface ContactFormLabels {
+  successTitle: string;
+  successBody: string;
+  sending: string;
+  send: string;
+  error: string;
+  invalid: string;
+}
+
+const DEFAULT_LABELS: ContactFormLabels = {
+  successTitle: "Thank you — message received.",
+  successBody: "We read every note from the greenhouse and reply within one business day.",
+  sending: "Sending…",
+  send: "Send message",
+  error: "Something went wrong. Please try again.",
+  invalid: "Invalid value",
+};
+
 interface ContactFormProps {
   formId: string;
   fields: ContactFormField[];
+  labels?: Partial<ContactFormLabels>;
 }
 
 interface FieldError {
@@ -20,7 +39,7 @@ interface FieldError {
   errorMessage?: string;
 }
 
-function readFieldErrors(error: unknown): Record<string, string> {
+function readFieldErrors(error: unknown, invalidLabel: string): Record<string, string> {
   const violations = (
     error as { details?: { validationError?: { fieldViolations?: unknown } } }
   )?.details?.validationError?.fieldViolations;
@@ -33,7 +52,7 @@ function readFieldErrors(error: unknown): Record<string, string> {
     if (!Array.isArray(errors)) continue;
     for (const fieldError of errors as FieldError[]) {
       const path = fieldError.errorPath?.split(".").pop();
-      if (path && !map[path]) map[path] = fieldError.errorMessage ?? "Invalid value";
+      if (path && !map[path]) map[path] = fieldError.errorMessage ?? invalidLabel;
     }
   }
   return map;
@@ -42,7 +61,8 @@ function readFieldErrors(error: unknown): Record<string, string> {
 const inputClass =
   "w-full rounded-sm border border-rule bg-paper-warm px-3 py-2 text-sm text-ink placeholder:text-mute transition-colors duration-500 ease-fluid focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
-export default function ContactForm({ formId, fields }: ContactFormProps) {
+export default function ContactForm({ formId, fields, labels: labelOverrides }: ContactFormProps) {
+  const labels = { ...DEFAULT_LABELS, ...labelOverrides };
   const [values, setValues] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -65,7 +85,7 @@ export default function ContactForm({ formId, fields }: ContactFormProps) {
       }
     } catch (error) {
       console.error("[contact-form] submission failed:", error);
-      const errors = readFieldErrors(error);
+      const errors = readFieldErrors(error, labels.invalid);
       if (Object.keys(errors).length > 0) {
         setFieldErrors(errors);
         setStatus("idle");
@@ -81,9 +101,9 @@ export default function ContactForm({ formId, fields }: ContactFormProps) {
         role="status"
         className="rounded-md border border-accent/40 bg-accent/10 p-6 text-sm leading-6 text-ink"
       >
-        <p className="font-display text-xl text-ink">Thank you — message received.</p>
+        <p className="font-display text-xl text-ink">{labels.successTitle}</p>
         <p className="mt-2 text-ink-soft">
-          We read every note from the greenhouse and reply within one business day.
+          {labels.successBody}
         </p>
       </div>
     );
@@ -149,12 +169,12 @@ export default function ContactForm({ formId, fields }: ContactFormProps) {
         disabled={status === "submitting"}
         className="inline-flex h-11 w-full items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
-        {status === "submitting" ? "Sending…" : "Send message"}
+        {status === "submitting" ? labels.sending : labels.send}
       </button>
 
       {status === "error" && (
         <p role="alert" className="text-sm text-error">
-          Something went wrong. Please try again.
+          {labels.error}
         </p>
       )}
     </form>
