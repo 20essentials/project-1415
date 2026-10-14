@@ -33,6 +33,7 @@
     "@wix/media": "^1.0.277",
     "@wix/members": "^1.0.527",
     "@wix/redirects": "^1.0.131",
+    "@wix/reviews": "^1.0.115",
     "@wix/sdk": "^1.21.17",
     "@wix/seo": "^1.0.92",
     "@wix/services-manager": "^1.0.7",

@@ -13,6 +13,7 @@ export const site = {
     { href: '/#como-funciona', label: 'nav.how-it-works' },
     { href: '/#tu-casa', label: 'nav.your-space' },
     { href: '/products', label: 'nav.all-plants' },
+    { href: '/lookbook', label: 'nav.lookbook' },
     { href: '/journal', label: 'nav.journal' },
     { href: '/about', label: 'nav.about' },
     { href: '/contact', label: 'nav.contact' },
@@ -22,6 +23,7 @@ export const site = {
     { href: '/#care', label: 'nav.care' },
     { href: '/#como-funciona', label: 'nav.how-it-works' },
     { href: '/products', label: 'nav.all-plants' },
+    { href: '/lookbook', label: 'nav.lookbook' },
     { href: '/journal', label: 'nav.journal' },
   ],
   links: {

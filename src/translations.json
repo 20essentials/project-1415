@@ -7,6 +7,7 @@
   "nav.how-it-works": "How it works",
   "nav.your-space": "Your space",
   "nav.all-plants": "All plants",
+  "nav.lookbook": "Lookbook",
   "nav.journal": "Journal",
   "nav.about": "About",
   "nav.contact": "Contact",
@@ -64,6 +65,7 @@
   "home.photo-coming": "Photo coming soon",
   "home.read-guide": "Read the guide",
   "home.all-guides": "All care guides →",
+  "home.lookbookCta": "Shop the lookbook",
 
   "paseo.inicio.eyebrow": "Petals & Predators",
   "paseo.inicio.title": "Plants with teeth.",
@@ -273,5 +275,13 @@
   "journal.not-found.eyebrow": "404",
   "journal.not-found.title": "That guide has wilted.",
   "journal.not-found.body": "We couldn't find the guide you were looking for. It may have moved or never existed.",
-  "journal.not-found.cta": "Back to the journal"
+  "journal.not-found.cta": "Back to the journal",
+
+  "lookbook.eyebrow": "The lookbook",
+  "lookbook.title": "Season by season",
+  "lookbook.intro": "A seasonal edit from the greenhouse — styling ideas, growing notes, and the plants that carry each moment.",
+  "lookbook.explore": "Explore the seasons",
+  "lookbook.shop-season": "Shop the season",
+  "lookbook.empty": "The lookbook is still in the greenhouse. In the meantime,",
+  "lookbook.empty-cta": "browse the plants"
 }

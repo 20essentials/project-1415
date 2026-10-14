@@ -1,0 +1,254 @@
+---
+import Layout from '@/layouts/layout.astro';
+import ProductCard from '@/components/product-card.astro';
+import { queryLookbook } from '@/utils/lookbook';
+import { renderRicos } from '@/utils/ricos';
+import { productsV3 } from '@wix/stores';
+import { useTranslation, localize } from '@/utils/i18n';
+
+const { t } = useTranslation();
+
+const seasons = await queryLookbook();
+const [hero, ...rest] = seasons;
+
+interface CatalogProduct {
+  _id?: string;
+  name?: string;
+  slug?: string;
+  media?: { main?: { image?: string; url?: string; altText?: string } };
+  actualPriceRange?: { minValue?: { formattedAmount?: string } };
+}
+
+let products: CatalogProduct[] = [];
+try {
+  const result = await productsV3.queryProducts({ fields: ['CURRENCY'] }).limit(100).find();
+  products = result.items ?? [];
+} catch (error) {
+  console.error('[lookbook] catalog query failed:', error);
+}
+
+const bySlug = new Map(products.map((product) => [product.slug, product]));
+const featuredFor = (slugs: string[]) =>
+  slugs
+    .map((slug) => bySlug.get(slug))
+    .filter((product): product is CatalogProduct => Boolean(product));
+
+const heroFeatured = hero ? featuredFor(hero.productSlugs) : [];
+---
+
+<Layout>
+  {
+    hero ? (
+      <section class="relative isolate flex min-h-svh flex-col overflow-hidden bg-paper">
+        {hero.hero && (
+          <img
+            src={hero.hero}
+            alt=""
+            width="1920"
+            height="1080"
+            class="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
+        <div
+          class="absolute inset-0 bg-linear-to-t from-paper via-paper/70 to-paper/20"
+          aria-hidden="true"
+        />
+        <div class="relative mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 pt-28 pb-16 text-ink sm:px-8 lg:px-20 lg:pb-24">
+          <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">
+            <a href={localize('/')} class="transition-colors hover:text-accent">{t('nav.home')}</a>
+            <span aria-hidden="true"> · </span>
+            <span aria-current="page" class="text-ink">{t('nav.lookbook')}</span>
+          </nav>
+
+          <div class="mt-auto">
+            <p class="text-xs font-medium tracking-widest text-accent uppercase">{hero.season}</p>
+            <h1 class="mt-3 max-w-3xl font-display text-5xl leading-tight text-ink lg:text-6xl">
+              {hero.title}
+            </h1>
+            {hero.tagline && <p class="mt-4 max-w-xl text-base leading-7 text-ink-soft">{hero.tagline}</p>}
+            <a
+              href="#seasons"
+              class="mt-8 inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream"
+            >
+              <span class="text-trim">{t('lookbook.explore')}</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    ) : (
+      <section class="relative z-2 bg-paper px-4 pt-32 pb-24 text-ink sm:px-8 lg:px-20">
+        <div class="mx-auto max-w-2xl">
+          <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('lookbook.eyebrow')}</p>
+          <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">{t('lookbook.title')}</h1>
+          <p class="mt-4 text-sm leading-6 text-ink-soft">
+            {t('lookbook.empty')}{' '}
+            <a href={localize('/products')} class="text-accent underline">{t('lookbook.empty-cta')}</a>.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    rest.length > 0 && (
+      <section id="seasons" class="relative z-2 bg-paper px-4 py-20 text-ink sm:px-8 lg:px-20 lg:py-28">
+        <div class="mx-auto max-w-6xl">
+          <header class="max-w-2xl">
+            <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('lookbook.eyebrow')}</p>
+            <h2 class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">{t('lookbook.title')}</h2>
+            <p class="mt-4 text-sm leading-6 text-ink-soft">{t('lookbook.intro')}</p>
+          </header>
+
+          <div class="mt-16 flex flex-col gap-20 lg:gap-28">
+            {hero && (
+              <article class="grid gap-8 lg:grid-cols-12 lg:gap-12">
+                <div class="lg:col-span-5 lg:self-center">
+                  <p class="text-xs font-medium tracking-widest text-accent uppercase">{hero.season}</p>
+                  <h3 class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">{hero.title}</h3>
+                  {hero.tagline && <p class="mt-3 text-base leading-7 text-ink-soft">{hero.tagline}</p>}
+                  {hero.story && (
+                    <div
+                      class="lookbook-story mt-6 text-sm leading-6 text-ink-soft"
+                      set:html={renderRicos(hero.story)}
+                    />
+                  )}
+                </div>
+                <div class="grid grid-cols-2 gap-4 sm:gap-6 lg:col-span-7 lg:grid-cols-3 lg:auto-rows-40">
+                  {hero.gallery.slice(0, 4).map((src, index) => (
+                    <div
+                      class={[
+                        'relative overflow-hidden rounded-md bg-paper-warm ring-1 ring-rule',
+                        index === 0
+                          ? 'col-span-2 aspect-3/2 lg:col-span-2 lg:row-span-2 lg:aspect-auto'
+                          : index === 3
+                            ? 'col-span-2 aspect-3/2 lg:col-span-3 lg:aspect-auto'
+                            : 'aspect-4/5 lg:aspect-auto',
+                      ].join(' ')}
+                    >
+                      <img
+                        src={src}
+                        alt={`${hero.season} — ${hero.title}`}
+                        width="900"
+                        height="1125"
+                        loading="lazy"
+                        class="h-full w-full object-cover transition-transform duration-700 ease-fluid hover:scale-105 motion-reduce:transform-none"
+                      />
+                    </div>
+                  ))}
+                </div>
+                {heroFeatured.length > 0 && (
+                  <div class="lg:col-span-12">
+                    <p class="text-xs font-medium tracking-widest text-accent uppercase">
+                      {t('lookbook.shop-season')}
+                    </p>
+                    <ul class="mt-6 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+                      {heroFeatured.map((product, index) => (
+                        <ProductCard product={product} index={index} />
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </article>
+            )}
+
+            {rest.map((entry) => {
+              const featured = featuredFor(entry.productSlugs);
+              return (
+                <article class="grid gap-8 lg:grid-cols-12 lg:gap-12">
+                  <div class="lg:col-span-5 lg:self-center">
+                    <p class="text-xs font-medium tracking-widest text-accent uppercase">{entry.season}</p>
+                    <h3 class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">
+                      {entry.title}
+                    </h3>
+                    {entry.tagline && <p class="mt-3 text-base leading-7 text-ink-soft">{entry.tagline}</p>}
+                    {entry.story && (
+                      <div
+                        class="lookbook-story mt-6 text-sm leading-6 text-ink-soft"
+                        set:html={renderRicos(entry.story)}
+                      />
+                    )}
+                  </div>
+                  <div class="grid grid-cols-2 gap-4 sm:gap-6 lg:col-span-7 lg:grid-cols-3 lg:auto-rows-40">
+                    {entry.gallery.slice(0, 4).map((src, index) => (
+                      <div
+                        class={[
+                          'relative overflow-hidden rounded-md bg-paper-warm ring-1 ring-rule',
+                          index === 0
+                            ? 'col-span-2 aspect-3/2 lg:col-span-2 lg:row-span-2 lg:aspect-auto'
+                            : index === 3
+                              ? 'col-span-2 aspect-3/2 lg:col-span-3 lg:aspect-auto'
+                              : 'aspect-4/5 lg:aspect-auto',
+                        ].join(' ')}
+                      >
+                        <img
+                          src={src}
+                          alt={`${entry.season} — ${entry.title}`}
+                          width="900"
+                          height="1125"
+                          loading="lazy"
+                          class="h-full w-full object-cover transition-transform duration-700 ease-fluid hover:scale-105 motion-reduce:transform-none"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  {featured.length > 0 && (
+                    <div class="lg:col-span-12">
+                      <p class="text-xs font-medium tracking-widest text-accent uppercase">
+                        {t('lookbook.shop-season')}
+                      </p>
+                      <ul class="mt-6 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+                        {featured.map((product, index) => (
+                          <ProductCard product={product} index={index} />
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Layout>
+
+<style is:global>
+  .lookbook-story h2,
+  .lookbook-story h3 {
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1.3;
+    color: var(--color-ink);
+  }
+  .lookbook-story p + p {
+    margin-top: 0.75rem;
+  }
+  .lookbook-story ul,
+  .lookbook-story ol {
+    margin-top: 0.75rem;
+    padding-left: 1.25rem;
+  }
+  .lookbook-story ul {
+    list-style: disc;
+  }
+  .lookbook-story ol {
+    list-style: decimal;
+  }
+  .lookbook-story li {
+    margin-top: 0.35rem;
+  }
+  .lookbook-story blockquote {
+    margin-top: 1rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--color-accent);
+    color: var(--color-ink-soft);
+  }
+  .lookbook-story a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>
