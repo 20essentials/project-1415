@@ -33,6 +33,16 @@ E2E con Playwright (`@playwright/test`, Chromium ya instalado):
 - `playwright.config.ts` levanta `astro dev` en `:4321` (webServer con `reuseExistingServer`). Los tests viven en `tests/e2e/*.spec.ts` (vitest ignora `*.spec.ts`, no pisarlos con `*.test.*`).
 - El login usa los endpoints integrados de `@wix/astro` (`/api/auth/login`, `/api/auth/logout`): no crear `src/pages/login.ts` propio — `getContextualAuth()` fuera del contexto Wix tira 500 "Wix context is not available". Si el flujo necesita redirigir no autenticado, apuntar a `localize('/api/auth/login?returnToUrl=…')`.
 
+## Apps de Wix (instalación vía API)
+
+- **Sí se pueden instalar apps de Wix en el sitio vía REST** (Apps Installer API), sin pasar por el dashboard. Receta: https://dev.wix.com/docs/api-reference/business-management/app-installation/skills/install-wix-apps
+- Endpoint: `POST https://www.wixapis.com/apps-installer-service/v1/app-instance/install`
+  Body: `{ "tenant": { "tenantType": "SITE", "id": "<SITE_ID>" }, "appInstance": { "appDefId": "<APP_DEF_ID>" } }` (con auth de sitio; sirve por MCP `ExecuteWixAPI` o por curl).
+- **Nunca adivinar el `appDefId`.** Apps hechas por Wix → tabla *Apps Created by Wix* (https://dev.wix.com/docs/api-reference/articles/work-with-wix-apis/platform/about-apps-created-by-wix). Terceros → Search Market Listings: `POST https://www.wixapis.com/devcenter/app-market-listing/v1/market-listings/search` con `{ "searchTerm": "<nombre>" }` (el `appId` que devuelve es el `appDefId`).
+- No chequear de antemano si la app ya está instalada (gasta un call): instalar directo y manejar el error. Tras instalar, una llamada dependiente puede fallar por propagación → reintentar con backoff (1s, 2s, 4s).
+- Site Petals & Predators = `c6608ff9-497b-4734-8fe9-74132892d04c`. Estado de apps/seed en `.wix/seeded.json`.
+- Ya instaladas vía API: Wix Reviews (ver `ROADMAP.md` step-16) y **Wix Gift Cards** (`appDefId` `d80111c5-a0f4-47a8-b63a-65b54d774a27`, instancia `457bf786-625b-4ca7-93a4-3fdd5878d1e2`, producto "eGift Card" `34e53e4e-a329-4aef-b4b2-6f4350f944e2` con 5 preset variants).
+
 ## Reglas de trabajo (lecciones aprendidas — no repetir)
 
 Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
@@ -75,6 +85,13 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 
 - No ampliar el alcance por inferencia (p. ej. "todo src" → convertir hojas CSS enteras, borrar scaffold). Si el alcance es ambiguo o implica cambios destructivos, preguntar antes de ejecutar.
 - Cambios que pueden romper el build o alterar el diseño (conversión masiva de CSS, borrado de archivos) se confirman primero.
+
+### Tests: assertear solo lo que controla la app (nunca output inyectado por Wix)
+
+- **No assertear valores que Wix inyecta en SSR**: `<title>`, meta tags de SEO, etc. El home no tiene `<title>` en el repo — Wix pone `Home | Petals & Predators` desde la config SEO del sitio. Assertear eso testea la config del sitio, no el código: es frágil y falla por causas ajenas a la app.
+- Assertear lo que **sí** es de la app: `html[lang]`, links localizados (`/es/products`), texto que renderizan los componentes propios, códigos HTTP, estados de navegación.
+- Si el contenido viene de una app de Wix (Reviews, Gift Cards, Stores), assertear que la página/componente se **renderiza** con datos sembrados y conocidos (p. ej. el nombre del producto), no chrome que Wix genera por su cuenta.
+- Regla práctica: antes de commitear un E2E, preguntarse si el assert depende **solo** de lo que este repo controla. Si falla por config del sitio (SEO, idioma no publicado) y no por el código, es ruido: no escribirlo.
 
 ## Instalación de comandos y skills (siempre local)
 

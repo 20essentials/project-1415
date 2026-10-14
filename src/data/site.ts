@@ -15,16 +15,17 @@ export const site = {
     { href: '/products', label: 'nav.all-plants' },
     { href: '/lookbook', label: 'nav.lookbook' },
     { href: '/journal', label: 'nav.journal' },
+    { href: '/gift-cards', label: 'nav.gift-cards' },
     { href: '/about', label: 'nav.about' },
     { href: '/contact', label: 'nav.contact' },
   ],
   navPrimary: [
     { href: '/#collection', label: 'nav.collection' },
     { href: '/#care', label: 'nav.care' },
-    { href: '/#como-funciona', label: 'nav.how-it-works' },
     { href: '/products', label: 'nav.all-plants' },
     { href: '/lookbook', label: 'nav.lookbook' },
     { href: '/journal', label: 'nav.journal' },
+    { href: '/gift-cards', label: 'nav.gift-cards' },
   ],
   links: {
     shop: '/products',

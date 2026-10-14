@@ -1,0 +1,116 @@
+---
+import Layout from '@/layouts/layout.astro';
+import GiftCardPurchase from '@/components/gift-card-purchase.tsx';
+import { getGiftCardProduct } from '@/utils/gift-cards';
+import { resolveWixImageUrl } from '@/utils/wix-image';
+import { useTranslation, localize } from '@/utils/i18n';
+
+const { t } = useTranslation();
+
+const product = await getGiftCardProduct();
+const productImage = product
+  ? resolveWixImageUrl(product.image, 1000, 1250)
+  : null;
+
+const purchaseLabels = {
+  amount: t('gift-cards.form.amount'),
+  firstName: t('gift-cards.form.first-name'),
+  lastName: t('gift-cards.form.last-name'),
+  email: t('gift-cards.form.email'),
+  message: t('gift-cards.form.message'),
+  messagePlaceholder: t('gift-cards.form.message-placeholder'),
+  add: t('gift-cards.form.add', { amount: '{{amount}}' }),
+  addDefault: t('gift-cards.form.add-default'),
+  adding: t('gift-cards.form.adding'),
+  added: t('gift-cards.form.added'),
+  error: t('gift-cards.form.error'),
+  viewCart: t('gift-cards.form.view-cart'),
+};
+
+const info = [
+  { title: 'gift-cards.info.1.title', body: 'gift-cards.info.1.body' },
+  { title: 'gift-cards.info.2.title', body: 'gift-cards.info.2.body' },
+  { title: 'gift-cards.info.3.title', body: 'gift-cards.info.3.body' },
+];
+
+const heading = product ? product.name : t('gift-cards.title');
+const intro = product ? product.description : t('gift-cards.intro');
+---
+
+<Layout>
+  <section class="relative z-2 bg-paper px-4 pt-32 pb-12 text-ink sm:px-8 lg:px-20 lg:pb-16">
+    <div class="mx-auto max-w-6xl">
+      <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">
+        <a href={localize('/')} class="transition-colors hover:text-accent">{t('nav.home')}</a>
+        <span aria-hidden="true"> · </span>
+        <span aria-current="page" class="text-ink">{t('nav.gift-cards')}</span>
+      </nav>
+
+      <p class="mt-10 text-xs font-medium tracking-widest text-accent uppercase">{t('gift-cards.eyebrow')}</p>
+      <h1 class="mt-3 max-w-3xl font-display text-4xl leading-tight text-ink lg:text-5xl">{heading}</h1>
+      <p class="mt-4 max-w-xl text-base leading-7 text-ink-soft">{intro}</p>
+    </div>
+  </section>
+
+  {
+    product ? (
+      <section class="relative z-2 bg-paper px-4 pb-24 text-ink sm:px-8 lg:px-20 lg:pb-32">
+        <div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-12 lg:gap-16">
+          <div class="lg:col-span-5">
+            <div class="relative aspect-4/5 overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule">
+              {productImage ? (
+                <img
+                  src={productImage}
+                  alt={product.image?.altText ?? product.name}
+                  width="1000"
+                  height="1250"
+                  class="h-full w-full object-cover"
+                />
+              ) : (
+                <span class="flex h-full w-full items-center justify-center text-xs text-mute">
+                  {t('home.photo-coming')}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 lg:self-center">
+            <h2 class="font-display text-2xl leading-tight text-ink lg:text-3xl">{t('gift-cards.form-title')}</h2>
+            <p class="mt-3 max-w-prose text-sm leading-6 text-ink-soft">{t('gift-cards.form-intro')}</p>
+
+            <div class="mt-8">
+              <GiftCardPurchase client:load product={product} labels={purchaseLabels} cartHref={localize('/cart')} />
+            </div>
+
+            <p class="mt-6 text-xs leading-5 text-mute">{t('gift-cards.fineprint')}</p>
+          </div>
+        </div>
+      </section>
+    ) : (
+      <section class="relative z-2 bg-paper px-4 pb-24 text-ink sm:px-8 lg:px-20 lg:pb-32">
+        <div class="mx-auto max-w-6xl">
+          <ul class="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {info.map((item) => (
+              <li class="flex flex-col gap-2 rounded-md border border-rule bg-paper-warm p-6">
+                <h2 class="font-display text-lg leading-tight text-ink">{t(item.title)}</h2>
+                <p class="text-sm leading-6 text-ink-soft">{t(item.body)}</p>
+              </li>
+            ))}
+          </ul>
+
+          <div class="mt-12 flex flex-col items-start gap-4 rounded-lg border border-rule bg-paper-warm p-8 sm:flex-row sm:items-center sm:justify-between lg:p-12">
+            <p class="max-w-md text-sm leading-6 text-ink-soft">{t('gift-cards.cta-note')}</p>
+            <a
+              href={localize('/products')}
+              class="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream"
+            >
+              <span class="text-trim">{t('gift-cards.cta')}</span>
+            </a>
+          </div>
+
+          <p class="mt-6 text-xs leading-5 text-mute">{t('gift-cards.fineprint')}</p>
+        </div>
+      </section>
+    )
+  }
+</Layout>
