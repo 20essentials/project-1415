@@ -4,6 +4,7 @@ text-just-for-me.txt
 
 # build output
 dist/
+.wix.config.json
 
 # playwright
 /test-results/
