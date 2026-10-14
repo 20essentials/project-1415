@@ -11,7 +11,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   vite: { plugins: [tailwindcss()] },
   integrations: [
-    wix({ robots: { enable: false }, essentials: true, translations: true }),
+    wix({ essentials: true, translations: true }),
     wixPages(),
     react()
   ],

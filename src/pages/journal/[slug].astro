@@ -3,6 +3,7 @@ import Layout from '@/layouts/layout.astro';
 import { getGuideBySlug, queryGuides, type CareGuide } from '@/utils/journal';
 import { renderRicos } from '@/utils/ricos';
 import { useTranslation, localize, currentLanguage } from '@/utils/i18n';
+import { ogImage } from '@/data/imagenes';
 
 const { t } = useTranslation();
 
@@ -12,6 +13,12 @@ const guide = slug ? await getGuideBySlug(slug) : null;
 if (!guide) {
   Astro.response.status = 404;
 }
+
+const forwardedUrl = Astro.request.headers.get('x-wix-forwarded-url');
+const pageUrl =
+  forwardedUrl && URL.canParse(forwardedUrl) && /^https?:$/.test(new URL(forwardedUrl).protocol)
+    ? forwardedUrl
+    : Astro.url.href;
 
 const bodyHtml = guide ? renderRicos(guide.body) : '';
 
@@ -26,13 +33,39 @@ if (guide) {
   const all = await queryGuides();
   related = all.filter((item) => item.slug !== guide.slug).slice(0, 3);
 }
+
+const articleJsonLd = guide
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: guide.title,
+      description: guide.intro,
+      image: guide.cover ?? ogImage.src,
+      datePublished: guide.createdDate?.toISOString(),
+      mainEntityOfPage: pageUrl,
+      author: { '@type': 'Organization', name: 'Petals & Predators' },
+    }
+  : null;
 ---
 
-<Layout
-  title={guide ? `${guide.title} — ${t('nav.journal')} — Petals & Predators` : t('journal.not-found.meta-title')}
-  description={guide?.intro ?? t('journal.not-found.meta-description')}
-  noindex={!guide}
->
+<Layout noindex={!guide}>
+  <Fragment slot="head">
+    {
+      guide ? (
+        <>
+          <title>{`${guide.title} — Petals & Predators`}</title>
+          <meta name="description" content={guide.intro} />
+          <meta property="og:image" content={guide.cover ?? ogImage.src} />
+          <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} is:inline />
+        </>
+      ) : (
+        <>
+          <title>{t('journal.not-found.meta-title')}</title>
+          <meta name="description" content={t('journal.not-found.meta-description')} />
+        </>
+      )
+    }
+  </Fragment>
   {
     guide ? (
       <>

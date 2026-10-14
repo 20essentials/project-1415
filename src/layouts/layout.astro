@@ -2,21 +2,18 @@
 import '../styles/global.css';
 import Header from '../components/header.astro';
 import Footer from '../components/footer.astro';
-import { ogImage } from '../data/imagenes';
 import { members } from '@wix/members';
-import { currentLanguage, localeUrl, LOCALES } from '../utils/i18n';
+import { currentLanguage } from '../utils/i18n';
 
 const googleFontsHref =
   'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600&display=swap';
 
 interface Props {
-  title: string;
-  description: string;
   noindex?: boolean;
   header?: boolean;
 }
 
-const { title, description, noindex = false, header = true } = Astro.props;
+const { noindex = false, header = true } = Astro.props;
 
 let loggedIn = false;
 try {
@@ -26,16 +23,7 @@ try {
   loggedIn = false;
 }
 
-const base = Astro.site ?? Astro.url;
 const lang = currentLanguage();
-const cleanPath = Astro.url.pathname;
-const canonical = new URL(localeUrl(cleanPath, lang), base);
-const ogUrl = new URL(ogImage.src, base).href;
-const ogLocales: Record<string, string> = { en: 'en_US', es: 'es_ES', it: 'it_IT' };
-const alternates = LOCALES.map((locale) => ({ locale, href: new URL(localeUrl(cleanPath, locale), base).href }));
-const robots = noindex
-  ? 'noindex, follow'
-  : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 ---
 
 <!doctype html>
@@ -43,55 +31,15 @@ const robots = noindex
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <slot name="seo-tags" />
     <script is:inline>document.documentElement.classList.add('js');</script>
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <meta name="robots" content={robots} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <meta name="theme-color" content="#08090a" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-    {
-      !noindex && (
-        <>
-          <link rel="canonical" href={canonical} />
-          {alternates.map((alt) => (
-            <link rel="alternate" hreflang={alt.locale} href={alt.href} />
-          ))}
-          <link
-            rel="alternate"
-            hreflang="x-default"
-            href={alternates.find((alt) => alt.locale === 'en')?.href ?? canonical}
-          />
-        </>
-      )
-    }
-
-    <meta property="og:type" content="website" />
-    <meta property="og:locale" content={ogLocales[lang] ?? 'en_US'} />
-    {LOCALES.filter((locale) => locale !== lang).map((locale) => (
-      <meta property="og:locale:alternate" content={ogLocales[locale]} />
-    ))}
-    <meta property="og:site_name" content="Petals & Predators" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={ogUrl} />
-    <meta property="og:image:secure_url" content={ogUrl} />
-    <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content={String(ogImage.width)} />
-    <meta property="og:image:height" content={String(ogImage.height)} />
-    <meta property="og:image:alt" content={ogImage.alt} />
-    {/* Sin twitter:site: su web no enlaza ninguna cuenta de X y @arko.barcelona es su Instagram. */}
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:url" content={canonical} />
-    <meta name="twitter:image" content={ogUrl} />
-    <meta name="twitter:image:alt" content={ogImage.alt} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

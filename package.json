@@ -34,6 +34,8 @@
     "@wix/members": "^1.0.527",
     "@wix/redirects": "^1.0.131",
     "@wix/sdk": "^1.21.17",
+    "@wix/seo": "^1.0.92",
+    "@wix/services-manager": "^1.0.7",
     "@wix/stores": "^1.0.938",
     "astro": "^5.8.0",
     "tailwindcss": "^4.3.3",

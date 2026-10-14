@@ -4,15 +4,20 @@ import ProductCard from '@/components/product-card.astro';
 import ProductPurchase from '@/components/product-purchase';
 import type { PurchaseProduct, VariantStock } from '@/components/product-purchase';
 import { productsV3, inventoryItemsV3 } from '@wix/stores';
+import { WIX_APPS } from '@wix/essentials';
+import { SEO } from '@wix/seo/components';
+import { loadSEOTagsServiceConfig } from '@wix/seo/services';
+import { seoTags } from '@wix/seo';
 import { listProductsInCategory } from '@/utils/categories';
 import { renderRicos } from '@/utils/ricos';
 import { resolveWixImageUrl } from '@/utils/wix-image';
+import { toMetaDescription } from '@/utils/seo';
 import { useTranslation, localize } from '@/utils/i18n';
 
 export const wixMetadata = {
-  appDefId: '1380b703-ce81-ff05-f115-39571d94dfcd',
-  pageIdentifier: 'wix.stores.sub_pages.product',
-  identifiers: { slug: 'STORES.PRODUCT.SLUG' },
+  appDefId: WIX_APPS.checkoutAndOrders.id,
+  pageIdentifier: WIX_APPS.checkoutAndOrders.productPageMetadata.pageIdentifier,
+  identifiers: { slug: WIX_APPS.checkoutAndOrders.productPageMetadata.identifiers.handle },
 };
 
 const { t } = useTranslation();
@@ -39,15 +44,30 @@ const PRODUCT_FIELDS = [
 
 const { slug } = Astro.params;
 
-let product: V3Product | null = null;
-try {
-  const response = await productsV3.getProductBySlug(slug ?? '', {
-    fields: PRODUCT_FIELDS,
-  });
-  product = response.product ?? null;
-} catch (error) {
-  console.error(`[product] getProductBySlug("${slug}") failed:`, error);
-}
+const forwardedUrl = Astro.request.headers.get('x-wix-forwarded-url');
+const pageUrl =
+  forwardedUrl && URL.canParse(forwardedUrl) && /^https?:$/.test(new URL(forwardedUrl).protocol)
+    ? forwardedUrl
+    : Astro.url.href;
+
+const [product, seoTagsServiceConfig] = await Promise.all([
+  (async (): Promise<V3Product | null> => {
+    try {
+      const response = await productsV3.getProductBySlug(slug ?? '', {
+        fields: PRODUCT_FIELDS,
+      });
+      return response.product ?? null;
+    } catch (error) {
+      console.error(`[product] getProductBySlug("${slug}") failed:`, error);
+      return null;
+    }
+  })(),
+  loadSEOTagsServiceConfig({
+    pageUrl,
+    itemType: seoTags.ItemType.STORES_PRODUCT,
+    itemData: { slug: slug ?? '' },
+  }),
+]);
 
 if (!product) {
   return new Response('Product not found', { status: 404 });
@@ -139,11 +159,10 @@ for (const [variantId, inv] of inventoryByVariantRaw) {
 const richDescription = renderRicos(product.description);
 const descriptionHtml = richDescription || product.plainDescription?.trim() || null;
 
-const metaDescription = (descriptionHtml ?? t('product.meta-fallback', { name: product.name }))
-  .replace(/<[^>]+>/g, ' ')
-  .replace(/\s+/g, ' ')
-  .trim()
-  .slice(0, 160);
+const metaDescription = toMetaDescription(
+  descriptionHtml,
+  t('product.meta-fallback', { name: product.name ?? '' }),
+);
 
 const crumbs = product.breadcrumbsInfo?.breadcrumbs ?? [];
 const inStock = product.inventory?.availabilityStatus !== 'OUT_OF_STOCK';
@@ -173,7 +192,12 @@ const purchaseLabels = {
 };
 ---
 
-<Layout title={`${product.name} — Petals & Predators`} description={metaDescription}>
+<Layout>
+  <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />
+  <Fragment slot="head">
+    <meta name="description" content={metaDescription} />
+    <meta property="og:description" content={metaDescription} />
+  </Fragment>
   <section class="relative z-2 bg-paper px-4 py-10 text-ink sm:px-8 lg:px-20 lg:py-16">
     <div class="mx-auto max-w-6xl">
       <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">

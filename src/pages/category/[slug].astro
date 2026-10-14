@@ -2,12 +2,23 @@
 import Layout from '@/layouts/layout.astro';
 import ProductCard from '@/components/product-card.astro';
 import CategoryRail from '@/components/category-rail.astro';
+import { WIX_APPS } from '@wix/essentials';
+import { SEO } from '@wix/seo/components';
+import { loadSEOTagsServiceConfig } from '@wix/seo/services';
+import { seoTags } from '@wix/seo';
 import {
   getCategoryBySlug,
   listProductsInCategory,
   listStoreCategories,
 } from '@/utils/categories';
+import { toMetaDescription } from '@/utils/seo';
 import { useTranslation, localize } from '@/utils/i18n';
+
+export const wixMetadata = {
+  appDefId: WIX_APPS.checkoutAndOrders.id,
+  pageIdentifier: WIX_APPS.checkoutAndOrders.categoryPageMetadata.pageIdentifier,
+  identifiers: { slug: WIX_APPS.checkoutAndOrders.categoryPageMetadata.identifiers.collection },
+};
 
 const { t } = useTranslation();
 
@@ -18,7 +29,21 @@ if (!slug) {
   return Astro.redirect(localize('/products'));
 }
 
-const category = await getCategoryBySlug(slug);
+const forwardedUrl = Astro.request.headers.get('x-wix-forwarded-url');
+const pageUrl =
+  forwardedUrl && URL.canParse(forwardedUrl) && /^https?:$/.test(new URL(forwardedUrl).protocol)
+    ? forwardedUrl
+    : Astro.url.href;
+
+const [category, seoTagsServiceConfig] = await Promise.all([
+  getCategoryBySlug(slug),
+  loadSEOTagsServiceConfig({
+    pageUrl,
+    itemType: seoTags.ItemType.STORES_CATEGORY,
+    itemData: { slug },
+  }),
+]);
+
 if (!category) {
   return new Response('Category not found', { status: 404 });
 }
@@ -32,16 +57,23 @@ const productList = page.items.filter(
 
 const categories = await listStoreCategories();
 
+const metaDescription = toMetaDescription(
+  category.description,
+  t('category.meta-description', { name: category.name }),
+);
+
 function pageHref(next: string | null): string | null {
   if (!next) return null;
   return `${localize(`/category/${category!.slug}`)}?cursor=${encodeURIComponent(next)}`;
 }
 ---
 
-<Layout
-  title={t('category.meta-title', { name: category.name })}
-  description={category.description ?? t('category.meta-description', { name: category.name })}
->
+<Layout>
+  <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />
+  <Fragment slot="head">
+    <meta name="description" content={metaDescription} />
+    <meta property="og:description" content={metaDescription} />
+  </Fragment>
   <section class="relative z-2 bg-paper px-4 pt-24 pb-10 text-ink sm:px-8 lg:px-20 lg:pt-28">
     <div class="mx-auto max-w-6xl">
       <nav class="text-xs text-ink-soft" aria-label="Breadcrumb">
