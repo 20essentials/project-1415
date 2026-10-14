@@ -4,6 +4,7 @@ import ContactForm, { type ContactFormField } from '@/components/contact-form.ts
 import { forms } from '@wix/forms';
 import { auth } from '@wix/essentials';
 import { useTranslation, localize } from '@/utils/i18n';
+import { CONTACT_FORM_NAME } from '@/utils/wix-forms';
 
 const { t } = useTranslation();
 
@@ -14,7 +15,7 @@ let fields: ContactFormField[] = [];
 
 try {
   const result = await elevatedListForms('wix.form_app.form');
-  const wixForm = result.forms?.[0];
+  const wixForm = result.forms?.find((form) => form.name === CONTACT_FORM_NAME);
   formId = wixForm?._id ?? '';
   fields = (wixForm?.formFields ?? [])
     .filter((field) => field.fieldType === 'INPUT' && !field.hidden)

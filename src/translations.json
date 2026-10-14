@@ -39,6 +39,18 @@
   "footer.rights": "© {{year}} Petals & Predators. All rights reserved.",
   "footer.tagline": "Greenhouse-grown in-house · shipped worldwide.",
 
+  "footer.newsletter.eyebrow": "Newsletter",
+  "footer.newsletter.title": "Grow with us.",
+  "footer.newsletter.body": "Plant-care notes, new arrivals, and greenhouse stories — one short email, now and then.",
+  "footer.newsletter.label": "Email address",
+  "footer.newsletter.placeholder": "you@example.com",
+  "footer.newsletter.submit": "Subscribe",
+  "footer.newsletter.sending": "Subscribing…",
+  "footer.newsletter.success": "You're on the list. Welcome to the greenhouse.",
+  "footer.newsletter.error": "Something went wrong. Please try again.",
+  "footer.newsletter.invalid": "Enter a valid email address.",
+  "footer.newsletter.empty": "Our newsletter is being repotted. Email us at",
+
   "home.meta-title": "Petals & Predators — Carnivorous plants and flowers",
   "home.meta-description": "Carnivorous specimens, show-stopping blooms, and care-tested kits — greenhouse-grown and shipped alive to your door.",
 

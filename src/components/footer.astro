@@ -1,11 +1,25 @@
 ---
 import Logo from '@/components/logo.astro';
+import NewsletterForm from '@/components/newsletter-form.tsx';
 import { site } from '@/data/site';
 import { useTranslation, localize } from '@/utils/i18n';
+import { getFormIdByName, NEWSLETTER_FORM_NAME } from '@/utils/wix-forms';
 
 const year = new Date().getFullYear();
 const { links } = site;
 const { t } = useTranslation();
+
+const newsletterFormId = await getFormIdByName(NEWSLETTER_FORM_NAME);
+
+const newsletterLabels = {
+  label: t('footer.newsletter.label'),
+  placeholder: t('footer.newsletter.placeholder'),
+  submit: t('footer.newsletter.submit'),
+  sending: t('footer.newsletter.sending'),
+  success: t('footer.newsletter.success'),
+  error: t('footer.newsletter.error'),
+  invalid: t('footer.newsletter.invalid'),
+};
 
 const columns = [
   {
@@ -65,6 +79,26 @@ const columns = [
         </div>
       ))
     }
+  </div>
+
+  <div class="mx-auto mt-16 max-w-6xl border-t border-rule pt-10">
+    <div class="grid gap-6 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('footer.newsletter.eyebrow')}</p>
+        <h2 class="mt-3 font-display text-2xl leading-tight text-ink lg:text-3xl">{t('footer.newsletter.title')}</h2>
+        <p class="mt-2 max-w-md text-sm leading-6 text-ink-soft">{t('footer.newsletter.body')}</p>
+      </div>
+      <div class="lg:pt-2">
+        {newsletterFormId ? (
+          <NewsletterForm client:idle formId={newsletterFormId} labels={newsletterLabels} />
+        ) : (
+          <p class="text-sm leading-6 text-ink-soft">
+            {t('footer.newsletter.empty')}{' '}
+            <a href="mailto:hello@petalsandpredators.com" class="link text-accent">hello@petalsandpredators.com</a>.
+          </p>
+        )}
+      </div>
+    </div>
   </div>
 
   <div class="mx-auto mt-16 flex max-w-6xl flex-col gap-3 border-t border-rule pt-8 text-xs text-mute sm:flex-row sm:items-center sm:justify-between">
