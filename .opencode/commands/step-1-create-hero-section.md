@@ -139,5 +139,5 @@ Transiciones 0.2s `cubic-bezier(.4,0,.2,1)`. Respeta `prefers-reduced-motion`.
 
 ## Al terminar
 
-1. Marca el paso 1 como `done` en `ROADMAP.md`.
+1. Marca el paso 1 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-2-create-footer`

@@ -55,5 +55,5 @@ El catálogo navegable: grid de productos en `/products`, páginas de categoría
 
 ## Al terminar
 
-1. Marca el paso 5 como `done` en `ROADMAP.md`.
+1. Marca el paso 5 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-6-create-product-detail`

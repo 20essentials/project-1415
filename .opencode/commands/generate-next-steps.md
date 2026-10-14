@@ -95,6 +95,6 @@ description: Step <N> — <Título corto> · Petals & Predators
 
 ## Al terminar
 
-1. Marca el paso <N> como `done` en `ROADMAP.md`.
+1. Marca el paso <N> como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-<N+1>-<slug>` (o `/generate-next-steps`).
 ```

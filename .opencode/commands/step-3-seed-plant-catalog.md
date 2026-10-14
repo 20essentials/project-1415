@@ -87,5 +87,5 @@ Slug/variantId de cada producto — los necesitan steps 5-7. **No se importa en 
 
 ## Al terminar
 
-1. Marca el paso 3 como `done` en `ROADMAP.md`.
+1. Marca el paso 3 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-4-create-home-page`

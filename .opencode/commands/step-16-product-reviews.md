@@ -1,9 +1,9 @@
 ---
-description: Step 14 — Reseñas de producto (Wix Reviews) · Petals & Predators
+description: Step 16 — Reseñas de producto (Wix Reviews) · Petals & Predators
 ---
-# Step 14 — Reseñas de producto (Wix Reviews)
+# Step 16 — Reseñas de producto (Wix Reviews)
 
-> **Siguiente:** `/step-15-gift-cards-landing` (aún no existe → `/generate-next-steps`)
+> **Siguiente:** `/step-17-gift-cards-landing` (aún no existe → `/generate-next-steps`)
 
 ## Objetivo
 
@@ -79,5 +79,5 @@ sección "What growers say" en el home.
 
 ## Al terminar
 
-1. Marca el paso 14 como `done` en `ROADMAP.md`.
-2. Siguiente: `/step-15-gift-cards-landing` (aún no existe → `/generate-next-steps`).
+1. Marca el paso 16 como `✅ done` en `ROADMAP.md`.
+2. Siguiente: `/step-17-gift-cards-landing` (aún no existe → `/generate-next-steps`).

@@ -3,33 +3,35 @@
 Fuente de verdad del **QUÉ** sigue. Los comandos `.opencode/commands/step-N-*.md` son
 la fuente de verdad del **CÓMO** ejecutar cada paso.
 
-Estados: `pending` → `materialized` (ya existe su step-N file) → `done` (ejecutado y verificado).
+Estados: `pending` → `materialized` (ya existe su step-N file) → `✅ done` (ejecutado y verificado).
 
 | # | Paso | Status | Archivo / Notas |
 |---|------|--------|-----------------|
-| 0 | Scaffold + Wix setup (login, proyecto, apps, env) | done | `step-0-scaffold-and-setup.md` |
-| 1 | Design system + header + navbar + hero | done | `step-1-create-hero-section.md` |
-| 2 | Footer completo | done | `step-2-create-footer.md` |
-| 3 | Seed del catálogo (5 plantas, variantes, categorías, imágenes) | done | `step-3-seed-plant-catalog.md` |
-| 4 | Home landing scroll-world con los 6 clips de `public/videos/` | done | `step-4-create-home-page.md` (+ receta en `.opencode/references/higgsfield-landing-prompts.md`) |
-| 5 | Shop + páginas de categoría | done | `step-5-create-shop-page.md` |
-| 6 | Product detail (variantes + add-to-cart) | done | `step-6-create-product-detail.md` |
-| 7 | Cart + checkout nativo Wix + badge en nav | done | `step-7-create-cart-and-checkout.md` |
-| 8 | About + Contact (Wix Forms) | done | `step-8-create-about-and-contact.md` |
-| 9 | SEO + accesibilidad + polish | done | `step-9-seo-and-accessibility.md` |
-| 10 | Member login + account (Wix Members Area) | done | `step-10-member-login-and-account.md` · app Wix Members Area + `@wix/members`; nav "Log in"/"Account" + `/account` (perfil + logout) |
-| 11 | Plant care journal (CMS) | done | `step-11-plant-care-journal.md` · Colección Wix CMS `care-guides` (title, slug, intro, body, plantTag, coverImage) + 4 guías seeded + rutas `/journal` y `/journal/[slug]` (404 si no existe) + link "Journal" en el nav + featured guide en home + sitemap |
-| 12 | Multilingual support (en, es, it) + Wix Translation | done | `step-12-multilingual-support.md` · Integración i18n con Wix Managed Headless. URLs `/`, `/es/*`, `/it/*` servidas por el middleware de Wix Multilingual (mantener `src/pages` plano — no crear carpetas por locale); idioma actual con `i18n.getLanguage()`. 108 claves planas en `src/translations.json` + seeds `es`/`it` en `.wix/multilingual/translations/`; selector de idioma (dropdown) en header (desktop) y menú móvil; nav recortado a 5 links (`site.navPrimary`) para evitar el wrapping; hreflang/canonical/`og:locale` + sitemap por locale; `lang` en login/logout. Textos editables desde dashboard de Wix (Translation) vía `npm run wix translation push` / `npm run wix translation pull` — **push requiere terminal interactivo (TTY)**; mientras tanto los textos ya viajan en el bundle. Ver: [Add multilingual support](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/feature-guides/add-multilingual-support#add-multilingual-support) |
-| 13 | Lookbook estacional | materialized | `step-13-seasonal-lookbook.md` · Landing `/lookbook` con grid editorial (CMS items + fotos), CTA desde home y nav |
-| 14 | Reseñas de producto | materialized | `step-14-product-reviews.md` · Ratings/reviews de Wix Stores en PDP + sección "What growers say" en home |
-| 15 | Gift cards landing | pending | Activar el pack `gift-cards` (hoy en `disabledPacks`): `/gift-cards` + nav link + mount en home |
-| 16 | Newsletter signup | pending | Formulario Wix Forms "Newsletter" en footer (receta wix-manage `references/forms/create-form.md`) + confirmación |
-| 17 | Site search | pending | Overlay de búsqueda de productos (`queryProducts` search) en nav, atclado a `/` |
-| 18 | Workshops (Bookings) | pending | Pack bookings: app + servicios (Care 101, Repotting 101) + `/services` + nav link |
-| 19 | Analytics + consent | pending | Wix Analytics, eventos de compra, banner de consent si aplica |
-| 20 | Performance audit | pending | Lighthouse, formatos de imagen, carga de fuentes, bundle |
-| 21 | Build + release (sitio en vivo) | materialized | `step-21-build-and-release.md` |
-| 22 | Historial de órdenes (miembros) | pending | Feature a futuro. No hay API member-scoped de órdenes de tienda en headless (solo Pricing Plans); requeriría `orders.searchOrders()` con auth elevada (`ECOM.READ_ORDERS`) — riesgo de seguridad, evaluar antes. |
+| 0 | Scaffold + Wix setup (login, proyecto, apps, env) | ✅ done | `step-0-scaffold-and-setup.md` |
+| 1 | Design system + header + navbar + hero | ✅ done | `step-1-create-hero-section.md` |
+| 2 | Footer completo | ✅ done | `step-2-create-footer.md` |
+| 3 | Seed del catálogo (5 plantas, variantes, categorías, imágenes) | ✅ done | `step-3-seed-plant-catalog.md` |
+| 4 | Home landing scroll-world con los 6 clips de `public/videos/` | ✅ done | `step-4-create-home-page.md` (+ receta en `.opencode/references/higgsfield-landing-prompts.md`) |
+| 5 | Shop + páginas de categoría | ✅ done | `step-5-create-shop-page.md` |
+| 6 | Product detail (variantes + add-to-cart) | ✅ done | `step-6-create-product-detail.md` |
+| 7 | Cart + checkout nativo Wix + badge en nav | ✅ done | `step-7-create-cart-and-checkout.md` |
+| 8 | About + Contact (Wix Forms) | ✅ done | `step-8-create-about-and-contact.md` |
+| 9 | SEO + accesibilidad + polish | ✅ done | `step-9-seo-and-accessibility.md` |
+| 10 | Member login + account (Wix Members Area) | ✅ done | `step-10-member-login-and-account.md` · app Wix Members Area + `@wix/members`; nav "Log in"/"Account" + `/account` (perfil + logout) |
+| 11 | Plant care journal (CMS) | ✅ done | `step-11-plant-care-journal.md` · Colección Wix CMS `care-guides` (title, slug, intro, body, plantTag, coverImage) + 4 guías seeded + rutas `/journal` y `/journal/[slug]` (404 si no existe) + link "Journal" en el nav + featured guide en home + sitemap |
+| 12 | Multilingual support (en, es, it) + Wix Translation | ✅ done | `step-12-multilingual-support.md` · Integración i18n con Wix Managed Headless. URLs `/`, `/es/*`, `/it/*` servidas por el middleware de Wix Multilingual (mantener `src/pages` plano — no crear carpetas por locale); idioma actual con `i18n.getLanguage()`. 108 claves planas en `src/translations.json` + seeds `es`/`it` en `.wix/multilingual/translations/`; selector de idioma (dropdown) en header (desktop) y menú móvil; nav recortado a 5 links (`site.navPrimary`) para evitar el wrapping; hreflang/canonical/`og:locale` + sitemap por locale; `lang` en login/logout. Textos editables desde dashboard de Wix (Translation) vía `npm run wix translation push` / `npm run wix translation pull` — **push requiere terminal interactivo (TTY)**; mientras tanto los textos ya viajan en el bundle. Ver: [Add multilingual support](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/feature-guides/add-multilingual-support#add-multilingual-support) |
+| 13 | SEO main pages + robots/sitemap (dashboard Wix) | materialized | `step-13-seo-main-pages.md` · Quita `title`/`description`/`canonical`/OG/`hreflang` hardcodeados del layout (en main pages manda el dashboard), `meta robots` solo si `noindex`, reactiva `robots.txt` de Wix y retira el `sitemap.xml` propio. Verificación **solo en el sitio publicado** |
+| 14 | SEO item pages con `@wix/seo` | materialized | `step-14-seo-item-pages.md` · `<slot name="seo-tags">` + `wixMetadata` desde `WIX_APPS` en `/products/[slug]` y `/category/[slug]` + `<SEO.Tags>` con `loadSEOTagsServiceConfig`; journal (CMS, sin tipo Wix) auto-renderiza title/description + `Article` JSON-LD |
+| 15 | Lookbook estacional | materialized | `step-15-seasonal-lookbook.md` · Landing `/lookbook` con grid editorial (CMS items + fotos), CTA desde home y nav |
+| 16 | Reseñas de producto | materialized | `step-16-product-reviews.md` · Ratings/reviews de Wix Stores en PDP + sección "What growers say" en home |
+| 17 | Gift cards landing | pending | Activar el pack `gift-cards` (hoy en `disabledPacks`): `/gift-cards` + nav link + mount en home |
+| 18 | Newsletter signup | pending | Formulario Wix Forms "Newsletter" en footer (receta wix-manage `references/forms/create-form.md`) + confirmación |
+| 19 | Site search | pending | Overlay de búsqueda de productos (`queryProducts` search) en nav, atclado a `/` |
+| 20 | Workshops (Bookings) | pending | Pack bookings: app + servicios (Care 101, Repotting 101) + `/services` + nav link |
+| 21 | Analytics + consent | pending | Wix Analytics, eventos de compra, banner de consent si aplica |
+| 22 | Performance audit | pending | Lighthouse, formatos de imagen, carga de fuentes, bundle |
+| 23 | Build + release (sitio en vivo) | materialized | `step-23-build-and-release.md` |
+| 24 | Historial de órdenes (miembros) | pending | Feature a futuro. No hay API member-scoped de órdenes de tienda en headless (solo Pricing Plans); requeriría `orders.searchOrders()` con auth elevada (`ECOM.READ_ORDERS`) — riesgo de seguridad, evaluar antes. |
 
 ---
 

@@ -3,7 +3,7 @@ description: Step 12 — Multilingual support (en, es, it) · Petals & Predators
 ---
 # Step 12 — Multilingual support (en, es, it)
 
-> **Siguiente:** `/step-13-seasonal-lookbook`
+> **Siguiente:** `/step-13-seo-main-pages`
 
 ## Objetivo
 
@@ -99,5 +99,5 @@ carpetas en `src/pages`.
 
 ## Al terminar
 
-1. Marca el paso 12 como `done` en `ROADMAP.md`.
-2. Siguiente: `/step-13-seasonal-lookbook`.
+1. Marca el paso 12 como `✅ done` en `ROADMAP.md`.
+2. Siguiente: `/step-13-seo-main-pages`.

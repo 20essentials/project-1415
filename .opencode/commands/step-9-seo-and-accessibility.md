@@ -61,5 +61,5 @@ alt de imágenes, navegación por teclado, contraste y comportamiento responsive
 
 ## Al terminar
 
-1. Marca el paso 9 como `done` en `ROADMAP.md`.
+1. Marca el paso 9 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-10-member-login-and-account`

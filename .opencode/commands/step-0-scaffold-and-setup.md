@@ -62,5 +62,5 @@ autenticada, proyecto scaffolded y aplanado en CWD, dependencias instaladas con
 
 ## Al terminar
 
-1. Marca el paso 0 como `done` en `ROADMAP.md` (nota cualquier desviación).
+1. Marca el paso 0 como `✅ done` en `ROADMAP.md` (nota cualquier desviación).
 2. Siguiente: `/step-1-create-hero-section`

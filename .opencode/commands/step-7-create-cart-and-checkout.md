@@ -54,5 +54,5 @@ navbar, y checkout redirigiendo al checkout alojado de Wix + página de agradeci
 
 ## Al terminar
 
-1. Marca el paso 7 como `done` en `ROADMAP.md`.
+1. Marca el paso 7 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-8-create-about-and-contact`

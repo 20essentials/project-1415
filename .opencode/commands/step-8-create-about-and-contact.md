@@ -65,5 +65,5 @@ formulario de contacto real en Wix Forms y las secciones ancla que promete el fo
 
 ## Al terminar
 
-1. Marca el paso 8 como `done` en `ROADMAP.md`.
+1. Marca el paso 8 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-9-seo-and-accessibility`

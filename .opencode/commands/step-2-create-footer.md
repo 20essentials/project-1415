@@ -49,5 +49,5 @@ columnas de enlaces, tagline, newsletter, redes sociales y fila legal — respon
 
 ## Al terminar
 
-1. Marca el paso 2 como `done` en `ROADMAP.md`.
+1. Marca el paso 2 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-3-seed-plant-catalog`

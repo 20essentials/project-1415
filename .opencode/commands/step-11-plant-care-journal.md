@@ -82,5 +82,5 @@ una guía destacada en el home.
 
 ## Al terminar
 
-1. Marca el paso 11 como `done` en `ROADMAP.md`.
+1. Marca el paso 11 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-12-multilingual-support`.

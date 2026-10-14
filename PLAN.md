@@ -47,7 +47,7 @@ garden-store/
   Wix wiring · Verificación · Al terminar**.
 - Cada paso deja el sitio compilando (`npx @wix/cli@latest build` verde) y termina con
   la línea `> Siguiente: /step-<N+1>-…` (o `/generate-next-steps` si no existe aún).
-- Al terminar: marcar el paso `done` en `ROADMAP.md`.
+- Al terminar: marcar el paso `✅ done` en `ROADMAP.md`.
 
 ## 4. Lote inicial (step-0 … step-10)
 

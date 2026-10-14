@@ -55,5 +55,5 @@ variantes, cantidad y add-to-cart — lista para conectar el carrito en step-7.
 
 ## Al terminar
 
-1. Marca el paso 6 como `done` en `ROADMAP.md`.
+1. Marca el paso 6 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-7-create-cart-and-checkout`

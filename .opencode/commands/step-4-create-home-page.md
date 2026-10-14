@@ -304,6 +304,6 @@ Adaptar `src/components/Header.astro` (ya es una píldora; hoy con copy Arko/esp
 
 ## Al terminar
 
-1. Marca el paso 4 como `done` en `ROADMAP.md`.
+1. Marca el paso 4 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-5-create-shop-page` (pedir tokens del design system si llega con los
    legacy `bg/crema/teja`).

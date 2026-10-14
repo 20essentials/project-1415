@@ -86,7 +86,7 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 ## Flujo de trabajo por comandos
 
 - El sitio se construye por pasos: cada `.opencode/commands/step-N-*.md` es la **fuente de verdad** de qué hacer a continuación. Ejecutar en orden (`/step-0-scaffold-and-setup`, `/step-1-create-hero-section`, …).
-- `ROADMAP.md` (raíz) lleva el estado del backlog: `pending` → `materialized` → `done`. Cada paso se marca `done` al terminar.
+- `ROADMAP.md` (raíz) lleva el estado del backlog: `pending` → `materialized` → `✅ done`. Cada paso se marca `✅ done` al terminar.
 - Cuando no exista el siguiente `step-N`, ejecutar `/generate-next-steps`: materializa los próximos items `pending` del roadmap con la plantilla fija.
 - **Marca:** Petals & Predators — e-commerce en inglés (plantas carnívoras + flores). Design system en `DESIGN.md` (frontmatter = tokens canónicos; body = captura de referencia).
 - **Recetas Wix:** skill `wix-headless` (`C:\Users\amoil\.agents\skills\wix-headless`) y skill `wix-manage` (apps + seeding).

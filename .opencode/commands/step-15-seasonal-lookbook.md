@@ -1,9 +1,9 @@
 ---
-description: Step 13 — Lookbook estacional · Petals & Predators
+description: Step 15 — Lookbook estacional · Petals & Predators
 ---
-# Step 13 — Lookbook estacional
+# Step 15 — Lookbook estacional
 
-> **Siguiente:** `/step-14-product-reviews`
+> **Siguiente:** `/step-16-product-reviews`
 
 ## Objetivo
 
@@ -85,5 +85,5 @@ fotos y productos destacados, más un CTA desde el home y un link en el nav.
 
 ## Al terminar
 
-1. Marca el paso 13 como `done` en `ROADMAP.md`.
-2. Siguiente: `/step-14-product-reviews`.
+1. Marca el paso 15 como `✅ done` en `ROADMAP.md`.
+2. Siguiente: `/step-16-product-reviews`.
