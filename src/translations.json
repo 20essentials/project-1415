@@ -283,5 +283,10 @@
   "lookbook.explore": "Explore the seasons",
   "lookbook.shop-season": "Shop the season",
   "lookbook.empty": "The lookbook is still in the greenhouse. In the meantime,",
-  "lookbook.empty-cta": "browse the plants"
+  "lookbook.empty-cta": "browse the plants",
+
+  "reviews.sectionTitle": "What growers say",
+  "reviews.count": "{{count}} reviews",
+  "reviews.count-one": "{{count}} review",
+  "reviews.ratedOutOf": "Rated {{rating}} out of 5"
 }

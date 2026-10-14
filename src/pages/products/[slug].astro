@@ -2,6 +2,7 @@
 import Layout from '@/layouts/layout.astro';
 import ProductCard from '@/components/product-card.astro';
 import ProductPurchase from '@/components/product-purchase';
+import RatingStars from '@/components/rating-stars.astro';
 import type { PurchaseProduct, VariantStock } from '@/components/product-purchase';
 import { productsV3, inventoryItemsV3 } from '@wix/stores';
 import { WIX_APPS } from '@wix/essentials';
@@ -12,7 +13,8 @@ import { listProductsInCategory } from '@/utils/categories';
 import { renderRicos } from '@/utils/ricos';
 import { resolveWixImageUrl } from '@/utils/wix-image';
 import { toMetaDescription } from '@/utils/seo';
-import { useTranslation, localize } from '@/utils/i18n';
+import { getProductReviews, averageRating } from '@/utils/reviews';
+import { useTranslation, localize, currentLanguage } from '@/utils/i18n';
 
 export const wixMetadata = {
   appDefId: WIX_APPS.checkoutAndOrders.id,
@@ -177,6 +179,17 @@ if (categoryId) {
     .slice(0, 3);
 }
 
+const productReviews = await getProductReviews(product._id ?? '');
+const productRating = averageRating(productReviews);
+const topReviews = productReviews.slice(0, 3);
+const reviewDateFormatter = new Intl.DateTimeFormat(currentLanguage(), {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+const formatReviewDate = (date: Date | null): string =>
+  date ? reviewDateFormatter.format(date) : '';
+
 const purchaseLabels = {
   stockLeft: t('product.stock-left'),
   inStock: t('product.in-stock'),
@@ -268,6 +281,13 @@ const purchaseLabels = {
               <p class="text-xs font-medium tracking-widest text-mute uppercase">{t('product.ships-48h')}</p>
             </div>
             <h1 class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">{product.name}</h1>
+            {
+              productReviews.length > 0 && (
+                <div class="mt-3">
+                  <RatingStars rating={productRating} count={productReviews.length} />
+                </div>
+              )
+            }
           </div>
 
           <ProductPurchase client:load product={purchaseProduct} inventoryByVariant={inventoryByVariant} labels={purchaseLabels} cartHref={localize('/cart')} />
@@ -286,6 +306,39 @@ const purchaseLabels = {
       </div>
     </div>
   </section>
+
+  {
+    topReviews.length > 0 && (
+      <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
+        <div class="mx-auto max-w-6xl">
+          <h2 class="font-display text-2xl text-ink lg:text-3xl">{t('reviews.sectionTitle')}</h2>
+          <ul class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {topReviews.map((review) => (
+              <li class="flex flex-col gap-4 rounded-md border border-rule bg-paper-warm p-6">
+                <RatingStars rating={review.content.rating} size="sm" />
+                <blockquote class="flex flex-col gap-2">
+                  {review.content.title && (
+                    <p class="font-display text-lg leading-snug text-ink">{review.content.title}</p>
+                  )}
+                  {review.content.body && (
+                    <p class="text-sm leading-6 text-ink-soft">{review.content.body}</p>
+                  )}
+                </blockquote>
+                <footer class="mt-auto flex items-center justify-between gap-3 text-xs">
+                  <span class="font-medium text-ink-soft">{review.author.authorName ?? ''}</span>
+                  {review.createdDate && (
+                    <time datetime={review.createdDate.toISOString()} class="text-mute">
+                      {formatReviewDate(review.createdDate)}
+                    </time>
+                  )}
+                </footer>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
 
   {
     related.length > 0 && (

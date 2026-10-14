@@ -4,8 +4,10 @@ import ScrollWorld from '@/components/scroll-world.astro';
 import { productsV3 } from '@wix/stores';
 import { listStoreCategories } from '@/utils/categories';
 import ProductCard from '@/components/product-card.astro';
+import RatingStars from '@/components/rating-stars.astro';
 import { site } from '@/data/site';
 import { queryGuides } from '@/utils/journal';
+import { getFeaturedReviews } from '@/utils/reviews';
 import { useTranslation, localize } from '@/utils/i18n';
 
 const { t } = useTranslation();
@@ -43,6 +45,8 @@ const categories = await listStoreCategories();
 
 const guides = await queryGuides();
 const featuredGuide = guides[0] ?? null;
+
+const featuredReviews = await getFeaturedReviews();
 
 let products: {
   _id?: string;
@@ -245,6 +249,29 @@ try {
       </a>
     </div>
   </section>
+
+  {
+    featuredReviews.length > 0 && (
+      <section class="relative z-2 bg-paper px-4 pb-24 text-ink sm:px-8 lg:px-20 lg:pb-32">
+        <div class="mx-auto max-w-6xl">
+          <h2 class="font-display text-3xl leading-tight sm:text-4xl">{t('reviews.sectionTitle')}</h2>
+          <ul class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {featuredReviews.map((review) => (
+              <li class="flex flex-col gap-4 rounded-md border border-rule bg-paper-warm p-6">
+                <RatingStars rating={review.content.rating} size="sm" />
+                <blockquote class="font-display text-base leading-6 text-ink">
+                  {review.content.body}
+                </blockquote>
+                <footer class="mt-auto text-xs font-medium text-ink-soft">
+                  {review.author.authorName ?? ''}
+                </footer>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
 
   <!-- home:gift-cards -->
 </Layout>
