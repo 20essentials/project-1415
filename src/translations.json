@@ -25,6 +25,16 @@
   "header.tagline": "Greenhouse-grown · shipped alive worldwide",
   "header.language": "Language",
 
+  "search.open": "Search",
+  "search.title": "Search products",
+  "search.placeholder": "Search plants and flowers…",
+  "search.close": "Close search",
+  "search.hint": "Type at least 2 characters to search.",
+  "search.loading": "Searching…",
+  "search.results": "{{count}} results",
+  "search.noResults": "No products found.",
+  "search.error": "Search is unavailable right now. Please try again.",
+
   "common.shop-the-collection": "Shop the collection",
 
   "footer.about": "Carnivorous specimens, show-stopping blooms, and care-tested kits — greenhouse-grown and shipped alive to your door.",

@@ -2,6 +2,7 @@
 import Logo from './logo.astro';
 import CartBadge from './cart-badge.tsx';
 import LanguageSelector from './language-selector.astro';
+import SiteSearch from './site-search.astro';
 import { site } from '../data/site';
 import { useTranslation, localize } from '@/utils/i18n';
 const { nav, navPrimary, links } = site;
@@ -56,6 +57,7 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
     <div class="flex items-center gap-6 lg:gap-5">
       <!-- nav:actions -->
       <LanguageSelector class="hidden xl:block" />
+      <SiteSearch />
       <CartBadge
         client:only="react"
         href={localize('/cart')}
@@ -69,7 +71,7 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
       </a>
       <a
         href={localize(links.shop)}
-        class="inline-flex h-9 items-center justify-center rounded-full bg-accent px-4 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream"
+        class="hidden h-9 items-center justify-center rounded-full bg-accent px-4 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream sm:inline-flex"
       >
         <span class="text-trim">{t('common.shop-the-collection')}</span>
       </a>
