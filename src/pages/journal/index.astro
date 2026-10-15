@@ -1,7 +1,7 @@
 ---
-import Layout from '@/layouts/layout.astro';
-import { queryGuides } from '@/utils/journal';
-import { useTranslation, localize, currentLanguage } from '@/utils/i18n';
+import Layout from '@/app/layout.astro';
+import { queryGuides } from '@/features/journal';
+import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
 
 const { t } = useTranslation();
 

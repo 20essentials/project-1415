@@ -1,0 +1,36 @@
+---
+import { currentLanguage, localize, useTranslation } from '@/shared/i18n';
+import type { Workshop } from './bookings';
+
+interface Props {
+  workshop: Workshop;
+}
+
+const { workshop } = Astro.props;
+const { t } = useTranslation();
+
+const price = workshop.price
+  ? new Intl.NumberFormat(currentLanguage(), {
+      style: 'currency',
+      currency: workshop.price.currency,
+    }).format(Number(workshop.price.amount))
+  : null;
+const duration = workshop.durationMinutes
+  ? t('services.minutes', { minutes: workshop.durationMinutes })
+  : null;
+const meta = [duration, price].filter(Boolean).join(' · ');
+---
+
+<li>
+  <a href={localize(`/services/${workshop.slug}`)} class="group block">
+    <div class="relative flex aspect-4/5 items-center justify-center overflow-hidden rounded-lg bg-paper-warm px-6 ring-1 ring-rule">
+      <div class="text-center">
+        <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('services.eyebrow')}</p>
+        <p class="mt-3 font-display text-2xl leading-tight text-ink">{workshop.name}</p>
+      </div>
+    </div>
+    <h3 class="mt-4 font-display text-base text-ink lg:text-lg">{workshop.name}</h3>
+    {workshop.tagLine && <p class="mt-1 text-sm leading-6 text-ink-soft">{workshop.tagLine}</p>}
+    {meta && <p class="mt-1 text-sm font-medium text-ink-soft">{meta}</p>}
+  </a>
+</li>

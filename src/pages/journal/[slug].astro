@@ -1,9 +1,9 @@
 ---
-import Layout from '@/layouts/layout.astro';
-import { getGuideBySlug, queryGuides, type CareGuide } from '@/utils/journal';
-import { renderRicos } from '@/utils/ricos';
-import { useTranslation, localize, currentLanguage } from '@/utils/i18n';
-import { ogImage } from '@/data/imagenes';
+import Layout from '@/app/layout.astro';
+import { getGuideBySlug, queryGuides, type CareGuide } from '@/features/journal';
+import { renderRicos } from '@/shared/ricos';
+import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
+import { ogImage } from '@/shared/og-image';
 
 const { t } = useTranslation();
 

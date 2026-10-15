@@ -1,0 +1,336 @@
+---
+import { useTranslation, localize } from '@/shared/i18n';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+const { t } = useTranslation();
+---
+
+<button
+  type="button"
+  class:list={[
+    'search-trigger inline-flex size-9 shrink-0 items-center justify-center rounded-full text-ink transition-colors duration-700 ease-fluid hover:bg-ink/10',
+    className,
+  ]}
+  aria-label={t('search.open')}
+  aria-haspopup="dialog"
+  data-search-open
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-4" aria-hidden="true">
+    <circle cx="11" cy="11" r="7"></circle>
+    <path d="m20 20-3.2-3.2" stroke-linecap="round"></path>
+  </svg>
+</button>
+
+<dialog
+  id="site-search"
+  class="search-dialog text-ink"
+  aria-labelledby="site-search-title"
+  data-search-dialog
+  data-product-base={localize('/products')}
+  data-msg-hint={t('search.hint')}
+  data-msg-loading={t('search.loading')}
+  data-msg-no-results={t('search.noResults')}
+  data-msg-error={t('search.error')}
+  data-msg-results={t('search.results')}
+>
+  <div class="w-full rounded-xl bg-paper/95 shadow-2xl shadow-paper/60 ring-1 ring-rule backdrop-blur-xl">
+    <h2 id="site-search-title" class="sr-only">{t('search.title')}</h2>
+
+    <form class="flex items-center gap-3 border-b border-rule px-4" role="search" aria-label={t('search.title')} data-search-form>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-4 shrink-0 text-mute" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m20 20-3.2-3.2" stroke-linecap="round"></path>
+      </svg>
+      <input
+        id="site-search-input"
+        type="search"
+        class="h-14 w-full min-w-0 bg-transparent text-base text-ink placeholder:text-mute"
+        placeholder={t('search.placeholder')}
+        aria-label={t('search.placeholder')}
+        autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        data-search-input
+      />
+      <button
+        type="button"
+        class="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-mute transition-colors duration-500 ease-fluid hover:bg-ink/10 hover:text-ink"
+        aria-label={t('search.close')}
+        data-search-close
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-4" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" stroke-linecap="round"></path>
+        </svg>
+      </button>
+    </form>
+
+    <p class="px-4 py-3 text-sm text-mute" role="status" aria-live="polite" data-search-message>
+      {t('search.hint')}
+    </p>
+
+    <ul class="max-h-80 overflow-y-auto overscroll-contain p-1.5" aria-label={t('search.title')} data-search-results hidden></ul>
+  </div>
+
+  <template data-search-result-template>
+    <li>
+      <a class="group flex items-center gap-3 rounded-md p-2 transition-colors duration-300 ease-fluid hover:bg-ink/5" data-result-link>
+        <span class="relative size-12 shrink-0 overflow-hidden rounded-sm bg-paper-warm ring-1 ring-rule" data-result-thumb>
+          <img class="size-full object-cover" width="48" height="48" loading="lazy" alt="" data-result-image />
+        </span>
+        <span class="flex min-w-0 flex-1 flex-col">
+          <span class="truncate text-sm text-ink" data-result-name></span>
+          <span class="mt-0.5 flex items-center gap-2 text-xs">
+            <span class="truncate text-mute" data-result-category></span>
+            <span class="text-rule" aria-hidden="true" data-result-dot>·</span>
+            <span class="shrink-0 text-ink-soft" data-result-price></span>
+          </span>
+        </span>
+      </a>
+    </li>
+  </template>
+</dialog>
+
+<style>
+  .search-dialog {
+    position: fixed;
+    inset: 0 0 auto;
+    margin: 5.5rem auto auto;
+    width: min(92vw, 40rem);
+    max-height: calc(100dvh - 8rem);
+    border: 0;
+    padding: 0;
+    background: transparent;
+    overflow: visible;
+    opacity: 0;
+    translate: 0 -0.75rem;
+    transition:
+      opacity 500ms var(--ease-fluid),
+      translate 500ms var(--ease-fluid),
+      display 500ms allow-discrete,
+      overlay 500ms allow-discrete;
+  }
+
+  .search-dialog[open] {
+    opacity: 1;
+    translate: 0;
+  }
+
+  @starting-style {
+    .search-dialog[open] {
+      opacity: 0;
+      translate: 0 -0.75rem;
+    }
+  }
+
+  .search-dialog::backdrop {
+    background-color: color-mix(in oklab, var(--color-paper) 72%, transparent);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    transition:
+      opacity 500ms var(--ease-fluid),
+      display 500ms allow-discrete,
+      overlay 500ms allow-discrete;
+  }
+
+  .search-dialog[open]::backdrop {
+    opacity: 1;
+  }
+
+  @starting-style {
+    .search-dialog[open]::backdrop {
+      opacity: 0;
+    }
+  }
+
+  .search-dialog input[type='search']::-webkit-search-cancel-button,
+  .search-dialog input[type='search']::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .search-dialog,
+    .search-dialog::backdrop {
+      transition-duration: 1ms !important;
+    }
+  }
+</style>
+
+<script>
+  import { productsV3 } from '@wix/stores';
+  import { resolveWixImageUrl } from '@/shared/wix-image';
+
+  type SearchResponse = Awaited<ReturnType<typeof productsV3.searchProducts>>;
+  type SearchProduct = NonNullable<SearchResponse['products']>[number];
+
+  const MIN_LENGTH = 2;
+  const DEBOUNCE_MS = 200;
+  const LIMIT = 6;
+
+  const dialog = document.getElementById('site-search') as HTMLDialogElement | null;
+  if (dialog) {
+    const trigger = document.querySelector<HTMLButtonElement>('[data-search-open]');
+    const form = dialog.querySelector<HTMLFormElement>('[data-search-form]');
+    const input = dialog.querySelector<HTMLInputElement>('[data-search-input]');
+    const closeButton = dialog.querySelector<HTMLButtonElement>('[data-search-close]');
+    const message = dialog.querySelector<HTMLElement>('[data-search-message]');
+    const list = dialog.querySelector<HTMLUListElement>('[data-search-results]');
+    const template = dialog.querySelector<HTMLTemplateElement>('[data-search-result-template]');
+
+    const productBase = dialog.dataset.productBase ?? '/products';
+    const messageText = {
+      hint: dialog.dataset.msgHint ?? '',
+      loading: dialog.dataset.msgLoading ?? '',
+      noResults: dialog.dataset.msgNoResults ?? '',
+      error: dialog.dataset.msgError ?? '',
+      results: dialog.dataset.msgResults ?? '{{count}}',
+    };
+
+    let debounceId = 0;
+    let requestId = 0;
+
+    const showMessage = (text: string) => {
+      if (!message || !list) return;
+      message.textContent = text;
+      message.hidden = false;
+      list.hidden = true;
+      list.replaceChildren();
+    };
+
+    const showResults = (items: SearchProduct[]) => {
+      if (!message || !list || !template) return;
+      list.replaceChildren();
+
+      if (items.length === 0) {
+        showMessage(messageText.noResults);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      for (const product of items) {
+        const row = template.content.firstElementChild?.cloneNode(true) as HTMLElement | null;
+        if (!row) continue;
+
+        const link = row.querySelector<HTMLAnchorElement>('[data-result-link]');
+        if (link && product.slug) link.href = `${productBase}/${product.slug}`;
+
+        const image = row.querySelector<HTMLImageElement>('[data-result-image]');
+        const src = resolveWixImageUrl(
+          product.media?.main?.image ?? product.media?.main?.url,
+          128,
+          128,
+        );
+        if (image) {
+          if (src) {
+            image.src = src;
+            image.alt = product.media?.main?.altText ?? '';
+          } else {
+            image.remove();
+          }
+        }
+
+        const name = row.querySelector<HTMLElement>('[data-result-name]');
+        if (name) name.textContent = product.name ?? '';
+
+        const breadcrumbs = product.breadcrumbsInfo?.breadcrumbs;
+        const category = breadcrumbs?.[breadcrumbs.length - 1]?.categoryName;
+        const categoryEl = row.querySelector<HTMLElement>('[data-result-category]');
+        if (categoryEl) {
+          if (category) {
+            categoryEl.textContent = category;
+          } else {
+            categoryEl.remove();
+            row.querySelector('[data-result-dot]')?.remove();
+          }
+        }
+
+        const price = row.querySelector<HTMLElement>('[data-result-price]');
+        const amount = product.actualPriceRange?.minValue?.formattedAmount;
+        if (price) {
+          if (amount) {
+            price.textContent = amount;
+          } else {
+            price.remove();
+          }
+        }
+
+        fragment.append(row);
+      }
+
+      list.append(fragment);
+      list.hidden = false;
+      message.textContent = messageText.results.replace('{{count}}', String(items.length));
+    };
+
+    const search = async (term: string) => {
+      const current = ++requestId;
+      showMessage(messageText.loading);
+      try {
+        const { products } = await productsV3.searchProducts(
+          {
+            search: { expression: term, fields: ['name'], fuzzy: true },
+            cursorPaging: { limit: LIMIT },
+          },
+          { fields: ['CURRENCY', 'BREADCRUMBS_INFO'] },
+        );
+        if (current !== requestId) return;
+        showResults(products ?? []);
+      } catch (error) {
+        console.error('[site-search] search failed:', error);
+        if (current !== requestId) return;
+        showMessage(messageText.error);
+      }
+    };
+
+    const open = () => {
+      if (typeof dialog.showModal === 'function') {
+        if (!dialog.open) dialog.showModal();
+      } else {
+        dialog.setAttribute('open', '');
+      }
+      input?.focus();
+    };
+
+    trigger?.addEventListener('click', open);
+    closeButton?.addEventListener('click', () => dialog.close());
+
+    form?.addEventListener('submit', (event) => event.preventDefault());
+
+    input?.addEventListener('input', () => {
+      const term = input.value.trim();
+      window.clearTimeout(debounceId);
+      if (term.length < MIN_LENGTH) {
+        requestId++;
+        showMessage(messageText.hint);
+        return;
+      }
+      debounceId = window.setTimeout(() => void search(term), DEBOUNCE_MS);
+    });
+
+    // Cierra al pulsar fuera del panel: el backdrop es el propio <dialog>, así
+    // que el receptor del click es el mismo elemento cuando cae fuera.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    // Escape sobre un <input type="search"> lo consume el control (limpiar),
+    // así que el cierre nativo del <dialog> no llega: lo forzamos aquí.
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && dialog.open) dialog.close();
+    });
+
+    dialog.addEventListener('close', () => {
+      window.clearTimeout(debounceId);
+      requestId++;
+    });
+
+    // El <dialog> se promueve a la capa superior, pero lo sacamos del header
+    // (con backdrop-filter) para que ningún contenedor lo recorte.
+    if (dialog.parentElement !== document.body) document.body.append(dialog);
+  }
+</script>

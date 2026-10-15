@@ -6,7 +6,7 @@ import {
   isLocalDate,
   listWorkshopSlots,
   siteToday,
-} from '@/utils/bookings';
+} from '@/features/workshops';
 
 const MAX_DAYS_AHEAD = 60;
 

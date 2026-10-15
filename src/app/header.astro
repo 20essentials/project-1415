@@ -1,0 +1,301 @@
+---
+import Logo from './logo.astro';
+import { CartBadge } from '@/features/cart';
+import LanguageSelector from './language-selector.astro';
+import { SiteSearch } from '@/features/site-search';
+import { site } from '@/shared/site';
+import { useTranslation, localize } from '@/shared/i18n';
+const { nav, navPrimary, links } = site;
+const { t } = useTranslation();
+
+interface Props {
+  loggedIn?: boolean;
+}
+
+const { loggedIn = false } = Astro.props;
+const accountHref = loggedIn ? localize('/account') : localize(`/api/auth/login?returnToUrl=${localize('/account')}`);
+const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
+---
+
+<a
+  href="#contenido"
+  class="btn btn-primary btn-sm fixed top-4 left-4 z-60 -translate-y-24 focus-visible:translate-y-0"
+>
+  <span>{t('header.skip')}</span>
+</a>
+
+<header
+  class="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-6 lg:justify-start lg:px-8 xl:px-20"
+>
+  <div
+    class="pointer-events-auto flex w-max items-center gap-6 rounded-full bg-paper/60 p-2 pl-6 ring-1 ring-rule backdrop-blur-xl lg:gap-5"
+  >
+    <a href="/" class="flex h-9 items-center rounded-full text-ink" aria-label={t('header.logo')}>
+      <Logo class="text-sm" />
+    </a>
+
+    <!-- nav:links -->
+    <nav aria-label={t('header.primary')} class="relative hidden xl:block">
+      <span aria-hidden="true" class="nav-indicator absolute top-0 left-0 h-9 rounded-full bg-ink/10"></span>
+      <ul class="relative flex items-center text-sm">
+        {
+          navPrimary.map((item) => (
+            <li>
+              <a
+                href={localize(item.href)}
+                data-nav-link
+                class="flex h-9 items-center rounded-full px-3 text-ink-soft transition-colors duration-700 ease-fluid hover:text-ink aria-[current=true]:text-ink"
+              >
+                <span class="text-trim">{t(item.label)}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-6 lg:gap-5">
+      <!-- nav:actions -->
+      <LanguageSelector class="hidden xl:block" />
+      <SiteSearch />
+      <CartBadge
+        client:only="react"
+        href={localize('/cart')}
+        labels={{ empty: t('cart.badge'), withCount: t('cart.badge-count') }}
+      />
+      <a
+        href={accountHref}
+        class="hidden h-9 items-center rounded-full px-3 text-sm text-ink-soft transition-colors duration-700 ease-fluid hover:text-ink xl:inline-flex"
+      >
+        <span class="text-trim">{accountLabel}</span>
+      </a>
+      <a
+        href={localize(links.shop)}
+        class="hidden h-9 items-center justify-center rounded-full bg-accent px-4 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream sm:inline-flex"
+      >
+        <span class="text-trim">{t('common.shop-the-collection')}</span>
+      </a>
+      <button
+        type="button"
+        class="menu-toggle relative size-9 rounded-full text-ink transition-colors duration-700 ease-fluid hover:bg-ink/10 xl:hidden"
+        aria-expanded="false"
+        aria-controls="menu"
+        aria-label={t('header.open-menu')}
+        data-open-label={t('header.open-menu')}
+        data-close-label={t('header.close-menu')}
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div
+  id="menu"
+  class="menu invisible fixed inset-0 z-40 flex flex-col justify-between bg-paper/80 px-4 pt-32 pb-12 opacity-0 backdrop-blur-3xl transition-all duration-700 ease-fluid xl:hidden"
+  inert
+>
+  <nav aria-label={t('header.mobile-menu')}>
+    <ul class="flex flex-col items-center gap-6 text-center">
+      {
+        nav.map((item, i) => (
+          <li class="menu-item" style={`--i:${i}`}>
+            <a href={localize(item.href)} data-menu-link class="font-display text-4xl text-ink">
+              {t(item.label)}
+            </a>
+          </li>
+        ))
+      }
+      <li class="menu-item pt-6" style={`--i:${nav.length}`}>
+        <a
+          href={localize(links.shop)}
+          class="inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 font-medium text-paper"
+        >
+          <span class="text-trim">{t('common.shop-the-collection')}</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="menu-item flex flex-col items-center gap-2 text-sm text-ink-soft" style={`--i:${nav.length + 1}`}>
+    <LanguageSelector />
+    <a href={accountHref} class="link">{accountLabel}</a>
+    <a href={localize('/contact')} class="link">{t('header.contact')}</a>
+    <p>{t('header.tagline')}</p>
+  </div>
+</div>
+
+<style>
+  .menu-toggle span {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    width: 16px;
+    height: 1.5px;
+    margin-top: -0.75px;
+    border-radius: 9999px;
+    background-color: currentColor;
+    transition: transform 700ms var(--ease-fluid);
+  }
+
+  .menu-toggle span:nth-child(1) {
+    transform: translateY(-3px);
+  }
+
+  .menu-toggle span:nth-child(2) {
+    transform: translateY(3px);
+  }
+
+  .menu-toggle[aria-expanded='true'] span:nth-child(1) {
+    transform: translateY(0) rotate(45deg);
+  }
+
+  .menu-toggle[aria-expanded='true'] span:nth-child(2) {
+    transform: translateY(0) rotate(-45deg);
+  }
+
+  .menu[data-open] {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .menu-item {
+    opacity: 0;
+    transform: translateY(3rem);
+    transition:
+      opacity 700ms var(--ease-fluid),
+      transform 700ms var(--ease-fluid);
+  }
+
+  .menu[data-open] .menu-item {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(100ms + var(--i, 0) * 50ms);
+  }
+
+  /* Píldora que se desliza hasta la sección activa. */
+  .nav-indicator {
+    width: var(--w, 0);
+    translate: var(--x, 0) 0;
+    opacity: 0;
+    transition:
+      translate 700ms var(--ease-fluid),
+      width 700ms var(--ease-fluid),
+      opacity 700ms var(--ease-fluid);
+  }
+
+  .nav-indicator[data-visible] {
+    opacity: 1;
+  }
+
+  .nav-indicator[data-instant] {
+    transition: opacity 700ms var(--ease-fluid);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-item,
+    .nav-indicator {
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  type SwWindow = Window & { __swGoTo?: (id: string) => boolean };
+
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const menu = document.getElementById('menu');
+  const main = document.getElementById('contenido');
+  const footer = document.querySelector('footer');
+
+  const setOpen = (open: boolean) => {
+    if (!toggle || !menu) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? (toggle.dataset.closeLabel ?? 'Close menu') : (toggle.dataset.openLabel ?? 'Open menu'));
+    menu.toggleAttribute('data-open', open);
+    menu.inert = !open;
+    if (main) main.inert = open;
+    if (footer) footer.inert = open;
+    if (open) {
+      menu.querySelector<HTMLAnchorElement>('a')?.focus({ preventScroll: true });
+    }
+  };
+
+  toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+
+  // Stops of the scroll-world engine have no DOM element, so links to them are
+  // handed to the engine (exposed as window.__swGoTo). Only the home page owns
+  // those stops: elsewhere the browser follows the link to /#id and the engine
+  // picks up the hash on load.
+  const homePaths = new Set(['/', '/es', '/es/', '/it', '/it/']);
+  document.addEventListener('click', (event) => {
+    const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href]');
+    if (!link) return;
+    const url = new URL(link.href, window.location.href);
+    const id = url.hash.slice(1);
+    if (!id || !homePaths.has(url.pathname) || !homePaths.has(window.location.pathname)) return;
+    if ((window as SwWindow).__swGoTo?.(id)) {
+      event.preventDefault();
+      setOpen(false);
+    }
+  });
+
+  menu?.querySelectorAll<HTMLAnchorElement>('[data-menu-link]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const target = document.querySelector<HTMLElement>(link.hash);
+      if (!target) return;
+      event.preventDefault();
+      setOpen(false);
+      target.scrollIntoView();
+    });
+  });
+
+  window.matchMedia('(min-width: 1280px)').addEventListener('change', (event) => {
+    if (event.matches) setOpen(false);
+  });
+
+  // Indica en la navegación la sección que se está viendo.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
+  const indicator = document.querySelector<HTMLElement>('.nav-indicator');
+
+  const moveIndicator = () => {
+    if (!indicator) return;
+    const active = links.find((link) => link.getAttribute('aria-current') === 'true');
+    if (!active) {
+      indicator.removeAttribute('data-visible');
+      return;
+    }
+    // Si estaba oculta, aparece en su sitio en vez de deslizarse desde el anterior.
+    indicator.toggleAttribute('data-instant', !indicator.hasAttribute('data-visible'));
+    indicator.style.setProperty('--x', `${active.offsetLeft}px`);
+    indicator.style.setProperty('--w', `${active.offsetWidth}px`);
+    void indicator.offsetWidth;
+    indicator.removeAttribute('data-instant');
+    indicator.setAttribute('data-visible', '');
+  };
+
+  const spy = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const href = (entry.target as HTMLElement).dataset.spy;
+        links.forEach((link) => link.setAttribute('aria-current', String(link.getAttribute('href') === href)));
+        moveIndicator();
+      }
+    },
+    { rootMargin: '-50% 0px -50% 0px' },
+  );
+  document.querySelectorAll('[data-spy]').forEach((el) => spy.observe(el));
+
+  const list = links[0]?.closest('ul');
+  if (list) new ResizeObserver(moveIndicator).observe(list);
+</script>

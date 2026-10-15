@@ -1,9 +1,9 @@
 ---
-import Layout from '@/layouts/layout.astro';
-import GiftCardPurchase from '@/components/gift-card-purchase.tsx';
-import { getGiftCardProduct } from '@/utils/gift-cards';
-import { resolveWixImageUrl } from '@/utils/wix-image';
-import { useTranslation, localize } from '@/utils/i18n';
+import Layout from '@/app/layout.astro';
+import { GiftCardPurchase } from '@/features/gift-cards';
+import { getGiftCardProduct } from '@/features/gift-cards';
+import { resolveWixImageUrl } from '@/shared/wix-image';
+import { useTranslation, localize } from '@/shared/i18n';
 
 const { t } = useTranslation();
 

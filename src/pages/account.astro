@@ -1,8 +1,8 @@
 ---
-import Layout from '@/layouts/layout.astro';
+import Layout from '@/app/layout.astro';
 import { members } from '@wix/members';
-import { resolveMemberAvatarUrl } from '@/utils/member-avatar';
-import { localize, currentLanguage, useTranslation } from '@/utils/i18n';
+import { resolveMemberAvatarUrl } from '@/features/account';
+import { localize, currentLanguage, useTranslation } from '@/shared/i18n';
 
 const { t } = useTranslation();
 

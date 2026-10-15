@@ -41,6 +41,12 @@ clave que filtre los items del roadmap (p.ej. `/generate-next-steps journal`).
   la marca; solo pregunta si hay un bloqueo real (p.ej. credito/API ausente).
 - Mantener la convención exacta: frontmatter `description`, secciones, contexto
   de marca, y la línea final `> Siguiente:`.
+- **Screaming Architecture (obligatoria):** todo código nuevo vive en
+  `src/features/<capacidad>/` (con `index.ts` como API pública), `src/shared/`
+  para infra cross-cutting o `src/app/` para el chrome. Prohibido crear archivos
+  en `src/components/`, `src/utils/` o `src/data/` (deprecados). Al redactar un
+  step, listar archivos dentro de `src/features/<feature>/`, no en carpetas por
+  tecnología; y los tests en `tests/features/<feature>/`. Reglas completas en `AGENTS.md`.
 
 ---
 
@@ -65,8 +71,8 @@ description: Step <N> — <Título corto> · Petals & Predators
   `src/styles/global.css`.
 - **Recetas Wix:** SKILL_ROOT = `C:\Users\amoil\.agents\skills\wix-headless` ·
   upstream `C:\Users\amoil\.agents\skills\wix-manage`.
-- **Estado (inspeccionar antes de empezar):** `src/pages/`, `src/components/`,
-  `.opencode/commands/`, `ROADMAP.md`.
+- **Estado (inspeccionar antes de empezar):** `src/features/`, `src/shared/`,
+  `src/app/`, `src/pages/`, `.opencode/commands/`, `ROADMAP.md`.
 
 ## Functionality
 

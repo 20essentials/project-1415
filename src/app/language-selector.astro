@@ -1,0 +1,102 @@
+---
+import { LOCALES, localeUrl, currentLanguage, useTranslation } from '@/shared/i18n';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+const { t } = useTranslation();
+const pathname = Astro.url.pathname;
+const current = currentLanguage();
+
+const names: Record<string, string> = { en: 'English', es: 'Español', it: 'Italiano' };
+const codes: Record<string, string> = { en: 'EN', es: 'ES', it: 'IT' };
+---
+
+<details class:list={['lang-selector relative', className]}>
+  <summary
+    class="group flex h-9 cursor-pointer list-none items-center gap-1.5 rounded-full border border-transparent px-3 text-sm text-ink-soft transition-all duration-500 ease-fluid hover:border-rule/60 hover:bg-ink/5 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    aria-label={`${t('header.language')}: ${names[current]}`}
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-4" aria-hidden="true">
+      <circle cx="12" cy="12" r="9"></circle>
+      <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path>
+    </svg>
+    <span class="text-trim" aria-hidden="true">{codes[current]}</span>
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      class="lang-chevron size-3 transition-transform duration-500 ease-fluid"
+      aria-hidden="true"
+    >
+      <path d="m4 6 4 4 4-4"></path>
+    </svg>
+  </summary>
+
+  <ul
+    class="lang-menu invisible absolute top-[calc(100%+0.5rem)] right-0 z-50 min-w-40 translate-y-1 scale-95 rounded-md border border-rule/80 bg-paper/95 p-1 opacity-0 shadow-lg shadow-paper/40 ring-1 ring-paper-warm/40 backdrop-blur-xl transition-all duration-500 ease-fluid will-change-transform"
+  >
+    {
+      LOCALES.map((locale) => (
+        <li>
+          <a
+            href={localeUrl(pathname, locale)}
+            hreflang={locale}
+            lang={locale}
+            aria-current={locale === current ? 'true' : undefined}
+            class="group flex items-center justify-between rounded-sm px-3 py-2 text-sm text-ink-soft transition-all duration-300 ease-fluid hover:bg-ink/5 hover:text-ink focus-visible:bg-ink/5 focus-visible:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-[current=true]:bg-accent/10 aria-[current=true]:text-ink aria-[current=true]:ring-1 aria-[current=true]:ring-accent/30"
+          >
+            <span>{names[locale]}</span>
+            <span class="text-xs text-mute transition-colors duration-300 ease-fluid group-hover:text-ink-soft group-aria-[current=true]:text-ink/80">{codes[locale]}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</details>
+
+<style>
+  .lang-selector summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .lang-selector[open] .lang-chevron {
+    transform: rotate(180deg);
+  }
+
+  .lang-selector[open] .lang-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0) scale(100%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lang-selector summary,
+    .lang-selector a,
+    .lang-selector span,
+    .lang-menu,
+    .lang-chevron {
+      transition-duration: 1ms !important;
+    }
+  }
+</style>
+
+<script>
+  const close = (selector: string) => {
+    document.querySelectorAll<HTMLDetailsElement>(selector).forEach((el) => el.removeAttribute('open'));
+  };
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as Element | null;
+    document.querySelectorAll<HTMLDetailsElement>('.lang-selector[open]').forEach((el) => {
+      if (!target?.closest('.lang-selector')) el.removeAttribute('open');
+    });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') close('.lang-selector[open]');
+  });
+</script>

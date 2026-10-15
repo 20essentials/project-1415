@@ -5,6 +5,8 @@ la fuente de verdad del **CÓMO** ejecutar cada paso.
 
 Estados: `pending` → `materialized` (ya existe su step-N file) → `✅ done` (ejecutado y verificado).
 
+**Arquitectura (desde step-24 en adelante):** todo código nuevo sigue Screaming Architecture — `src/features/<capacidad>/` (con `index.ts` como API pública), `src/shared/` para infra cross-cutting y `src/app/` para el chrome. Ver reglas en `AGENTS.md`. Los steps 0–23 preceden la migración; sus rutas en los `.md` son historial y no se reescriben.
+
 | # | Paso | Status | Archivo / Notas |
 |---|------|--------|-----------------|
 | 0 | Scaffold + Wix setup (login, proyecto, apps, env) | ✅ done | `step-0-scaffold-and-setup.md` |

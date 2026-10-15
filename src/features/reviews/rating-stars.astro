@@ -1,0 +1,55 @@
+---
+import { useTranslation } from '@/shared/i18n';
+
+interface Props {
+  rating: number;
+  count?: number;
+  size?: 'sm' | 'md';
+  class?: string;
+}
+
+const { rating, count, size = 'md', class: className } = Astro.props;
+const { t } = useTranslation();
+
+const clamped = Math.max(0, Math.min(5, Number.isFinite(rating) ? rating : 0));
+const percent = (clamped / 5) * 100;
+const label = t('reviews.ratedOutOf', { rating: clamped.toFixed(1) });
+const starClass = size === 'sm' ? 'size-3.5' : 'size-4';
+const starPath =
+  'M12 2.6l2.9 5.88 6.5.94-4.7 4.58 1.11 6.47L12 17.42l-5.81 3.05 1.11-6.47L2.6 9.42l6.5-.94z';
+const stars = [0, 1, 2, 3, 4];
+---
+
+<span class={`inline-flex items-center gap-2 ${className ?? ''}`}>
+  <span role="img" aria-label={label} class="relative inline-flex">
+    <span class="inline-flex items-center gap-0.5 text-rule" aria-hidden="true">
+      {
+        stars.map(() => (
+          <svg class={starClass} viewBox="0 0 24 24" fill="currentColor">
+            <path d={starPath} />
+          </svg>
+        ))
+      }
+    </span>
+    <span
+      class="absolute inset-y-0 left-0 inline-flex items-center gap-0.5 overflow-hidden text-accent"
+      style={`width:${percent}%`}
+      aria-hidden="true"
+    >
+      {
+        stars.map(() => (
+          <svg class={`${starClass} shrink-0`} viewBox="0 0 24 24" fill="currentColor">
+            <path d={starPath} />
+          </svg>
+        ))
+      }
+    </span>
+  </span>
+  {
+    count != null && (
+      <span class="text-sm text-ink-soft">
+        {t(count === 1 ? 'reviews.count-one' : 'reviews.count', { count })}
+      </span>
+    )
+  }
+</span>

@@ -1,20 +1,20 @@
 ---
-import Layout from '@/layouts/layout.astro';
-import ProductCard from '@/components/product-card.astro';
-import ProductPurchase from '@/components/product-purchase';
-import RatingStars from '@/components/rating-stars.astro';
-import type { PurchaseProduct, VariantStock } from '@/components/product-purchase';
+import Layout from '@/app/layout.astro';
+import { ProductCard } from '@/features/product-catalog';
+import { ProductPurchase } from '@/features/product-catalog';
+import { RatingStars } from '@/features/reviews';
+import type { PurchaseProduct, VariantStock } from '@/features/product-catalog';
 import { productsV3, inventoryItemsV3 } from '@wix/stores';
 import { WIX_APPS } from '@wix/essentials';
 import { SEO } from '@wix/seo/components';
 import { loadSEOTagsServiceConfig } from '@wix/seo/services';
 import { seoTags } from '@wix/seo';
-import { listProductsInCategory } from '@/utils/categories';
-import { renderRicos } from '@/utils/ricos';
-import { resolveWixImageUrl } from '@/utils/wix-image';
-import { toMetaDescription } from '@/utils/seo';
-import { getProductReviews, averageRating } from '@/utils/reviews';
-import { useTranslation, localize, currentLanguage } from '@/utils/i18n';
+import { listProductsInCategory } from '@/features/product-catalog';
+import { renderRicos } from '@/shared/ricos';
+import { resolveWixImageUrl } from '@/shared/wix-image';
+import { toMetaDescription } from '@/shared/seo';
+import { getProductReviews, averageRating } from '@/features/reviews';
+import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
 
 export const wixMetadata = {
   appDefId: WIX_APPS.checkoutAndOrders.id,

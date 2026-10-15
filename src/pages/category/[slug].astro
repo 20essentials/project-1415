@@ -1,7 +1,7 @@
 ---
-import Layout from '@/layouts/layout.astro';
-import ProductCard from '@/components/product-card.astro';
-import CategoryRail from '@/components/category-rail.astro';
+import Layout from '@/app/layout.astro';
+import { ProductCard } from '@/features/product-catalog';
+import { CategoryRail } from '@/features/product-catalog';
 import { WIX_APPS } from '@wix/essentials';
 import { SEO } from '@wix/seo/components';
 import { loadSEOTagsServiceConfig } from '@wix/seo/services';
@@ -10,9 +10,9 @@ import {
   getCategoryBySlug,
   listProductsInCategory,
   listStoreCategories,
-} from '@/utils/categories';
-import { toMetaDescription } from '@/utils/seo';
-import { useTranslation, localize } from '@/utils/i18n';
+} from '@/features/product-catalog';
+import { toMetaDescription } from '@/shared/seo';
+import { useTranslation, localize } from '@/shared/i18n';
 
 export const wixMetadata = {
   appDefId: WIX_APPS.checkoutAndOrders.id,

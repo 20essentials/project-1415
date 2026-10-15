@@ -40,19 +40,24 @@ Fraunces + Inter. Ver `DESIGN.md`.
 
 ## Estructura
 
+Screaming Architecture: las carpetas gritan **qué hace el negocio**, no qué tecnología usa (ver reglas en `AGENTS.md`).
+
 ```
 src/
-├── components/     # UI (.astro) + islas React (.tsx), kebab-case
-├── layouts/        # layout.astro (head, header, footer, slots SEO)
-├── pages/          # rutas (index, products, category, journal, cart, …)
+├── app/            # chrome de la app: layout.astro, header, footer, logo, language-selector
+├── shared/         # infra cross-cutting (2+ features): i18n, wix-image, ricos, seo,
+│                   # analytics, wix-forms, discounts, site, og-image
+├── features/       # UNA carpeta por capacidad de negocio (con index.ts como API pública)
+│                   # home, product-catalog, cart, journal, lookbook, workshops,
+│                   # gift-cards, reviews, account, newsletter, contact, site-search
+├── pages/          # rutas delgadas (requisito de Astro): componen features, sin lógica
 ├── styles/         # global.css + tokens del @theme
-├── scripts/        # JS de cliente (scroll-world)
 ├── assets/         # fuentes y medios estáticos
-├── utils/          # SDK wrappers (stores, reviews, seo, i18n, …)
-├── data/           # contenido estático (site, imágenes)
 └── translations.json
-tests/              # unit/, components/, e2e/, mocks/
+tests/              # features/, shared/, e2e/, mocks/
 ```
+
+Reglas: cada feature expone su API en `index.ts` y se importa solo como `@/features/<feature>`; una feature **nunca** importa de otra (si comparten algo → `src/shared/`); `src/pages` solo compone. `src/components/`, `src/utils/` y `src/data/` quedaron deprecados.
 
 > Todo archivo dentro de `src/` va en **kebab-case** y sin `any` (ver `AGENTS.md`).
 

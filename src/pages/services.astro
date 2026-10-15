@@ -1,8 +1,8 @@
 ---
-import Layout from '@/layouts/layout.astro';
-import ServiceCard from '@/components/service-card.astro';
-import { listWorkshops } from '@/utils/bookings';
-import { localize, useTranslation } from '@/utils/i18n';
+import Layout from '@/app/layout.astro';
+import { ServiceCard } from '@/features/workshops';
+import { listWorkshops } from '@/features/workshops';
+import { localize, useTranslation } from '@/shared/i18n';
 
 const { t } = useTranslation();
 

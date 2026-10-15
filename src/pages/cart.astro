@@ -1,7 +1,7 @@
 ---
-import Layout from '@/layouts/layout.astro';
-import CartView from '@/components/cart-view.tsx';
-import { useTranslation, localize } from '@/utils/i18n';
+import Layout from '@/app/layout.astro';
+import { CartView } from '@/features/cart';
+import { useTranslation, localize } from '@/shared/i18n';
 
 const { t } = useTranslation();
 

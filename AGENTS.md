@@ -6,6 +6,35 @@
 # GENERAL
 - Todo file adentro de src/* debe estar escrito en kebab-case.
 
+## Arquitectura: Screaming Architecture (obligatoria para todo código nuevo)
+
+Las carpetas describen **qué hace el negocio**, no qué tecnología usa. Al abrir `src/features/` debe leerse el negocio: `cart/`, `workshops/`, `gift-cards/`… no `components/`, `utils/`, `hooks/`.
+
+```
+src/
+  app/          chrome de la app: layout.astro, header, footer, logo, language-selector
+  shared/       infra cross-cutting (usada por 2+ features): i18n, wix-image, ricos, seo,
+                analytics, wix-forms, discounts, site, og-image
+  features/     UNA CARPETA POR CAPACIDAD DE NEGOCIO; aquí vive el 90% del código
+    home/ product-catalog/ cart/ journal/ lookbook/ workshops/ gift-cards/
+    reviews/ account/ newsletter/ contact/ site-search/
+  pages/        SOLO rutas delgadas (requisito de Astro). Componen features; no tienen lógica de negocio.
+  styles/ assets/ translations.json   infra sin mover (tooling @wix/astro + tokens de CSS)
+```
+
+Reglas de dependencia (las que hacen que "grite"):
+
+1. Cada feature expone su API pública en `index.ts` (barrel). El resto del código importa **solo** `@/features/<feature>` — nunca `@/features/<feature>/<archivo>` desde afuera.
+2. Una feature **nunca importa de otra feature**. Si dos features necesitan lo mismo → sube a `src/shared/`.
+3. `src/app/` (chrome) puede componer features (`header` usa `cart`, `site-search`). Features no importan de `app`.
+4. **Cero archivos nuevos en `src/components/`, `src/utils/`, `src/data/`** (deprecados; no crear ni revivir esas carpetas).
+5. Una feature incluye sus componentes, su data-access al SDK de Wix, sus tipos y su copy. Nada de "utils" genéricos.
+6. Nombres en kebab-case, en inglés, en singular o plural según el dominio (`gift-cards`, `workshops`).
+
+Tests espejan la estructura: `tests/features/<feature>/*.test.ts(x)` y `tests/shared/*.test.ts`. Los E2E siguen planos en `tests/e2e/*.spec.ts` (son por ruta, no por feature).
+
+`translations.json` **no se mueve** (lo consume `@wix/astro` con `translations: true`). El copy de cada feature se namespacea por feature en las claves (`workshops.*`, `gift-cards.*`, `reviews.*`…).
+
 
 ## Typescript
 - No debes usar any, a menos que no tengas de otra. Trata de crear los tipos usando las docs de Wix:  https://dev.wix.com/docs/api-reference y https://dev.wix.com/docs/sdk y
@@ -26,7 +55,7 @@
 ## Testing
 
 - Stack: Vitest + `@testing-library/react` (jsdom). Correr con `npm test` (alias `npm run test:unit`); watch: `npm run test:watch`.
-- Tests en `tests/**` (`tests/unit/*`, `tests/components/*`). `tests/setup.ts` registra `@testing-library/jest-dom` y limpia el DOM tras cada test.
+- Tests espejan la arquitectura: `tests/features/<feature>/*.test.ts(x)` y `tests/shared/*.test.ts`. `tests/setup.ts` registra `@testing-library/jest-dom` y limpia el DOM tras cada test.
 - `vitest.config.ts` aliasa los módulos virtuales que no resuelven en Node: `wix:astro:i18n`, `astro:env/client`, `@wix/essentials` (mocks en `tests/mocks/`). Al testear código que los importe, extender los alias.
 - Componentes React que llaman al SDK de Wix (p. ej. `cart-badge.tsx`) se testean mockeando el módulo (`vi.mock('@wix/ecom', ...)`).
 
@@ -67,7 +96,7 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 ### Astro: preferir JSX declarativo sobre markup repetido
 
 - El markup repetido se genera con un array en el **frontmatter** + `.map()` en el template, no copiando y pegando elementos.
-- Por defecto, mantener los datos en el frontmatter del propio componente. **No** crear módulos externos (`src/utils/*.ts`) salvo que los datos se compartan realmente entre varios archivos; abstraer de más es sobre-ingeniería.
+- Por defecto, mantener los datos en el frontmatter del propio componente. **No** crear módulos externos salvo que los datos se compartan realmente entre varios archivos; abstraer de más es sobre-ingeniería. Si se comparten, van a `src/shared/` (2+ features) o al `data-access` de la propia feature.
 - Mantener los marcadores de plantilla (`<!-- nav:links -->`, `<!-- nav:actions -->`, `<!-- home:* -->`) aunque se refactorice: el pipeline de pasos los usa.
 
 ### Comentarios: solo si aportan (nada de relleno)

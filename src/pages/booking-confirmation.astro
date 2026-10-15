@@ -1,7 +1,7 @@
 ---
-import Layout from '@/layouts/layout.astro';
-import { SITE_TIMEZONE } from '@/utils/bookings';
-import { currentLanguage, localize, useTranslation } from '@/utils/i18n';
+import Layout from '@/app/layout.astro';
+import { SITE_TIMEZONE } from '@/features/workshops';
+import { currentLanguage, localize, useTranslation } from '@/shared/i18n';
 
 const { t } = useTranslation();
 

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { WorkshopBookingError, createWorkshopBooking } from '@/utils/bookings';
+import { WorkshopBookingError, createWorkshopBooking } from '@/features/workshops';
 
 function json(data: Record<string, unknown>, status: number): Response {
   return new Response(JSON.stringify(data), {

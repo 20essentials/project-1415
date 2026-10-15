@@ -1,10 +1,10 @@
 ---
-import Layout from '@/layouts/layout.astro';
-import ContactForm, { type ContactFormField } from '@/components/contact-form.tsx';
+import Layout from '@/app/layout.astro';
+import { ContactForm, type ContactFormField } from '@/features/contact';
 import { forms } from '@wix/forms';
 import { auth } from '@wix/essentials';
-import { useTranslation, localize } from '@/utils/i18n';
-import { CONTACT_FORM_NAME } from '@/utils/wix-forms';
+import { useTranslation, localize } from '@/shared/i18n';
+import { CONTACT_FORM_NAME } from '@/shared/wix-forms';
 
 const { t } = useTranslation();
 
