@@ -12,7 +12,6 @@
   "nav.gift-cards": "Gift Cards",
   "nav.about": "About",
   "nav.contact": "Contact",
-
   "header.skip": "Skip to content",
   "header.login": "Log in",
   "header.account": "Account",
@@ -24,7 +23,6 @@
   "header.contact": "Contact us",
   "header.tagline": "Greenhouse-grown · shipped alive worldwide",
   "header.language": "Language",
-
   "search.open": "Search",
   "search.title": "Search products",
   "search.placeholder": "Search plants and flowers…",
@@ -34,9 +32,7 @@
   "search.results": "{{count}} results",
   "search.noResults": "No products found.",
   "search.error": "Search is unavailable right now. Please try again.",
-
   "common.shop-the-collection": "Shop the collection",
-
   "footer.about": "Carnivorous specimens, show-stopping blooms, and care-tested kits — greenhouse-grown and shipped alive to your door.",
   "footer.shop": "Shop",
   "footer.company": "Company",
@@ -48,7 +44,6 @@
   "footer.plant-care": "Plant care 101",
   "footer.rights": "© {{year}} Petals & Predators. All rights reserved.",
   "footer.tagline": "Greenhouse-grown in-house · shipped worldwide.",
-
   "footer.newsletter.eyebrow": "Newsletter",
   "footer.newsletter.title": "Grow with us.",
   "footer.newsletter.body": "Plant-care notes, new arrivals, and greenhouse stories — one short email, now and then.",
@@ -60,10 +55,8 @@
   "footer.newsletter.error": "Something went wrong. Please try again.",
   "footer.newsletter.invalid": "Enter a valid email address.",
   "footer.newsletter.empty": "Our newsletter is being repotted. Email us at",
-
   "home.meta-title": "Petals & Predators — Carnivorous plants and flowers",
   "home.meta-description": "Carnivorous specimens, show-stopping blooms, and care-tested kits — greenhouse-grown and shipped alive to your door.",
-
   "home.eco.greenhouse.title": "Greenhouse-grown",
   "home.eco.greenhouse.body": "Grown in our own greenhouse, never mass-imported.",
   "home.eco.shipped.title": "Shipped alive",
@@ -89,7 +82,6 @@
   "home.read-guide": "Read the guide",
   "home.all-guides": "All care guides →",
   "home.lookbookCta": "Shop the lookbook",
-
   "paseo.inicio.eyebrow": "Petals & Predators",
   "paseo.inicio.title": "Plants with teeth.",
   "paseo.inicio.subtitle": "Carnivorous specimens, show-stopping blooms, and care-tested kits — greenhouse-grown and shipped alive to your door.",
@@ -130,7 +122,6 @@
   "paseo.your-space.title": "Bring one home.",
   "paseo.your-space.subtitle": "Pick a plant, skip the guesswork, and watch it come alive in your space.",
   "paseo.your-space.cta": "Shop the collection",
-
   "faq.q1": "Will my plant arrive alive?",
   "faq.a1": "Yes. We ship greenhouse-grown plants carefully packed and guarantee live arrival for 30 days.",
   "faq.q2": "What do carnivorous plants eat?",
@@ -141,9 +132,7 @@
   "faq.a4": "Our Starter Kit is perfect for first-time growers. Venus Flytrap and Cape Sundew are also great options.",
   "faq.q5": "Shipping & returns?",
   "faq.a5": "We ship worldwide. If your plant does not arrive alive, contact us within 30 days and we will make it right.",
-
   "paseo.hint": "scroll",
-
   "account.eyebrow": "Your account",
   "account.welcome": "Welcome back, {{name}}.",
   "account.intro": "This is the greenhouse side of your account — your member details, kept in one place.",
@@ -153,7 +142,6 @@
   "account.member": "Member",
   "account.meta-title": "Your account — Petals & Predators",
   "account.meta-description": "Your Petals & Predators member profile and sign-out.",
-
   "about.meta-title": "About — Petals & Predators",
   "about.meta-description": "A greenhouse boutique for carnivorous plants and flowers with character — grown in-house, packed by hand, and shipped alive.",
   "about.hero.title": "A greenhouse boutique for plants with teeth — and flowers with character.",
@@ -177,14 +165,12 @@
   "about.stat-3.label": "Live-arrival guarantee",
   "about.cta.title": "Pick a plant, skip the guesswork.",
   "about.cta.body": "Browse the collection and let us ship something alive and a little unexpected to your door.",
-
   "thank-you.meta-title": "Thank you — Petals & Predators",
   "thank-you.meta-description": "Your Petals & Predators order has been received — we'll email you the next steps.",
   "thank-you.title": "Thank you",
   "thank-you.received": "Your order has been received.",
   "thank-you.next-steps": "We'll send you an email with the next steps.",
   "thank-you.continue": "Continue shopping",
-
   "cart.meta-title": "Cart — Petals & Predators",
   "cart.meta-description": "Review the carnivorous plants and flowers in your cart, then check out securely with Petals & Predators.",
   "cart.title": "Cart",
@@ -206,7 +192,6 @@
   "cart.product-alt": "Product",
   "cart.badge": "Cart",
   "cart.badge-count": "Cart, {{count}} items",
-
   "contact.meta-title": "Contact — Petals & Predators",
   "contact.meta-description": "Questions about an order or a plant? Reach the Petals & Predators greenhouse — plus shipping, returns and care answers.",
   "contact.hero.title": "Say hello to the greenhouse.",
@@ -237,14 +222,12 @@
   "contact.care.tip-3.body": "We grow in peat-based, nutrient-poor mixes. Repot with the same blend — regular potting soil burns their roots.",
   "contact.care.tip-4.title": "Feeding",
   "contact.care.tip-4.body": "Let them hunt. Indoors they usually catch enough on their own, so resist the urge to feed them by hand.",
-
   "contact-form.success-title": "Thank you — message received.",
   "contact-form.success-body": "We read every note from the greenhouse and reply within one business day.",
   "contact-form.sending": "Sending…",
   "contact-form.send": "Send message",
   "contact-form.error": "Something went wrong. Please try again.",
   "contact-form.invalid": "Invalid value",
-
   "shop.meta-title": "All plants — Petals & Predators",
   "shop.meta-description": "Browse every carnivorous plant, bloom and starter kit in the greenhouse — grown and shipped alive.",
   "shop.eyebrow": "The shop",
@@ -256,7 +239,6 @@
   "shop.pagination": "Listing pagination",
   "shop.previous": "Previous",
   "shop.next": "Next",
-
   "product.meta-fallback": "Shop {{name}} — grown and shipped alive by Petals & Predators.",
   "product.photo-alt": "Product photo",
   "product.view-image": "View image {{current}} of {{total}}",
@@ -274,13 +256,11 @@
   "product.add-to-cart": "Add to cart",
   "product.view-cart": "Added to your cart — view cart →",
   "product.select-options": "Select options",
-
   "category.meta-title": "{{name}} — Petals & Predators",
   "category.meta-description": "Browse our {{name}} collection — grown and shipped alive.",
   "category.plants-in": "Plants in {{name}}",
   "category.empty": "Nothing in {{name}} just now —",
   "category.browse-all": "browse all plants",
-
   "journal.meta-title": "Journal — Petals & Predators",
   "journal.meta-description": "Care guides for carnivorous plants and blooms — watering, humidity, light and repotting, from the Petals & Predators greenhouse.",
   "journal.eyebrow": "The journal",
@@ -299,7 +279,6 @@
   "journal.not-found.title": "That guide has wilted.",
   "journal.not-found.body": "We couldn't find the guide you were looking for. It may have moved or never existed.",
   "journal.not-found.cta": "Back to the journal",
-
   "lookbook.eyebrow": "The lookbook",
   "lookbook.title": "Season by season",
   "lookbook.intro": "A seasonal edit from the greenhouse — styling ideas, growing notes, and the plants that carry each moment.",
@@ -307,12 +286,10 @@
   "lookbook.shop-season": "Shop the season",
   "lookbook.empty": "The lookbook is still in the greenhouse. In the meantime,",
   "lookbook.empty-cta": "browse the plants",
-
   "reviews.sectionTitle": "What growers say",
   "reviews.count": "{{count}} reviews",
   "reviews.count-one": "{{count}} review",
   "reviews.ratedOutOf": "Rated {{rating}} out of 5",
-
   "gift-cards.eyebrow": "A gift, considered",
   "gift-cards.title": "Gift cards",
   "gift-cards.intro": "A Petals & Predators gift card is a standing invitation to the greenhouse — let them choose the plant that bites back, the bloom that stops the room, or the starter kit that makes it easy.",
@@ -342,5 +319,43 @@
   "gift-cards.teaser.eyebrow": "A gift, considered",
   "gift-cards.teaser.title": "Let them pick the plant with teeth.",
   "gift-cards.teaser.body": "A Petals & Predators gift card is a standing invitation to the greenhouse — redeemed on any plant, bloom, or starter kit.",
-  "gift-cards.teaser.cta": "Shop gift cards"
+  "gift-cards.teaser.cta": "Shop gift cards",
+  "nav.services": "Workshops",
+  "services.meta-title": "Workshops — Petals & Predators",
+  "services.meta-description": "Hands-on greenhouse workshops at Petals & Predators: Care 101 for carnivorous plants and Repotting 101. Small groups, pay at the workshop.",
+  "services.eyebrow": "Grow with us",
+  "services.title": "Workshops",
+  "services.intro": "Two small-format sessions in the greenhouse: what carnivorous plants actually need (Care 101), and how to repot them without killing them (Repotting 101). Every spot includes soil, pots, and a plant to take home.",
+  "services.minutes": "{{minutes}} min",
+  "services.view": "View workshop",
+  "services.pay-note": "Pay at the workshop — no online payment needed.",
+  "services.cancel-note": "Free cancellation up to 24 hours before the session.",
+  "services.timezone-note": "Times are shown in the greenhouse’s local time.",
+  "services.select-date": "Pick a date",
+  "services.select-time": "Pick a time",
+  "services.loading-times": "Loading times…",
+  "services.no-times": "No times available on this day — try another date.",
+  "services.times-error": "We couldn’t load the times. Please try again.",
+  "services.details-title": "Your details",
+  "services.submit": "Reserve my spot",
+  "services.submitting": "Reserving…",
+  "services.form-error": "Something went wrong. Please try again.",
+  "services.form-invalid": "Invalid value",
+  "services.field.first-name": "First name",
+  "services.field.last-name": "Last name",
+  "services.field.email": "Email",
+  "services.field.phone": "Phone",
+  "services.field.message": "Anything we should know?",
+  "services.empty": "No workshops are scheduled right now. Check back soon.",
+  "services.not-found.title": "Workshop not found",
+  "services.not-found.body": "This workshop doesn’t exist (anymore). The greenhouse runs new sessions often — check the full list.",
+  "services.not-found.link": "Back to workshops",
+  "booking-confirmation.title": "You’re booked.",
+  "booking-confirmation.body": "Your spot is reserved. A confirmation with the details is on its way to your inbox — see you at the greenhouse.",
+  "booking-confirmation.reference": "Booking reference",
+  "booking-confirmation.session": "Session",
+  "booking-confirmation.back": "Back to workshops",
+  "booking-confirmation.missing-title": "No booking found",
+  "booking-confirmation.missing-body": "We couldn’t find that booking. If you completed a reservation, the confirmation email has the details.",
+  "services.retry": "Try again"
 }

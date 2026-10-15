@@ -18,7 +18,7 @@ test.describe('gift cards', () => {
 
     await expect(page.getByLabel(/Recipient first name/)).toBeVisible();
     await expect(page.getByLabel(/Recipient email/)).toBeVisible();
-    await expect(page.locator('form button[type="submit"]')).toBeDisabled();
+    await expect(page.getByRole('button', { name: /Add .* gift card to cart/ })).toBeDisabled();
 
     await expect(page.getByRole('link', { name: 'Browse the collection' })).toHaveCount(0);
   });

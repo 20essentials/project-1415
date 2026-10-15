@@ -13,6 +13,7 @@ export const site = {
     { href: '/#como-funciona', label: 'nav.how-it-works' },
     { href: '/#tu-casa', label: 'nav.your-space' },
     { href: '/products', label: 'nav.all-plants' },
+    { href: '/services', label: 'nav.services' },
     { href: '/lookbook', label: 'nav.lookbook' },
     { href: '/journal', label: 'nav.journal' },
     { href: '/gift-cards', label: 'nav.gift-cards' },
@@ -20,7 +21,7 @@ export const site = {
     { href: '/contact', label: 'nav.contact' },
   ],
   navPrimary: [
-    { href: '/#collection', label: 'nav.collection' },
+    { href: '/services', label: 'nav.services' },
     { href: '/#care', label: 'nav.care' },
     { href: '/products', label: 'nav.all-plants' },
     { href: '/lookbook', label: 'nav.lookbook' },

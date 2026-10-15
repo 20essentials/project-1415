@@ -25,6 +25,8 @@
     "@wix/astro": "^2.39.0",
     "@wix/astro-pages": "^2.0.4",
     "@wix/auto_sdk_categories_categories": "^1.0.147",
+    "@wix/auto_sdk_ecom_cart-v-2": "1.0.216",
+    "@wix/bookings": "1.0.1716",
     "@wix/dashboard": "^1.3.43",
     "@wix/data": "^1.0.527",
     "@wix/ecom": "^1.0.2540",

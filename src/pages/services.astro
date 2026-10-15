@@ -1,0 +1,52 @@
+---
+import Layout from '@/layouts/layout.astro';
+import ServiceCard from '@/components/service-card.astro';
+import { listWorkshops } from '@/utils/bookings';
+import { localize, useTranslation } from '@/utils/i18n';
+
+const { t } = useTranslation();
+
+const workshops = await listWorkshops();
+---
+
+<Layout>
+  <Fragment slot="head">
+    <meta name="description" content={t('services.meta-description')} />
+  </Fragment>
+
+  <section class="relative z-2 bg-paper px-4 pt-24 pb-10 text-ink sm:px-8 lg:px-20 lg:pt-32">
+    <div class="mx-auto max-w-6xl">
+      <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">
+        <a href={localize('/')} class="transition-colors hover:text-accent">{t('nav.home')}</a>
+        <span aria-hidden="true"> · </span>
+        <span aria-current="page" class="text-ink">{t('nav.services')}</span>
+      </nav>
+      <p class="mt-6 text-xs font-medium tracking-widest text-accent uppercase">{t('services.eyebrow')}</p>
+      <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">{t('services.title')}</h1>
+      <p class="mt-4 max-w-xl text-sm leading-6 text-ink-soft">
+        {t('services.intro')}
+      </p>
+    </div>
+  </section>
+
+  <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
+    <div class="mx-auto max-w-6xl">
+      {
+        workshops.length > 0 ? (
+          <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+            {workshops.map((workshop) => (
+              <ServiceCard workshop={workshop} />
+            ))}
+          </ul>
+        ) : (
+          <p class="max-w-xl text-sm leading-6 text-ink-soft">
+            {t('services.empty')}
+            <a href={localize('/')} class="text-accent underline">
+              {t('shop.back-home')}
+            </a>
+          </p>
+        )
+      }
+    </div>
+  </section>
+</Layout>

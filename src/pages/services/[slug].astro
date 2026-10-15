@@ -1,0 +1,131 @@
+---
+import Layout from '@/layouts/layout.astro';
+import WorkshopBooking from '@/components/workshop-booking';
+import type { BookingField, WorkshopBookingLabels } from '@/components/workshop-booking';
+import { BOOKING_FORM_FIELDS, SITE_TIMEZONE, getWorkshopBySlug } from '@/utils/bookings';
+import { WIX_APPS } from '@wix/essentials';
+import { SEO } from '@wix/seo/components';
+import { loadSEOTagsServiceConfig } from '@wix/seo/services';
+import { seoTags } from '@wix/seo';
+import { currentLanguage, localize, useTranslation } from '@/utils/i18n';
+
+export const wixMetadata = {
+  appDefId: WIX_APPS.bookings.id,
+  pageIdentifier: WIX_APPS.bookings.servicePageMetadata.pageIdentifier,
+  identifiers: { slug: WIX_APPS.bookings.servicePageMetadata.identifiers.slug },
+};
+
+const { t } = useTranslation();
+const { slug } = Astro.params;
+
+const forwardedUrl = Astro.request.headers.get('x-wix-forwarded-url');
+const pageUrl =
+  forwardedUrl && URL.canParse(forwardedUrl) && /^https?:$/.test(new URL(forwardedUrl).protocol)
+    ? forwardedUrl
+    : Astro.url.href;
+
+const [workshop, seoTagsServiceConfig] = await Promise.all([
+  getWorkshopBySlug(slug ?? ''),
+  loadSEOTagsServiceConfig({
+    pageUrl,
+    itemType: seoTags.ItemType.BOOKINGS_SERVICE,
+    itemData: { slug: slug ?? '' },
+  }),
+]);
+
+if (!workshop) {
+  return new Response('Workshop not found', { status: 404 });
+}
+
+const price = workshop.price
+  ? new Intl.NumberFormat(currentLanguage(), {
+      style: 'currency',
+      currency: workshop.price.currency,
+    }).format(Number(workshop.price.amount))
+  : null;
+const duration = workshop.durationMinutes
+  ? t('services.minutes', { minutes: workshop.durationMinutes })
+  : null;
+
+const bookingFields: BookingField[] = BOOKING_FORM_FIELDS.map((field) => ({
+  target: field.target,
+  label: t(field.labelKey),
+  inputType: field.inputType,
+  required: field.required,
+}));
+
+const bookingLabels: WorkshopBookingLabels = {
+  selectDate: t('services.select-date'),
+  selectTime: t('services.select-time'),
+  loadingTimes: t('services.loading-times'),
+  noTimes: t('services.no-times'),
+  timesError: t('services.times-error'),
+  retry: t('services.retry'),
+  detailsTitle: t('services.details-title'),
+  submit: t('services.submit'),
+  submitting: t('services.submitting'),
+  formError: t('services.form-error'),
+  invalid: t('services.form-invalid'),
+  timezoneNote: t('services.timezone-note'),
+};
+---
+
+<Layout>
+  <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />
+
+  <section class="relative z-2 bg-paper px-4 py-10 text-ink sm:px-8 lg:px-20 lg:py-16">
+    <div class="mx-auto max-w-6xl">
+      <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">
+        <a href={localize('/')} class="transition-colors hover:text-accent">{t('nav.home')}</a>
+        <span aria-hidden="true"> · </span>
+        <a href={localize('/services')} class="transition-colors hover:text-accent">{t('nav.services')}</a>
+        <span aria-hidden="true"> · </span>
+        <span aria-current="page" class="text-ink">{workshop.name}</span>
+      </nav>
+
+      <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+        <div class="relative flex aspect-4/5 items-center justify-center overflow-hidden rounded-lg bg-paper-warm px-6 ring-1 ring-rule lg:sticky lg:top-24 lg:aspect-auto lg:min-h-120">
+          <div class="text-center">
+            <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('services.eyebrow')}</p>
+            <p class="mt-3 font-display text-3xl leading-tight text-ink">{workshop.name}</p>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <div>
+            <div class="flex flex-wrap items-center gap-2.5 text-xs font-medium tracking-widest text-mute uppercase">
+              {duration && <p>{duration}</p>}
+              {duration && price && <span aria-hidden="true" class="text-rule">·</span>}
+              {price && <p>{price}</p>}
+            </div>
+            <h1 class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">{workshop.name}</h1>
+            {workshop.tagLine && <p class="mt-3 text-base leading-6 text-ink-soft">{workshop.tagLine}</p>}
+          </div>
+
+          {
+            workshop.description && (
+              <div class="border-t border-rule pt-5">
+                <p class="max-w-prose text-sm leading-6 text-ink-soft">{workshop.description}</p>
+              </div>
+            )
+          }
+
+          <div class="flex flex-col gap-2 border-t border-rule pt-5 text-xs leading-5 text-mute">
+            <p>{t('services.pay-note')}</p>
+            <p>{t('services.cancel-note')}</p>
+          </div>
+
+          <WorkshopBooking
+            client:load
+            serviceId={workshop.id}
+            timeZone={SITE_TIMEZONE}
+            locale={currentLanguage()}
+            confirmationBase={localize('/booking-confirmation')}
+            fields={bookingFields}
+            labels={bookingLabels}
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

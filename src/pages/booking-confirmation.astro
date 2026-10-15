@@ -1,0 +1,81 @@
+---
+import Layout from '@/layouts/layout.astro';
+import { SITE_TIMEZONE } from '@/utils/bookings';
+import { currentLanguage, localize, useTranslation } from '@/utils/i18n';
+
+const { t } = useTranslation();
+
+const id = Astro.url.searchParams.get('id');
+const service = Astro.url.searchParams.get('service');
+const start = Astro.url.searchParams.get('start');
+const end = Astro.url.searchParams.get('end');
+
+const hasBooking = Boolean(id && service && start && end);
+
+const sessionDay = hasBooking && start
+  ? new Intl.DateTimeFormat(currentLanguage(), {
+      timeZone: SITE_TIMEZONE,
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(new Date(`${start.slice(0, 10)}T12:00:00Z`))
+  : null;
+const sessionRange = hasBooking && start && end ? `${start.slice(11, 16)}–${end.slice(11, 16)}` : null;
+---
+
+<Layout noindex>
+  <section class="relative z-2 bg-paper px-4 py-24 text-ink sm:px-8 lg:px-20 lg:py-32">
+    <div class="mx-auto max-w-xl">
+      {
+        hasBooking ? (
+          <>
+            <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('nav.services')}</p>
+            <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">
+              {t('booking-confirmation.title')}
+            </h1>
+            <p class="mt-4 text-sm leading-6 text-ink-soft">{t('booking-confirmation.body')}</p>
+
+            <dl class="mt-8 flex flex-col gap-4 rounded-md border border-rule bg-paper-warm p-5">
+              <div class="flex flex-col gap-1">
+                <dt class="text-xs font-medium tracking-widest text-mute uppercase">
+                  {t('booking-confirmation.reference')}
+                </dt>
+                <dd class="text-sm text-ink break-all">{id}</dd>
+              </div>
+              <div class="flex flex-col gap-1">
+                <dt class="text-xs font-medium tracking-widest text-mute uppercase">
+                  {t('booking-confirmation.session')}
+                </dt>
+                <dd class="text-sm text-ink">
+                  {service} — {sessionDay}, {sessionRange} · {t('services.timezone-note')}
+                </dd>
+              </div>
+            </dl>
+
+            <a
+              href={localize('/services')}
+              class="mt-8 inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              {t('booking-confirmation.back')}
+            </a>
+          </>
+        ) : (
+          <>
+            <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('nav.services')}</p>
+            <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">
+              {t('booking-confirmation.missing-title')}
+            </h1>
+            <p class="mt-4 text-sm leading-6 text-ink-soft">{t('booking-confirmation.missing-body')}</p>
+            <a
+              href={localize('/services')}
+              class="mt-8 inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              {t('booking-confirmation.back')}
+            </a>
+          </>
+        )
+      }
+    </div>
+  </section>
+</Layout>
