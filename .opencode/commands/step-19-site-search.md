@@ -59,4 +59,4 @@ Añadir overlay de búsqueda de productos en el nav (atclado a `/`) que usa `que
 ## Al terminar
 
 1. Marca el paso 19 como `✅ done` en `ROADMAP.md`.
-2. Siguiente: `/generate-next-steps` (o ejecutar cuando se creen nuevos pending).
+2. Siguiente: `/step-20-workshops-bookings` (o `/generate-next-steps`).

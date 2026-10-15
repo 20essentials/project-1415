@@ -1,3 +1,5 @@
+- NO usamos python, preferimos nodejs.
+
 - Nos inspiraremos en la web de: https://www.mintlify.com/
 - Un punto de referencia es la documentation de Wix Managed Headless: https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/about-the-astro-integration
 
