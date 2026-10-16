@@ -46,6 +46,8 @@ const heroFeatured = hero ? featuredFor(hero.productSlugs) : [];
             alt=""
             width="1920"
             height="1080"
+            fetchpriority="high"
+            decoding="async"
             class="absolute inset-0 h-full w-full object-cover"
           />
         )}
@@ -131,6 +133,7 @@ const heroFeatured = hero ? featuredFor(hero.productSlugs) : [];
                         width="900"
                         height="1125"
                         loading="lazy"
+                        decoding="async"
                         class="h-full w-full object-cover transition-transform duration-700 ease-fluid hover:scale-105 motion-reduce:transform-none"
                       />
                     </div>
@@ -143,7 +146,7 @@ const heroFeatured = hero ? featuredFor(hero.productSlugs) : [];
                     </p>
                     <ul class="mt-6 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
                       {heroFeatured.map((product, index) => (
-                        <ProductCard product={product} index={index} />
+                          <ProductCard product={product} index={index} sizes="(min-width: 1024px) 24vw, 46vw" />
                       ))}
                     </ul>
                   </div>
@@ -184,9 +187,10 @@ const heroFeatured = hero ? featuredFor(hero.productSlugs) : [];
                           src={src}
                           alt={`${entry.season} — ${entry.title}`}
                           width="900"
-                          height="1125"
-                          loading="lazy"
-                          class="h-full w-full object-cover transition-transform duration-700 ease-fluid hover:scale-105 motion-reduce:transform-none"
+                        height="1125"
+                        loading="lazy"
+                        decoding="async"
+                        class="h-full w-full object-cover transition-transform duration-700 ease-fluid hover:scale-105 motion-reduce:transform-none"
                         />
                       </div>
                     ))}
@@ -198,7 +202,7 @@ const heroFeatured = hero ? featuredFor(hero.productSlugs) : [];
                       </p>
                       <ul class="mt-6 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
                         {featured.map((product, index) => (
-                          <ProductCard product={product} index={index} />
+                        <ProductCard product={product} index={index} sizes="(min-width: 1024px) 24vw, 46vw" />
                         ))}
                       </ul>
                     </div>

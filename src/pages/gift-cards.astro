@@ -64,6 +64,8 @@ const intro = product ? product.description : t('gift-cards.intro');
                   alt={product.image?.altText ?? product.name}
                   width="1000"
                   height="1250"
+                  fetchpriority="high"
+                  decoding="async"
                   class="h-full w-full object-cover"
                 />
               ) : (

@@ -50,7 +50,9 @@ function readCachedCount(): number {
 }
 
 export default function CartBadge({ labels = DEFAULT_LABELS, href = "/cart" }: CartBadgeProps = {}) {
-  const [count, setCount] = useState(() => readCachedCount());
+  // SSR pinta el link con 0; el conteo cacheado recién entra en el efecto para
+  // no desincronizar el hidratación.
+  const [count, setCount] = useState(0);
 
   const fetchCount = async () => {
     try {
@@ -62,6 +64,7 @@ export default function CartBadge({ labels = DEFAULT_LABELS, href = "/cart" }: C
   };
 
   useEffect(() => {
+    setCount(readCachedCount());
     void fetchCount();
 
     const handleCartUpdate = (event: Event) => {

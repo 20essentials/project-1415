@@ -108,6 +108,9 @@ export function mountScrollWorld(container, config) {
     copylayer.appendChild(c); copies.push(c);
 
     const dot = el('button', 'sw-route__dot'); dot.style.setProperty('--sw-accent', s.accent || '');
+    // The visible label is display:none on phones (out of the a11y tree), so the
+    // dot needs its own accessible name to pass the button-name audit.
+    dot.setAttribute('aria-label', s.label || s.title || `Stop ${i + 1}`);
     dot.innerHTML = `<span class="sw-route__label">${esc(s.label || '')}</span><i></i>`;
     dot.addEventListener('click', () => jumpTo(i)); route.appendChild(dot); dots.push(dot);
 
@@ -135,6 +138,7 @@ export function mountScrollWorld(container, config) {
     SEGMENTS.forEach(s => { s.start = off * vh; off += s.w; s.end = off * vh; });
     totalW = off;
     track.style.height = (totalW * vh + vh) + 'px';   // +1vh so the last flight completes
+    container.style.minHeight = track.style.height;   // matches the pre-paint reserve in scroll-world.astro
     read();
   }
 

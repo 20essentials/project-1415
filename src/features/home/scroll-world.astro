@@ -61,6 +61,31 @@ const world = {
   set:html={JSON.stringify(world).replace(/</g, '\\u003c')}
 />
 
+<script is:inline>
+  // Reserve the scrub height before first paint: the engine sets the track
+  // height only after hydration, which would otherwise push every section
+  // below the fold (the biggest CLS on the site). Keep in sync with the
+  // segment math in scroll-world.js (dive + connector widths + 1vh tail).
+  (function () {
+    var wrap = document.querySelector('[data-world]');
+    var cfg = document.getElementById('world-config');
+    if (!wrap || !cfg) return;
+    try {
+      var c = JSON.parse(cfg.textContent || '{}');
+      var secs = c.sections || [];
+      var cons = c.connectors || [];
+      var dive = c.diveScroll || 1.3;
+      var conn = c.connScroll || 0.9;
+      var w = 0;
+      for (var i = 0; i < secs.length; i++) {
+        w += secs[i].scroll || dive;
+        if (i < secs.length - 1 && cons[i]) w += conn;
+      }
+      wrap.style.minHeight = (w + 1) * window.innerHeight + 'px';
+    } catch (e) {}
+  })();
+</script>
+
 <script>
   import { mountScrollWorld } from './scroll-world.js';
 

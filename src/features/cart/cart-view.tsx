@@ -312,7 +312,7 @@ export default function CartView({
               <article key={item._id} className="cart-row">
                 <div className="cart-row-image">
                   {imageUrl ? (
-                    <img src={imageUrl} alt={item.name ?? labels.product} loading="lazy" />
+                    <img src={imageUrl} alt={item.name ?? labels.product} width="80" height="80" loading="lazy" decoding="async" />
                   ) : (
                     <div className="cart-row-image-placeholder" aria-hidden="true" />
                   )}

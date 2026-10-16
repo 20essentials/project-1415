@@ -59,7 +59,7 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
       <LanguageSelector class="hidden xl:block" />
       <SiteSearch />
       <CartBadge
-        client:only="react"
+        client:idle
         href={localize('/cart')}
         labels={{ empty: t('cart.badge'), withCount: t('cart.badge-count') }}
       />

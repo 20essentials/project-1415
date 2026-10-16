@@ -261,7 +261,7 @@ const purchaseLabels = {
                 aria-current={index === 0 ? 'true' : undefined}
                 class="shrink-0 rounded-sm ring-1 ring-rule transition-opacity duration-500 ease-fluid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent hover:opacity-80"
               >
-                <img src={image.thumb} alt="" width="160" height="200" loading="lazy" class="h-24 w-20 rounded-sm object-cover sm:h-28 sm:w-24" />
+                <img src={image.thumb} alt="" width="160" height="200" loading="lazy" decoding="async" class="h-24 w-20 rounded-sm object-cover sm:h-28 sm:w-24" />
               </button>
             ))}
           </div>
@@ -274,7 +274,8 @@ const purchaseLabels = {
                   alt={gallery[0].alt}
                   width="1000"
                   height="1250"
-                  fetchpriority={gallery[0].alt === '' ? undefined : 'high'}
+                  fetchpriority="high"
+                  decoding="async"
                   class="h-full w-full object-cover"
                 />
               ) : (
@@ -367,7 +368,7 @@ const purchaseLabels = {
           </div>
           <ul class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {related.map((item, index) => (
-              <ProductCard product={item} index={index} />
+              <ProductCard product={item} index={index} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 46vw, 92vw" />
             ))}
           </ul>
         </div>

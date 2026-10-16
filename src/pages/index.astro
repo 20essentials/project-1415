@@ -121,7 +121,7 @@ try {
         products.length > 0 ? (
           <ul class="mt-12 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
             {products.map((product, index) => (
-              <ProductCard product={product} index={index} />
+              <ProductCard product={product} index={index} sizes="(min-width: 1024px) 33vw, 46vw" />
             ))}
           </ul>
         ) : (
@@ -205,6 +205,7 @@ try {
                   width="900"
                   height="1125"
                   loading="lazy"
+                  decoding="async"
                   class="h-full w-full object-cover transition-transform duration-700 ease-fluid group-hover:scale-105"
                 />
               ) : (

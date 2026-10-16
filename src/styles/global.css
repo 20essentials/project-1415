@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./components-ecom.css";
+@import "./fonts.css";
 
 @theme {
   --font-display: Fraunces, Georgia, serif;
