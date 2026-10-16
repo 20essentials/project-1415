@@ -1,13 +1,13 @@
 ---
 import Layout from '@/app/layout.astro';
-import { ScrollWorld } from '@/features/home';
+import ScrollWorld from '@/features/home/scroll-world.astro';
 import { productsV3 } from '@wix/stores';
-import { listStoreCategories } from '@/features/product-catalog';
-import { ProductCard } from '@/features/product-catalog';
-import { RatingStars } from '@/features/reviews';
+import { listStoreCategories } from '@/features/product-catalog/categories';
+import ProductCard from '@/features/product-catalog/product-card.astro';
+import RatingStars from '@/features/reviews/rating-stars.astro';
 import { site } from '@/shared/site';
-import { queryGuides } from '@/features/journal';
-import { getFeaturedReviews } from '@/features/reviews';
+import { queryGuides } from '@/features/journal/journal';
+import { getFeaturedReviews } from '@/features/reviews/reviews';
 import { useTranslation, localize } from '@/shared/i18n';
 import AnalyticsView from '@/shared/analytics-view.astro';
 

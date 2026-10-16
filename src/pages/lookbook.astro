@@ -1,7 +1,7 @@
 ---
 import Layout from '@/app/layout.astro';
-import { ProductCard } from '@/features/product-catalog';
-import { queryLookbook } from '@/features/lookbook';
+import ProductCard from '@/features/product-catalog/product-card.astro';
+import { queryLookbook } from '@/features/lookbook/lookbook';
 import { renderRicos } from '@/shared/ricos';
 import { productsV3 } from '@wix/stores';
 import { useTranslation, localize } from '@/shared/i18n';

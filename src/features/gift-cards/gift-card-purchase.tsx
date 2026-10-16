@@ -45,7 +45,7 @@ interface GiftCardPurchaseProps {
 
 // catalogReference captured from a real paid Wix-Editor gift-card order. On
 // ORDER_PAID the gift-card backend issues the card and emails the recipient.
-export default function GiftCardPurchase({
+export function GiftCardPurchase({
   product,
   labels: labelOverrides,
   cartHref = "/cart",

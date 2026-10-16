@@ -1,8 +1,8 @@
 ---
 import Logo from './logo.astro';
-import { CartBadge } from '@/features/cart';
+import { CartBadge } from '@/features/cart/cart-badge';
 import LanguageSelector from './language-selector.astro';
-import { SiteSearch } from '@/features/site-search';
+import SiteSearch from '@/features/site-search/site-search.astro';
 import { site } from '@/shared/site';
 import { useTranslation, localize } from '@/shared/i18n';
 const { nav, navPrimary, links } = site;

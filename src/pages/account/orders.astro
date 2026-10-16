@@ -2,7 +2,8 @@
 import Layout from '@/app/layout.astro';
 import { members } from '@wix/members';
 import { localize, useTranslation } from '@/shared/i18n';
-import { listMemberOrders, OrderHistoryList } from '@/features/order-history';
+import { listMemberOrders } from '@/features/order-history/orders';
+import OrderHistoryList from '@/features/order-history/order-history-list.astro';
 import type { Member } from '@wix/auto_sdk_members_members';
 
 const { t } = useTranslation();

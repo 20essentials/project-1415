@@ -24,12 +24,13 @@ src/
 
 Reglas de dependencia (las que hacen que "grite"):
 
-1. Cada feature expone su API pública en `index.ts` (barrel). El resto del código importa **solo** `@/features/<feature>` — nunca `@/features/<feature>/<archivo>` desde afuera.
+1. Una feature expone **archivos concretos, no barrels**: no hay `index.ts` de feature. El resto del código importa la ruta exacta (`@/features/<feature>/<archivo>`), nunca un `@/features/<feature>` a secas.
 2. Una feature **nunca importa de otra feature**. Si dos features necesitan lo mismo → sube a `src/shared/`.
 3. `src/app/` (chrome) puede componer features (`header` usa `cart`, `site-search`). Features no importan de `app`.
 4. **Cero archivos nuevos en `src/components/`, `src/utils/`, `src/data/`** (deprecados; no crear ni revivir esas carpetas).
 5. Una feature incluye sus componentes, su data-access al SDK de Wix, sus tipos y su copy. Nada de "utils" genéricos.
 6. Nombres en kebab-case, en inglés, en singular o plural según el dominio (`gift-cards`, `workshops`).
+7. **Exports nombrados, nunca barrels ni default.** Preferir `export function` / `export const` / `export interface` e `import { X }`. Prohibido `export *` y `export default` en `.ts`/`.tsx`. Excepción única: los componentes `.astro`, que Astro exporta por default (se importan como default: `import Card from '@/features/…/card.astro'`).
 
 Tests espejan la estructura: `tests/features/<feature>/*.test.ts(x)` y `tests/shared/*.test.ts`. Los E2E siguen planos en `tests/e2e/*.spec.ts` (son por ruta, no por feature).
 

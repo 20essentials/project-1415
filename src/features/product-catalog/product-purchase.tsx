@@ -74,7 +74,7 @@ interface ProductPurchaseProps {
   cartHref?: string;
 }
 
-export default function ProductPurchase({
+export function ProductPurchase({
   product,
   inventoryByVariant = {},
   labels: labelOverrides,

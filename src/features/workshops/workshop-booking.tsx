@@ -116,7 +116,7 @@ function formatRange(start: string, end: string, locale: string, timeZone: strin
   return `${day}, ${start.slice(11, 16)}–${end.slice(11, 16)}`;
 }
 
-export default function WorkshopBooking({
+export function WorkshopBooking({
   serviceId,
   timeZone,
   locale,

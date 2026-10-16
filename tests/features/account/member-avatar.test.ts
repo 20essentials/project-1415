@@ -10,7 +10,7 @@ vi.mock('@wix/media', () => ({ files: { importFile } }));
 vi.mock('@wix/members', () => ({ members: { updateMember } }));
 vi.mock('@wix/sdk', () => ({ media: { getScaledToFillImageUrl } }));
 
-import { resolveMemberAvatarUrl } from '@/features/account';
+import { resolveMemberAvatarUrl } from '@/features/account/member-avatar';
 
 const GOOGLE_URL = 'https://lh3.googleusercontent.com/a/abc=s96-c';
 const WIX_URL = 'https://static.wixstatic.com/media/wix-id';

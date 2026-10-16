@@ -1,19 +1,19 @@
 ---
 import Layout from '@/app/layout.astro';
-import { ProductCard } from '@/features/product-catalog';
-import { ProductPurchase } from '@/features/product-catalog';
-import { RatingStars } from '@/features/reviews';
-import type { PurchaseProduct, VariantStock } from '@/features/product-catalog';
+import ProductCard from '@/features/product-catalog/product-card.astro';
+import { ProductPurchase } from '@/features/product-catalog/product-purchase';
+import RatingStars from '@/features/reviews/rating-stars.astro';
+import type { PurchaseProduct, VariantStock } from '@/features/product-catalog/product-purchase';
 import { productsV3, inventoryItemsV3 } from '@wix/stores';
 import { WIX_APPS } from '@wix/essentials';
 import { SEO } from '@wix/seo/components';
 import { loadSEOTagsServiceConfig } from '@wix/seo/services';
 import { seoTags } from '@wix/seo';
-import { listProductsInCategory } from '@/features/product-catalog';
+import { listProductsInCategory } from '@/features/product-catalog/categories';
 import { renderRicos, type RicosDocument } from '@/shared/ricos';
 import { resolveWixImageUrl } from '@/shared/wix-image';
 import { toMetaDescription } from '@/shared/seo';
-import { getProductReviews, averageRating } from '@/features/reviews';
+import { getProductReviews, averageRating } from '@/features/reviews/reviews';
 import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
 import AnalyticsView from '@/shared/analytics-view.astro';
 import type { V3Product } from '@wix/auto_sdk_stores_products-v-3';

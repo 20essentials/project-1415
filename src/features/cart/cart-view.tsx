@@ -130,7 +130,7 @@ interface CartViewProps {
   thankYouPath?: string;
 }
 
-export default function CartView({
+export function CartView({
   labels: labelOverrides,
   continueHref = "/products",
   thankYouPath = "/thank-you",

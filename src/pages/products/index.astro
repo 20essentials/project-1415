@@ -1,9 +1,9 @@
 ---
 import Layout from '@/app/layout.astro';
-import { ProductCard } from '@/features/product-catalog';
-import { CategoryRail } from '@/features/product-catalog';
+import ProductCard from '@/features/product-catalog/product-card.astro';
+import CategoryRail from '@/features/product-catalog/category-rail.astro';
 import { productsV3 } from '@wix/stores';
-import { listStoreCategories } from '@/features/product-catalog';
+import { listStoreCategories } from '@/features/product-catalog/categories';
 import { useTranslation, localize } from '@/shared/i18n';
 
 const { t } = useTranslation();

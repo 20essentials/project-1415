@@ -49,7 +49,7 @@ function readCachedCount(): number {
   }
 }
 
-export default function CartBadge({ labels = DEFAULT_LABELS, href = "/cart" }: CartBadgeProps = {}) {
+export function CartBadge({ labels = DEFAULT_LABELS, href = "/cart" }: CartBadgeProps = {}) {
   // SSR pinta el link con 0; el conteo cacheado recién entra en el efecto para
   // no desincronizar el hidratación.
   const [count, setCount] = useState(0);

@@ -29,7 +29,7 @@ interface NewsletterFormProps {
   labels?: Partial<NewsletterLabels>;
 }
 
-export default function NewsletterForm({ formId, labels: labelOverrides }: NewsletterFormProps) {
+export function NewsletterForm({ formId, labels: labelOverrides }: NewsletterFormProps) {
   const labels = { ...DEFAULT_LABELS, ...labelOverrides };
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import CartBadge from '@/features/cart/cart-badge';
+import { CartBadge } from '@/features/cart/cart-badge';
 
 const getCurrentCart = vi.fn();
 

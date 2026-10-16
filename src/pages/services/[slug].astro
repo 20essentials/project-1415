@@ -1,8 +1,8 @@
 ---
 import Layout from '@/app/layout.astro';
-import { WorkshopBooking } from '@/features/workshops';
-import type { BookingField, WorkshopBookingLabels } from '@/features/workshops';
-import { BOOKING_FORM_FIELDS, SITE_TIMEZONE, getWorkshopBySlug } from '@/features/workshops';
+import { WorkshopBooking } from '@/features/workshops/workshop-booking';
+import type { BookingField, WorkshopBookingLabels } from '@/features/workshops/workshop-booking';
+import { BOOKING_FORM_FIELDS, SITE_TIMEZONE, getWorkshopBySlug } from '@/features/workshops/bookings';
 import { WIX_APPS } from '@wix/essentials';
 import { SEO } from '@wix/seo/components';
 import { loadSEOTagsServiceConfig } from '@wix/seo/services';

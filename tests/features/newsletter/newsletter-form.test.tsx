@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import NewsletterForm from '@/features/newsletter/newsletter-form';
+import { NewsletterForm } from '@/features/newsletter/newsletter-form';
 
 const submitForm = vi.fn();
 

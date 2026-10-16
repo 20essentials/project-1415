@@ -62,7 +62,7 @@ function readFieldErrors(error: unknown, invalidLabel: string): Record<string, s
 const inputClass =
   "w-full rounded-sm border border-rule bg-paper-warm px-3 py-2 text-sm text-ink placeholder:text-mute transition-colors duration-500 ease-fluid focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
-export default function ContactForm({ formId, fields, labels: labelOverrides }: ContactFormProps) {
+export function ContactForm({ formId, fields, labels: labelOverrides }: ContactFormProps) {
   const labels = { ...DEFAULT_LABELS, ...labelOverrides };
   const [values, setValues] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
