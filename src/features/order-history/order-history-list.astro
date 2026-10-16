@@ -1,0 +1,116 @@
+---
+import type { MemberOrderSummary } from './orders';
+import { currentLanguage, localize, useTranslation } from '@/shared/i18n';
+import { resolveWixImageUrl } from '@/shared/wix-image';
+
+interface Props {
+  orders: MemberOrderSummary[];
+}
+
+const { orders } = Astro.props;
+const { t } = useTranslation();
+
+type Badge = { key: string; tone: string };
+
+// Wix separa `status` (flujo del pedido) de `paymentStatus` (cobro); la tarjeta
+// colapsa ambos en una sola etiqueta.
+function badgeFor(order: MemberOrderSummary): Badge {
+  const { status, paymentStatus } = order;
+  if (status === 'CANCELED') return { key: 'order-history.status.canceled', tone: 'text-ink-soft' };
+  if (paymentStatus === 'FULLY_REFUNDED' || paymentStatus === 'PARTIALLY_REFUNDED') {
+    return { key: 'order-history.status.refunded', tone: 'text-ink-soft' };
+  }
+  if (status === 'APPROVED' || paymentStatus === 'PAID') {
+    return { key: 'order-history.status.paid', tone: 'text-accent' };
+  }
+  if (paymentStatus === 'NOT_PAID') return { key: 'order-history.status.unpaid', tone: 'text-mute' };
+  if (status === 'PENDING' || status === 'INITIALIZED') {
+    return { key: 'order-history.status.pending', tone: 'text-mute' };
+  }
+  return { key: 'order-history.status.other', tone: 'text-mute' };
+}
+
+const dateFormatter = new Intl.DateTimeFormat(currentLanguage(), { dateStyle: 'medium' });
+
+function formatDate(value: Date | null): string {
+  if (!value) return '—';
+  return dateFormatter.format(value);
+}
+
+function formatTotal(order: MemberOrderSummary): string {
+  const total = order.priceSummary.total;
+  if (total?.formattedAmount) return total.formattedAmount;
+  const amount = Number(total?.amount);
+  if (!total?.amount || !order.currency || !Number.isFinite(amount)) return '—';
+  try {
+    return new Intl.NumberFormat(currentLanguage(), { style: 'currency', currency: order.currency }).format(amount);
+  } catch {
+    return total.amount;
+  }
+}
+
+const cards = orders.map((order) => ({
+  number: order.orderNumber,
+  date: formatDate(order.createdDate),
+  total: formatTotal(order),
+  badge: badgeFor(order),
+  items: order.lineItems.map((item) => ({
+    title: item.title,
+    quantity: item.quantity,
+    thumb: resolveWixImageUrl(item.image, 96, 96),
+  })),
+}));
+---
+
+{
+  cards.length === 0 ? (
+    <div class="rounded-md border border-rule bg-paper-warm/40 p-8 text-center">
+      <p class="text-sm text-ink-soft">{t('order-history.empty')}</p>
+      <a href={localize('/products')} class="btn btn-ghost mt-6">
+        <span class="text-trim">{t('order-history.empty-cta')}</span>
+      </a>
+    </div>
+  ) : (
+    <ul class="grid gap-4">
+      {cards.map((card) => (
+        <li class="rounded-md border border-rule bg-paper-warm/40 p-6">
+          <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+            <div>
+              <p class="font-display text-xl text-ink">#{card.number}</p>
+              <p class="mt-1 text-sm text-ink-soft">{card.date}</p>
+            </div>
+            <div class="flex items-center gap-4">
+              <span class={`text-xs font-medium tracking-widest uppercase ${card.badge.tone}`}>
+                {t(card.badge.key)}
+              </span>
+              <span class="text-base font-medium text-ink">{card.total}</span>
+            </div>
+          </div>
+          {card.items.length > 0 && (
+            <ul class="mt-5 grid gap-3 border-t border-rule pt-5">
+              {card.items.map((item) => (
+                <li class="flex items-center gap-3">
+                  {item.thumb && (
+                    <img
+                      src={item.thumb}
+                      width="48"
+                      height="48"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      class="size-12 shrink-0 rounded-sm border border-rule object-cover"
+                    />
+                  )}
+                  <span class="min-w-0 flex-1 truncate text-sm text-ink-soft">{item.title}</span>
+                  <span class="shrink-0 text-sm text-mute">
+                    {t('order-history.quantity', { qty: item.quantity })}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+  )
+}

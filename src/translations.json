@@ -146,6 +146,7 @@
   "account.member": "Member",
   "account.meta-title": "Your account — Petals & Predators",
   "account.meta-description": "Your Petals & Predators member profile and sign-out.",
+  "account.order-history": "Order history",
   "about.meta-title": "About — Petals & Predators",
   "about.meta-description": "A greenhouse boutique for carnivorous plants and flowers with character — grown in-house, packed by hand, and shipped alive.",
   "about.hero.title": "A greenhouse boutique for plants with teeth — and flowers with character.",
@@ -361,5 +362,16 @@
   "booking-confirmation.back": "Back to workshops",
   "booking-confirmation.missing-title": "No booking found",
   "booking-confirmation.missing-body": "We couldn’t find that booking. If you completed a reservation, the confirmation email has the details.",
-  "services.retry": "Try again"
+  "services.retry": "Try again",
+  "order-history.title": "Order history",
+  "order-history.empty": "You haven't placed any orders yet.",
+  "order-history.empty-cta": "Browse plants",
+  "order-history.status.paid": "Paid",
+  "order-history.status.pending": "Pending",
+  "order-history.status.unpaid": "Unpaid",
+  "order-history.status.canceled": "Canceled",
+  "order-history.status.refunded": "Refunded",
+  "order-history.status.other": "Processing",
+  "order-history.quantity": "×{{qty}}",
+  "order-history.back-to-account": "Back to account"
 }
