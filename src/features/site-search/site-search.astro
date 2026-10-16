@@ -40,23 +40,27 @@ const { t } = useTranslation();
   <div class="w-full rounded-xl bg-paper/95 shadow-2xl shadow-paper/60 ring-1 ring-rule backdrop-blur-xl">
     <h2 id="site-search-title" class="sr-only">{t('search.title')}</h2>
 
-    <form class="flex items-center gap-3 border-b border-rule px-4" role="search" aria-label={t('search.title')} data-search-form>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-4 shrink-0 text-mute" aria-hidden="true">
-        <circle cx="11" cy="11" r="7"></circle>
-        <path d="m20 20-3.2-3.2" stroke-linecap="round"></path>
-      </svg>
-      <input
-        id="site-search-input"
-        type="search"
-        class="h-14 w-full min-w-0 bg-transparent text-base text-ink placeholder:text-mute"
-        placeholder={t('search.placeholder')}
-        aria-label={t('search.placeholder')}
-        autocomplete="off"
-        autocapitalize="off"
-        autocorrect="off"
-        spellcheck="false"
-        data-search-input
-      />
+    <form class="flex items-center gap-2.5 border-b border-rule px-3.5 py-3" role="search" aria-label={t('search.title')} data-search-form>
+      <div
+        class="group flex min-w-0 flex-1 items-center gap-2.5 rounded-lg border border-rule bg-ink/5 px-3.5 transition-colors duration-500 ease-fluid focus-within:border-accent/70 focus-within:bg-ink/10"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-4 shrink-0 text-mute transition-colors duration-500 ease-fluid group-focus-within:text-accent" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.2-3.2" stroke-linecap="round"></path>
+        </svg>
+        <input
+          id="site-search-input"
+          type="search"
+          class="h-11 w-full min-w-0 bg-transparent text-base text-ink caret-accent outline-none placeholder:text-mute"
+          placeholder={t('search.placeholder')}
+          aria-label={t('search.placeholder')}
+          autocomplete="off"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          data-search-input
+        />
+      </div>
       <button
         type="button"
         class="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-mute transition-colors duration-500 ease-fluid hover:bg-ink/10 hover:text-ink"
@@ -69,7 +73,7 @@ const { t } = useTranslation();
       </button>
     </form>
 
-    <p class="px-4 py-3 text-sm text-mute" role="status" aria-live="polite" data-search-message>
+    <p class="px-3.5 py-3 text-sm text-mute" role="status" aria-live="polite" data-search-message>
       {t('search.hint')}
     </p>
 
