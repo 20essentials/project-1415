@@ -262,9 +262,14 @@ export async function createWorkshopBooking(
     },
   );
 
+  const booking = created.booking;
+  if (!booking) {
+    throw new Error('createWorkshopBooking: Wix returned no booking');
+  }
+
   return {
-    id: created.booking._id ?? '',
-    status: created.booking.status ?? 'CONFIRMED',
+    id: booking._id ?? '',
+    status: booking.status ?? 'CONFIRMED',
     serviceName: workshop.name,
     localStartDate: slot.localStartDate,
     localEndDate: slot.localEndDate,

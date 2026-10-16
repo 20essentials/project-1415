@@ -101,8 +101,8 @@ function dateLabel(date: string, locale: string, timeZone: string): { weekday: s
   });
   const parts = formatter.formatToParts(new Date(`${date}T12:00:00Z`));
   return {
-    weekday: parts.find((part) => part.type === "weekday")?.day ?? "",
-    day: parts.find((part) => part.type === "day")?.day ?? "",
+    weekday: parts.find((part) => part.type === "weekday")?.value ?? "",
+    day: parts.find((part) => part.type === "day")?.value ?? "",
   };
 }
 

@@ -2,6 +2,7 @@
 import Layout from '@/app/layout.astro';
 import { CartView } from '@/features/cart';
 import { useTranslation, localize } from '@/shared/i18n';
+import AnalyticsView from '@/shared/analytics-view.astro';
 
 const { t } = useTranslation();
 
@@ -27,6 +28,7 @@ const labels = {
 ---
 
 <Layout noindex>
+  <AnalyticsView event="CustomEvent" payload={{ eventCategory: 'Cart', eventAction: 'ViewCart' }} />
   <div class='relative z-2 bg-paper px-4 pt-24 pb-16 text-ink sm:px-8 lg:px-20'>
     <CartView client:load labels={labels} continueHref={localize('/products')} thankYouPath={localize('/thank-you')} />
   </div>

@@ -4,11 +4,11 @@ import { useTranslation, localize } from '@/shared/i18n';
 
 interface Props {
   product: {
-    _id?: string;
-    name?: string;
-    slug?: string;
-    media?: { main?: { image?: string; url?: string; altText?: string } };
-    actualPriceRange?: { minValue?: { formattedAmount?: string } };
+    _id?: string | null;
+    name?: string | null;
+    slug?: string | null;
+    media?: { main?: { image?: string | null; url?: string | null; altText?: string | null } | null } | null;
+    actualPriceRange?: { minValue?: { formattedAmount?: string | null } | null } | null;
   };
   index?: number;
 }

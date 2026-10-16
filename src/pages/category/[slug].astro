@@ -13,6 +13,7 @@ import {
 } from '@/features/product-catalog';
 import { toMetaDescription } from '@/shared/seo';
 import { useTranslation, localize } from '@/shared/i18n';
+import AnalyticsView from '@/shared/analytics-view.astro';
 
 export const wixMetadata = {
   appDefId: WIX_APPS.checkoutAndOrders.id,
@@ -69,6 +70,10 @@ function pageHref(next: string | null): string | null {
 ---
 
 <Layout>
+  <AnalyticsView
+    event="CustomEvent"
+    payload={{ eventCategory: 'Category', eventAction: 'ViewCategory', eventLabel: category.name }}
+  />
   <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />
   <Fragment slot="head">
     <meta name="description" content={metaDescription} />

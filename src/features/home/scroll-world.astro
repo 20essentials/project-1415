@@ -46,8 +46,8 @@ const world = {
     body: stop.subtitle,
     tags: stop.steps ?? stop.claims ?? [],
     cta: stop.cta ? { primary: stop.cta } : undefined,
-    scroll: stop.scroll,
-    linger: stop.linger,
+    scroll: 'scroll' in stop ? stop.scroll : undefined,
+    linger: 'linger' in stop ? stop.linger : undefined,
     accent: 'var(--color-accent)'
   }))
 };
@@ -84,7 +84,7 @@ const world = {
         return true;
       };
       // Links like /#care arrive from other pages; land on the matching stop.
-      (window as SwWindow).__swGoTo(decodeURIComponent(window.location.hash.slice(1)));
+      (window as SwWindow).__swGoTo?.(decodeURIComponent(window.location.hash.slice(1)));
     });
   }
 

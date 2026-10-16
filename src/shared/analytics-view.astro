@@ -1,0 +1,30 @@
+---
+import type { AnalyticsEventName } from './analytics';
+
+interface Props {
+  event: AnalyticsEventName;
+  payload?: Record<string, unknown>;
+}
+
+const { event, payload } = Astro.props;
+---
+
+<script type="application/json" data-pp-analytics-view is:inline set:html={JSON.stringify({ event, payload: payload ?? {} })}></script>
+
+<script>
+  import { trackEvent, type AnalyticsEventName } from '@/shared/analytics';
+
+  const markers = document.querySelectorAll<HTMLScriptElement>('script[data-pp-analytics-view]');
+
+  for (const marker of markers) {
+    try {
+      const parsed = JSON.parse(marker.textContent ?? '{}') as {
+        event?: AnalyticsEventName;
+        payload?: Record<string, unknown>;
+      };
+      if (parsed.event) trackEvent(parsed.event, parsed.payload);
+    } catch {
+      // A malformed payload must never break the page over tracking.
+    }
+  }
+</script>

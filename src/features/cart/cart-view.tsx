@@ -178,7 +178,12 @@ export default function CartView({
       if (isCart(updated)) {
         setCart(updated as Cart);
         publishCartUpdate(updated as Cart);
-        trackEvent("cart_updated", { itemId, quantity });
+        trackEvent("CustomEvent", {
+          eventCategory: "Cart",
+          eventAction: "CartUpdated",
+          eventLabel: itemId,
+          quantity,
+        });
       } else {
         await refreshCart();
       }
@@ -194,13 +199,21 @@ export default function CartView({
     setUpdating(true);
     setError(null);
         const prevCount = lineItems.reduce((sum: number, item: LineItem) => sum + (item.quantity ?? 0), 0);
+    const removed = lineItems.find((item: LineItem) => item._id === itemId);
     try {
       const res = await currentCart.removeLineItemsFromCurrentCart([itemId]);
       const updated = res?.cart as unknown;
       if (isCart(updated)) {
         setCart(updated as Cart);
         publishCartUpdate(updated as Cart, -(prevCount > 0 ? prevCount : 1));
-        trackEvent("cart_removed", { itemId });
+        trackEvent("RemoveFromCart", {
+          id: itemId,
+          name: removed?.name ?? labels.product,
+          price: removed?.price?.amountPerItem ?? removed?.price?.amount ?? undefined,
+          currency,
+          quantity: removed?.quantity ?? 1,
+          origin: "Cart Page",
+        });
       } else {
         await refreshCart();
       }
@@ -234,7 +247,16 @@ export default function CartView({
       if (!fullUrl) {
         throw new Error("Missing redirect session URL");
       }
-      trackEvent("cart_checkout_started", { checkoutId });
+      trackEvent("InitiateCheckout", {
+        origin: "Cart Page",
+        contents: lineItems.map((item: LineItem) => ({
+          id: item._id,
+          name: item.name ?? labels.product,
+          price: item.price?.amountPerItem ?? item.price?.amount ?? undefined,
+          currency,
+          quantity: item.quantity ?? 1,
+        })),
+      });
       window.location.href = fullUrl;
     } catch (err) {
       setError(err instanceof Error ? err.message : labels.errorCheckout);

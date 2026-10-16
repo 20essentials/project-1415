@@ -97,6 +97,7 @@ Necesitas sesión de Wix activa (`wix login`) y el proyecto enlazado (ver `step-
 | `npm run dev` | Servidor de desarrollo (`wix dev`) |
 | `npm run build` | Compila el sitio (`wix build`) |
 | `npm run release` | Publica a Wix Hosting |
+| `npm run check` | Typecheck de TS y `.astro` (`astro check`) |
 | `npm test` | Tests unitarios (Vitest) |
 | `npm run test:watch` | Vitest en modo watch |
 | `npm run test:e2e` | E2E con Playwright |

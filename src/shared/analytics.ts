@@ -1,14 +1,26 @@
+import { analytics } from '@wix/site';
+import { hasAnalyticsConsent } from './consent';
+
 export type AnalyticsEventName =
   | "AddToCart"
   | "RemoveFromCart"
   | "InitiateCheckout"
   | "Purchase"
+  | "ViewContent"
+  | "ClickProduct"
+  | "Lead"
   | "ArticleView"
   | "FormSubmit"
   | "AddProductImpression"
-  | "ViewContent"
-  | "ClickProduct"
+  | "CustomEvent"
   | (string & {});
+
+type TrackEventData = Parameters<typeof analytics.trackEvent>[1];
+
+function isDev(): boolean {
+  const meta = import.meta as unknown as { env?: { DEV?: boolean } };
+  return Boolean(meta.env?.DEV);
+}
 
 export function trackEvent(
   name: AnalyticsEventName,
@@ -16,25 +28,18 @@ export function trackEvent(
 ): void {
   if (typeof window === "undefined") return;
 
-  const event = { name, ...(payload ?? {}) };
-
-  const w = window as unknown as {
-    dataLayer?: unknown[];
-    wixAnalytics?: { track(event: { name: string } & Record<string, unknown>): void };
-  };
-
-  if (w.wixAnalytics?.track) {
-    w.wixAnalytics.track(event);
+  if (!hasAnalyticsConsent()) {
+    if (isDev()) {
+      console.debug("[analytics] skipped (no consent)", name, payload);
+    }
     return;
   }
 
-  if (w.dataLayer) {
-    w.dataLayer.push({ event: name, ...event });
-    return;
-  }
-
-  const meta = import.meta as unknown as { env?: { DEV?: boolean } };
-  if (meta.env?.DEV) {
-    console.debug("[analytics]", event);
+  try {
+    analytics.trackEvent(name, payload as TrackEventData);
+  } catch (error) {
+    if (isDev()) {
+      console.debug("[analytics] failed", name, payload, error);
+    }
   }
 }

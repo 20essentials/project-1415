@@ -6,6 +6,7 @@
     "astro": "astro",
     "dev": "wix dev",
     "build": "wix build",
+    "check": "astro check",
     "test": "vitest run",
     "test:unit": "vitest run",
     "test:watch": "vitest",
@@ -39,12 +40,14 @@
     "@wix/sdk": "^1.21.17",
     "@wix/seo": "^1.0.92",
     "@wix/services-manager": "^1.0.7",
+    "@wix/site": "1.68.0",
     "@wix/stores": "^1.0.938",
     "astro": "^5.8.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@astrojs/check": "0.9.10",
     "@astrojs/react": "^4.3.0",
     "@playwright/test": "^1.64.0",
     "@testing-library/dom": "^10.4.2",

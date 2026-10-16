@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from './header.astro';
 import Footer from './footer.astro';
+import { ConsentBanner, ConsentBootstrap } from '@/features/consent';
 import { members } from '@wix/members';
 import { currentLanguage } from '@/shared/i18n';
 
@@ -33,6 +34,7 @@ const lang = currentLanguage();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <slot name="seo-tags" />
     <script is:inline>document.documentElement.classList.add('js');</script>
+    <ConsentBootstrap />
     {noindex && <meta name="robots" content="noindex, follow" />}
     <meta name="theme-color" content="#08090a" />
 
@@ -53,5 +55,6 @@ const lang = currentLanguage();
       <slot />
     </main>
     <Footer />
+    <ConsentBanner />
   </body>
 </html>

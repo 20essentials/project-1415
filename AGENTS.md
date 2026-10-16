@@ -54,6 +54,7 @@ Tests espejan la estructura: `tests/features/<feature>/*.test.ts(x)` y `tests/sh
 
 ## Testing
 
+- Typecheck: `npm run check` (`astro check`, devDep `@astrojs/check`). Necesario para ver errores de `.astro`/TS que `wix build` no reporta (el build solo compila). Correr antes de dar un paso por terminado.
 - Stack: Vitest + `@testing-library/react` (jsdom). Correr con `npm test` (alias `npm run test:unit`); watch: `npm run test:watch`.
 - Tests espejan la arquitectura: `tests/features/<feature>/*.test.ts(x)` y `tests/shared/*.test.ts`. `tests/setup.ts` registra `@testing-library/jest-dom` y limpia el DOM tras cada test.
 - `vitest.config.ts` aliasa los módulos virtuales que no resuelven en Node: `wix:astro:i18n`, `astro:env/client`, `@wix/essentials` (mocks en `tests/mocks/`). Al testear código que los importe, extender los alias.

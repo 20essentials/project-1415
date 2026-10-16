@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { submissions } from "@wix/forms";
+import { trackEvent } from "@/shared/analytics";
 
 export interface ContactFormField {
   label: string;
@@ -80,6 +81,7 @@ export default function ContactForm({ formId, fields, labels: labelOverrides }: 
       if (result.status === "CONFIRMED" || result.status === "PENDING") {
         setValues({});
         setStatus("success");
+        trackEvent("Lead", { category: "Contact", action: "Submit" });
       } else {
         setStatus("error");
       }

@@ -8,7 +8,7 @@ export type WixImage = {
 };
 
 export function resolveWixImage(
-  image: string | { id?: string; url?: string } | undefined
+  image: string | { id?: string; url?: string } | null | undefined
 ): WixImage | null {
   if (!image) return null;
 
@@ -46,7 +46,7 @@ export function srcSet(img: WixImage, widths: number[]): string {
 // (stores product-card + detail page, blog post hero, cms list thumbnails).
 // Kept alongside resolveWixImage so verticals do not ship their own copy.
 export function resolveWixImageUrl(
-  image: string | { id?: string; url?: string } | undefined,
+  image: string | { id?: string; url?: string } | null | undefined,
   width?: number,
   height?: number,
 ): string | null {

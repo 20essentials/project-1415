@@ -1,0 +1,38 @@
+---
+// Runs before the Wix consent runtime loads to apply the visitor's stored
+// choice (or the opt-in default) as early as possible.
+---
+
+<script is:inline>
+  (function () {
+    var KEY = 'pp_consent_v1';
+    var state = null;
+    try {
+      state = window.localStorage.getItem(KEY);
+    } catch (e) {}
+
+    var policy =
+      state === 'accepted'
+        ? { essential: true, functional: true, analytics: true, advertising: true, dataToThirdParty: true }
+        : { essential: true, functional: false, analytics: false, advertising: false, dataToThirdParty: false };
+
+    function apply() {
+      var manager = window.consentPolicyManager;
+      if (manager && typeof manager.setConsentPolicy === 'function') {
+        try {
+          manager.setConsentPolicy(policy);
+        } catch (e) {}
+        return true;
+      }
+      return false;
+    }
+
+    if (!apply()) {
+      var attempts = 0;
+      var timer = window.setInterval(function () {
+        attempts += 1;
+        if (apply() || attempts >= 30) window.clearInterval(timer);
+      }, 100);
+    }
+  })();
+</script>

@@ -3,10 +3,11 @@ import Layout from '@/app/layout.astro';
 import { members } from '@wix/members';
 import { resolveMemberAvatarUrl } from '@/features/account';
 import { localize, currentLanguage, useTranslation } from '@/shared/i18n';
+import type { Member } from '@wix/auto_sdk_members_members';
 
 const { t } = useTranslation();
 
-type CurrentMember = NonNullable<Awaited<ReturnType<typeof members.getCurrentMember>>['member']>;
+type CurrentMember = Member;
 
 let member: CurrentMember | null = null;
 try {

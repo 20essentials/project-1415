@@ -11,6 +11,7 @@ export default defineConfig({
       'wix:astro:i18n': resolve('./tests/mocks/wix-astro-i18n.ts'),
       'astro:env/client': resolve('./tests/mocks/astro-env-client.ts'),
       '@wix/essentials': resolve('./tests/mocks/wix-essentials.ts'),
+      '@wix/site': resolve('./tests/mocks/wix-site.ts'),
     },
   },
   test: {

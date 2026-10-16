@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { submitForm } from "@/shared/wix-forms";
+import { trackEvent } from "@/shared/analytics";
 
 export interface NewsletterLabels {
   label: string;
@@ -53,6 +54,7 @@ export default function NewsletterForm({ formId, labels: labelOverrides }: Newsl
         setEmail("");
         setStatus("success");
         setMessage(labels.success);
+        trackEvent("Lead", { category: "Newsletter", action: "Subscribe" });
       } else {
         setStatus("error");
         setMessage(labels.error);

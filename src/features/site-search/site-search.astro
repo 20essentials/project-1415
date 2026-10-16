@@ -164,9 +164,9 @@ const { t } = useTranslation();
 <script>
   import { productsV3 } from '@wix/stores';
   import { resolveWixImageUrl } from '@/shared/wix-image';
+  import type { V3Product } from '@wix/auto_sdk_stores_products-v-3';
 
-  type SearchResponse = Awaited<ReturnType<typeof productsV3.searchProducts>>;
-  type SearchProduct = NonNullable<SearchResponse['products']>[number];
+  type SearchProduct = V3Product;
 
   const MIN_LENGTH = 2;
   const DEBOUNCE_MS = 200;
