@@ -3,7 +3,7 @@ description: Step 23 — Build + release (sitio en vivo) · Petals & Petals & Pr
 ---
 # Step 23 — Build + release (sitio en vivo)
 
-> **Siguiente:** `/generate-next-steps`
+> **Siguiente:** `/step-24-member-order-history`
 
 ## Objetivo
 
