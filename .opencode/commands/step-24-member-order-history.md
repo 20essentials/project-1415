@@ -3,7 +3,7 @@ description: Step 24 — Historial de órdenes (miembros) · Petals & Predators
 ---
 # Step 24 — Historial de órdenes (miembros)
 
-> **Siguiente:** `/generate-next-steps`
+> **Siguiente:** `/step-25-catalog-filters-and-sort` (si aún no existe → `/generate-next-steps`)
 
 ## Objetivo
 

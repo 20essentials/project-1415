@@ -26,15 +26,6 @@ export const wixMetadata = {
 
 const { t } = useTranslation();
 
-interface CardProduct {
-  _id?: string;
-  name?: string;
-  slug?: string;
-  ribbon?: { name?: string };
-  media?: { main?: { image?: string; url?: string; altText?: string } };
-  actualPriceRange?: { minValue?: { formattedAmount?: string } };
-}
-
 const PRODUCT_FIELDS = [
   'CURRENCY',
   'PLAIN_DESCRIPTION',
@@ -172,7 +163,7 @@ const metaDescription = toMetaDescription(
 const crumbs = product.breadcrumbsInfo?.breadcrumbs ?? [];
 const inStock = product.inventory?.availabilityStatus !== 'OUT_OF_STOCK';
 
-let related: CardProduct[] = [];
+let related: V3Product[] = [];
 const categoryId = product.directCategoriesInfo?.categories?.[0]?._id;
 if (categoryId) {
   const relatedPage = await listProductsInCategory(categoryId, { limit: 8 });

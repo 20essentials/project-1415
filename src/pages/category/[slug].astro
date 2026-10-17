@@ -2,6 +2,7 @@
 import Layout from '@/app/layout.astro';
 import ProductCard from '@/features/product-catalog/product-card.astro';
 import CategoryRail from '@/features/product-catalog/category-rail.astro';
+import CatalogToolbar from '@/features/product-catalog/catalog-toolbar.astro';
 import { WIX_APPS } from '@wix/essentials';
 import { SEO } from '@wix/seo/components';
 import { loadSEOTagsServiceConfig } from '@wix/seo/services';
@@ -11,8 +12,16 @@ import {
   listProductsInCategory,
   listStoreCategories,
 } from '@/features/product-catalog/categories';
+import {
+  buildCatalogHref,
+  DEFAULT_CATALOG_QUERY,
+  filterCatalogItems,
+  isCatalogFiltered,
+  parseCatalogQuery,
+  sortCatalogItems,
+} from '@/features/product-catalog/catalog-filters';
 import { toMetaDescription } from '@/shared/seo';
-import { useTranslation, localize } from '@/shared/i18n';
+import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
 import AnalyticsView from '@/shared/analytics-view.astro';
 
 export const wixMetadata = {
@@ -52,8 +61,14 @@ if (!category) {
 const cursor = Astro.url.searchParams.get('cursor') ?? undefined;
 const page = await listProductsInCategory(category.id, { limit: PAGE_SIZE, cursor });
 
-const productList = page.items.filter(
-  (product: { ribbon?: { name?: string } }) => product.ribbon?.name !== 'Gift Card',
+const query = parseCatalogQuery(Astro.url.searchParams);
+const productList = sortCatalogItems(
+  filterCatalogItems(
+    page.items.filter((product) => product.ribbon?.name !== 'Gift Card'),
+    query.availability,
+  ),
+  query.sort,
+  currentLanguage(),
 );
 
 const categories = await listStoreCategories();
@@ -65,7 +80,7 @@ const metaDescription = toMetaDescription(
 
 function pageHref(next: string | null): string | null {
   if (!next) return null;
-  return `${localize(`/category/${category!.slug}`)}?cursor=${encodeURIComponent(next)}`;
+  return buildCatalogHref(localize(`/category/${category!.slug}`), query, { cursor: next });
 }
 ---
 
@@ -102,6 +117,16 @@ function pageHref(next: string | null): string | null {
     activeSlug={category.slug}
     prevHref={pageHref(page.prevCursor)}
     nextHref={pageHref(page.nextCursor)}
+  />
+
+  <CatalogToolbar
+    query={query}
+    resultCount={productList.length}
+    clearHref={
+      isCatalogFiltered(query)
+        ? buildCatalogHref(localize(`/category/${category.slug}`), DEFAULT_CATALOG_QUERY)
+        : null
+    }
   />
 
   <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">

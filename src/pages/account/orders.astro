@@ -20,7 +20,7 @@ if (!member) {
   return Astro.redirect(localize(`/api/auth/login?returnToUrl=${localize('/account/orders')}`));
 }
 
-const orders = await listMemberOrders(member.loginEmail ?? '');
+const orders = await listMemberOrders(member.loginEmail ?? member.contact?.emails?.[0] ?? '');
 ---
 
 <Layout noindex>

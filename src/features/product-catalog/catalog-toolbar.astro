@@ -1,0 +1,78 @@
+---
+import type { CatalogQuery } from './catalog-filters';
+import { useTranslation } from '@/shared/i18n';
+
+interface Props {
+  query: CatalogQuery;
+  resultCount: number;
+  clearHref: string | null;
+}
+
+const { query, resultCount, clearHref } = Astro.props;
+const { t } = useTranslation();
+
+const sortOptions = [
+  { value: 'featured', label: t('shop.sort.featured') },
+  { value: 'price-asc', label: t('shop.sort.price-asc') },
+  { value: 'price-desc', label: t('shop.sort.price-desc') },
+  { value: 'name-asc', label: t('shop.sort.name-asc') },
+  { value: 'newest', label: t('shop.sort.newest') },
+] as const;
+
+const availabilityOptions = [
+  { value: 'all', label: t('shop.filter.all') },
+  { value: 'in-stock', label: t('shop.filter.in-stock') },
+] as const;
+
+const selectClass =
+  'h-10 rounded-sm border border-rule bg-paper-warm px-3 text-sm text-ink transition-colors duration-500 ease-fluid focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
+const countLabel = resultCount === 1 ? 'shop.results.count-one' : 'shop.results.count';
+---
+
+<div class="relative z-2 bg-paper px-4 pb-6 sm:px-8 lg:px-20">
+  <div class="mx-auto max-w-6xl">
+    <form method="get" class="flex flex-col gap-4 border-t border-rule pt-6 sm:flex-row sm:flex-wrap sm:items-end">
+      <div class="flex flex-col gap-1.5">
+        <label for="catalog-sort" class="text-xs font-medium tracking-widest text-mute uppercase">
+          {t('shop.sort.label')}
+        </label>
+        <select id="catalog-sort" name="sort" class={selectClass}>
+          {sortOptions.map((option) => (
+            <option value={option.value} selected={query.sort === option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label for="catalog-availability" class="text-xs font-medium tracking-widest text-mute uppercase">
+          {t('shop.filter.availability')}
+        </label>
+        <select id="catalog-availability" name="availability" class={selectClass}>
+          {availabilityOptions.map((option) => (
+            <option value={option.value} selected={query.availability === option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-ghost">
+        <span class="text-trim">{t('shop.filter.apply')}</span>
+      </button>
+
+      <p class="text-sm text-ink-soft sm:ml-auto sm:self-center">
+        {t(countLabel, { count: resultCount })}
+      </p>
+    </form>
+
+    {
+      clearHref && (
+        <a href={clearHref} class="mt-4 inline-block text-sm text-accent transition-colors hover:underline">
+          {t('shop.filter.clear')}
+        </a>
+      )
+    }
+  </div>
+</div>

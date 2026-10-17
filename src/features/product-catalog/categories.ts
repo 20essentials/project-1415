@@ -2,6 +2,7 @@
 // failure. The auto-provisioned "All Products" root is dropped.
 import * as categories from "@wix/auto_sdk_categories_categories";
 import { productsV3 } from "@wix/stores";
+import type { V3Product } from "@wix/auto_sdk_stores_products-v-3";
 
 const STORES_NAMESPACE = "@wix/stores";
 const STORES_APP_ID = "215238eb-22a5-4c36-9e7b-e7c08025e04e";
@@ -102,7 +103,7 @@ async function getCategoryItemIds(categoryId: string): Promise<string[]> {
 }
 
 export interface ProductPage {
-  items: any[];
+  items: V3Product[];
   nextCursor: string | null;
   prevCursor: string | null;
 }
@@ -118,7 +119,7 @@ export async function listProductsInCategory(
       return { items: [], nextCursor: null, prevCursor: null };
     }
     let builder = productsV3
-      .queryProducts({ fields: ["CURRENCY"] })
+      .queryProducts({ fields: ["CURRENCY", "MIN_PRICE_VARIANT", "DISCOUNT_INFO"] })
       .in("_id", ids)
       .limit(opts.limit);
     if (opts.cursor) builder = builder.skipTo(opts.cursor);
