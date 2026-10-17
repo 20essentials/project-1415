@@ -386,5 +386,21 @@
   "order-history.status.refunded": "Refunded",
   "order-history.status.other": "Processing",
   "order-history.quantity": "×{{qty}}",
-  "order-history.back-to-account": "Back to account"
+  "order-history.back-to-account": "Back to account",
+  "cart.coupon": {
+    "label": "Coupon code",
+    "placeholder": "Enter coupon code",
+    "apply": "Apply",
+    "applying": "Applying…",
+    "applied": "Applied coupon",
+    "remove": "Remove",
+    "invalid": "Invalid coupon code",
+    "expired": "Coupon expired or not valid",
+    "already": "Coupon already applied",
+    "gift-card": "This coupon cannot be applied to gift cards",
+    "network": "Network error while applying coupon",
+    "unknown": "Failed to apply coupon"
+  },
+  "cart.discount": "Discount",
+  "cart.total": "Total"
 }

@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
-import { currentCart } from "@wix/ecom";
+import { currentCart, currentCartV2 } from "@wix/ecom";
 import { redirects } from "@wix/redirects";
 import { trackEvent } from "@/shared/analytics";
 import { resolveWixImageUrl } from "@/shared/wix-image";
+import {
+  couponDiscount,
+  couponErrorCode,
+  couponErrorMessage,
+  type CouponMessages,
+} from "./coupon-messages";
 
 const CART_CACHE_KEY = "cart:last-snapshot";
 
@@ -32,10 +38,17 @@ type Cart = CartFromSDK & {
       formattedConvertedAmount?: string | null;
     } | null;
   }>;
+  coupons?: Array<{ _id?: string | null; code?: string | null }> | null;
   summary?: {
     subtotal?: number | null;
     lineItemsSubtotal?: number | null;
     currencyCode?: string | null;
+    total?: number | null;
+    discounts?: Array<{
+      couponCode?: string | null;
+      couponId?: string | null;
+      discount?: { amount?: number | null } | null;
+    }> | null;
   } | null;
 };
 type LineItem = NonNullable<Cart["lineItems"]>[number];
@@ -99,9 +112,19 @@ export interface CartLabels {
   remove: string;
   summary: string;
   subtotal: string;
+  discount?: string;
+  total?: string;
   redirecting: string;
   checkout: string;
   product: string;
+  coupon?: CouponMessages & {
+    label: string;
+    placeholder: string;
+    apply: string;
+    applying: string;
+    applied: string;
+    remove: string;
+  };
 }
 
 const DEFAULT_LABELS: CartLabels = {
@@ -119,9 +142,25 @@ const DEFAULT_LABELS: CartLabels = {
   remove: "Remove",
   summary: "Order summary",
   subtotal: "Subtotal",
+  discount: "Discount",
+  total: "Total",
   redirecting: "Redirecting…",
   checkout: "Check out securely",
   product: "Product",
+  coupon: {
+    label: "Coupon code",
+    placeholder: "Enter coupon code",
+    apply: "Apply",
+    applying: "Applying…",
+    applied: "Applied coupon",
+    remove: "Remove",
+    invalid: "Invalid coupon code",
+    expired: "Coupon expired or not valid",
+    already: "Coupon already applied",
+    giftCard: "This coupon cannot be applied to gift cards",
+    network: "Network error while applying coupon",
+    unknown: "Failed to apply coupon",
+  },
 };
 
 interface CartViewProps {
@@ -141,6 +180,9 @@ export function CartView({
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [couponInput, setCouponInput] = useState("");
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponPending, setCouponPending] = useState(false);
 
   const refreshCart = async () => {
     setLoading(true);
@@ -165,6 +207,8 @@ export function CartView({
 
   const subtotal = summary?.subtotal ?? summary?.lineItemsSubtotal ?? 0;
   const currency = summary?.currencyCode ?? "USD";
+  const discount = couponDiscount(cart);
+  const total = summary?.total ?? (subtotal - (discount ?? 0) >= 0 ? subtotal - (discount ?? 0) : subtotal);
 
   const handleQuantityChange = async (itemId: string, quantity: number) => {
     if (!cart) return;
@@ -221,6 +265,61 @@ export function CartView({
       setError(err instanceof Error ? err.message : labels.errorRemove);
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleApplyCoupon = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (couponPending) return;
+    const code = couponInput.trim();
+    if (!code) return;
+    setCouponPending(true);
+    setCouponError(null);
+    try {
+      const res = await currentCartV2.addCouponToCurrentCart({ coupon: { code } });
+      const updated = res?.cart as unknown;
+      if (isCart(updated)) {
+        setCart(updated as Cart);
+        publishCartUpdate(updated as Cart);
+        trackEvent("CustomEvent", {
+          eventCategory: "Cart",
+          eventAction: "ApplyCoupon",
+          eventLabel: code,
+        });
+        setCouponInput("");
+      } else {
+        await refreshCart();
+      }
+    } catch (err) {
+      const codeErr = couponErrorCode(err);
+      const msgs = labels.coupon ?? DEFAULT_LABELS.coupon!;
+      setCouponError(couponErrorMessage(codeErr, msgs));
+    } finally {
+      setCouponPending(false);
+    }
+  };
+
+  const handleRemoveCoupon = async (couponId?: string | null) => {
+    if (couponPending) return;
+    const id = couponId ?? cart?.coupons?.[0]?._id;
+    if (!id) return;
+    setCouponPending(true);
+    setCouponError(null);
+    try {
+      const res = await currentCartV2.removeCouponFromCurrentCart(id);
+      const updated = res?.cart as unknown;
+      if (isCart(updated)) {
+        setCart(updated as Cart);
+        publishCartUpdate(updated as Cart);
+      } else {
+        await refreshCart();
+      }
+    } catch (err) {
+      const codeErr = couponErrorCode(err);
+      const msgs = labels.coupon ?? DEFAULT_LABELS.coupon!;
+      setCouponError(couponErrorMessage(codeErr, msgs));
+    } finally {
+      setCouponPending(false);
     }
   };
 
@@ -364,6 +463,75 @@ export function CartView({
             <span>{labels.subtotal}</span>
             <span className="cart-summary-subtotal">{formatCurrency(subtotal, currency)}</span>
           </div>
+          {cart?.coupons && cart.coupons.length > 0 && cart.coupons[0] && (
+            <div className="cart-summary-row">
+              <span>{labels.discount ?? "Discount"}</span>
+              <span className="cart-summary-discount">
+                −{formatCurrency(discount ?? 0, currency)}
+              </span>
+              <span className="cart-coupon-chip">
+                {cart.coupons[0].code}
+                <button
+                  type="button"
+                  className="cart-coupon-remove"
+                  onClick={() => handleRemoveCoupon(cart.coupons?.[0]?._id)}
+                  aria-label={`${labels.coupon?.remove ?? "Remove"} ${cart.coupons?.[0]?.code ?? ""}`}
+                  disabled={couponPending}
+                >
+                  {labels.coupon?.remove ?? "Remove"}
+                </button>
+              </span>
+            </div>
+          )}
+          {discount != null && discount > 0 && (
+            <div className="cart-summary-row">
+              <span>{labels.total ?? "Total"}</span>
+              <span className="cart-summary-total">{formatCurrency(total, currency)}</span>
+            </div>
+          )}
+          {(!cart?.coupons || cart.coupons.length === 0) && (
+            <form className="cart-coupon-form" onSubmit={handleApplyCoupon}>
+              <label htmlFor="coupon-input" className="sr-only">
+                {labels.coupon?.label ?? "Coupon code"}
+              </label>
+              <input
+                id="coupon-input"
+                name="coupon"
+                type="text"
+                autoComplete="off"
+                className="cart-coupon-input"
+                placeholder={labels.coupon?.placeholder ?? "Enter coupon code"}
+                value={couponInput}
+                onChange={(e) => {
+                  setCouponInput(e.target.value);
+                  if (couponError) setCouponError(null);
+                }}
+              />
+              <button
+                type="submit"
+                className="btn btn-secondary cart-coupon-btn"
+                disabled={couponPending || couponInput.trim() === ""}
+                aria-busy={couponPending}
+              >
+                {couponPending ? labels.coupon?.applying ?? "Applying…" : labels.coupon?.apply ?? "Apply"}
+              </button>
+              {couponError && (
+                <div className="cart-coupon-error" role="alert">
+                  {couponError}
+                </div>
+              )}
+            </form>
+          )}
+          {cart?.coupons && cart.coupons.length > 0 && couponError && (
+            <div className="cart-coupon-error" role="alert">
+              {couponError}
+            </div>
+          )}
+          {cart?.coupons && cart.coupons.length > 0 && (
+            <div className="cart-coupon-applied" role="status">
+              {labels.coupon?.applied ?? "Applied coupon"}
+            </div>
+          )}
           <button
             type="button"
             className="btn btn-primary btn-full"
