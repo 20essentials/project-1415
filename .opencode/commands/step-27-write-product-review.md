@@ -3,7 +3,7 @@ description: Step 27 — Escribir reseña de producto · Petals & Predators
 ---
 # Step 27 — Escribir reseña de producto
 
-> **Siguiente:** `/generate-next-steps`
+> **Siguiente:** `/step-28-wishlist` (si aún no existe → `/generate-next-steps`)
 
 ## Objetivo
 

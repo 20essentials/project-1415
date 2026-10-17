@@ -14,6 +14,8 @@ import { renderRicos, type RicosDocument } from '@/shared/ricos';
 import { resolveWixImageUrl } from '@/shared/wix-image';
 import { toMetaDescription } from '@/shared/seo';
 import { getProductReviews, averageRating } from '@/features/reviews/reviews';
+import { ReviewForm, type ReviewFormLabels } from '@/features/reviews/review-form';
+import { members } from '@wix/members';
 import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
 import AnalyticsView from '@/shared/analytics-view.astro';
 import type { V3Product } from '@wix/auto_sdk_stores_products-v-3';
@@ -184,6 +186,28 @@ const reviewDateFormatter = new Intl.DateTimeFormat(currentLanguage(), {
 const formatReviewDate = (date: Date | null): string =>
   date ? reviewDateFormatter.format(date) : '';
 
+let isMember = false;
+try {
+  const res = await members.getCurrentMember({ fieldsets: ['FULL'] });
+  isMember = Boolean(res.member?.contactId);
+} catch {
+  isMember = false;
+}
+
+const reviewFormLabels: ReviewFormLabels = {
+  title: t('reviews.form.title'),
+  ratingLabel: t('reviews.form.rating'),
+  titleLabel: t('reviews.form.subject'),
+  bodyLabel: t('reviews.form.body'),
+  bodyPlaceholder: t('reviews.form.body-placeholder'),
+  submit: t('reviews.form.submit'),
+  submitting: t('reviews.form.submitting'),
+  success: t('reviews.form.success'),
+  error: t('reviews.form.error'),
+  retry: t('reviews.form.retry'),
+  validationRating: t('reviews.form.rating-required'),
+};
+
 const purchaseLabels = {
   stockLeft: t('product.stock-left'),
   inStock: t('product.in-stock'),
@@ -313,11 +337,13 @@ const purchaseLabels = {
     </div>
   </section>
 
-  {
-    topReviews.length > 0 && (
-      <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
-        <div class="mx-auto max-w-6xl">
-          <h2 class="font-display text-2xl text-ink lg:text-3xl">{t('reviews.sectionTitle')}</h2>
+  <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
+    <div class="mx-auto max-w-6xl">
+      <h2 class="font-display text-2xl text-ink lg:text-3xl">{t('reviews.sectionTitle')}</h2>
+      {
+        topReviews.length === 0 ? (
+          <p class="mt-4 text-sm text-ink-soft">{t('reviews.be-first')}</p>
+        ) : (
           <ul class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {topReviews.map((review) => (
               <li class="flex flex-col gap-4 rounded-md border border-rule bg-paper-warm p-6">
@@ -341,10 +367,29 @@ const purchaseLabels = {
               </li>
             ))}
           </ul>
-        </div>
-      </section>
-    )
-  }
+        )
+      }
+      <div class="mt-10 max-w-xl">
+        {
+          isMember ? (
+            <ReviewForm client:idle productId={product._id ?? ''} labels={reviewFormLabels} />
+          ) : (
+            <div class="flex flex-col gap-2">
+              <h3 class="font-display text-xl text-ink">{t('reviews.write')}</h3>
+              <p class="text-sm text-ink-soft">
+                <a
+                  href={localize(`/api/auth/login?returnToUrl=${localize(`/products/${slug}`)}`)}
+                  class="text-accent transition-colors hover:underline"
+                >
+                  {t('reviews.login-to-review')}
+                </a>
+              </p>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
 
   {
     related.length > 0 && (
