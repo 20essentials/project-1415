@@ -1,6 +1,7 @@
 ---
 import { resolveWixImageUrl } from '@/shared/wix-image';
-import { useTranslation, localize } from '@/shared/i18n';
+import { WishlistHeart } from '@/features/wishlist/wishlist-heart';
+import { useTranslation, localize, stripLocalePrefix } from '@/shared/i18n';
 
 interface Props {
   product: {
@@ -14,11 +15,23 @@ interface Props {
   // Ancho del slot que ocupa la tarjeta en su grilla; la página que compone
   // la pasa para que el navegador elija 400w/640w sin adivinar columnas.
   sizes?: string;
+  isMember?: boolean;
+  wished?: boolean;
 }
 
-const { product, index, sizes = '(min-width: 1280px) 280px, (min-width: 1024px) 360px, (min-width: 640px) 46vw, 92vw' } =
+const { product, index, isMember = false, wished = false, sizes = '(min-width: 1280px) 280px, (min-width: 1024px) 360px, (min-width: 640px) 46vw, 92vw' } =
   Astro.props;
 const { t } = useTranslation();
+
+const wishlistLabels = {
+  add: t('wishlist.add'),
+  remove: t('wishlist.remove'),
+  signIn: t('wishlist.sign-in'),
+  error: t('wishlist.error'),
+};
+const signInHref = localize(
+  `/api/auth/login?returnToUrl=${localize(stripLocalePrefix(Astro.url.pathname))}`,
+);
 
 const imageRef = product.media?.main?.image ?? product.media?.main?.url;
 const imageUrl = resolveWixImageUrl(imageRef, 640, 800);
@@ -33,7 +46,7 @@ const indexLabel =
   typeof index === 'number' ? String(index + 1).padStart(2, '0') : null;
 ---
 
-<li>
+<li class="relative">
   <a href={localize(`/products/${product.slug}`)} class="group block">
     <div class="relative aspect-4/5 overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule">
       {
@@ -66,4 +79,19 @@ const indexLabel =
     <h3 class="mt-4 font-display text-base text-ink lg:text-lg">{product.name}</h3>
     {price && <p class="mt-1 text-sm font-medium text-ink-soft">{price}</p>}
   </a>
+  {
+    product._id && (
+      <div class="absolute top-3 right-3">
+        <WishlistHeart
+          client:idle
+          productId={product._id}
+          productSlug={product.slug ?? undefined}
+          initialWished={wished}
+          isMember={isMember}
+          signInHref={signInHref}
+          labels={wishlistLabels}
+        />
+      </div>
+    )
+  }
 </li>

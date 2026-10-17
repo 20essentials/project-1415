@@ -97,9 +97,14 @@ const memberSince =
         </dl>
 
         <div class="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-rule pt-6">
-          <a href={localize('/account/orders')} class="text-sm text-accent transition-colors hover:underline">
-            {t('account.order-history')}
-          </a>
+          <div class="flex flex-wrap items-center gap-6">
+            <a href={localize('/account/orders')} class="text-sm text-accent transition-colors hover:underline">
+              {t('account.order-history')}
+            </a>
+            <a href={localize('/account/wishlist')} class="text-sm text-accent transition-colors hover:underline">
+              {t('account.wishlist')}
+            </a>
+          </div>
           <form method="POST" action={`/api/auth/logout?returnToUrl=${localize('/')}`}>
             <button type="submit" class="btn btn-ghost">
               <span class="text-trim">{t('account.log-out')}</span>

@@ -12,6 +12,8 @@ import {
   listProductsInCategory,
   listStoreCategories,
 } from '@/features/product-catalog/categories';
+import { listWishlist } from '@/features/wishlist/wishlist';
+import { members } from '@wix/members';
 import {
   buildCatalogHref,
   DEFAULT_CATALOG_QUERY,
@@ -72,6 +74,15 @@ const productList = sortCatalogItems(
 );
 
 const categories = await listStoreCategories();
+
+let memberId = '';
+try {
+  const res = await members.getCurrentMember({ fieldsets: ['FULL'] });
+  memberId = res.member?._id ?? '';
+} catch {
+  memberId = '';
+}
+const wishedIds = new Set((await listWishlist(memberId)).map((item) => item.productId));
 
 const metaDescription = toMetaDescription(
   category.description,
@@ -136,7 +147,12 @@ function pageHref(next: string | null): string | null {
         productList.length > 0 ? (
           <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
             {productList.map((product, index) => (
-              <ProductCard product={product} index={index} />
+              <ProductCard
+                product={product}
+                index={index}
+                isMember={Boolean(memberId)}
+                wished={wishedIds.has(product._id ?? '')}
+              />
             ))}
           </ul>
         ) : (
