@@ -1,5 +1,7 @@
 # Petals & Predators
 
+- No usamos python, solo nodejs.
+
 > Tienda headless de plantas carnívoras y flores — Astro + Wix Managed Headless.
 
 Un e-commerce en inglés construido sobre **Wix Stores** como backend (catálogo, carrito y

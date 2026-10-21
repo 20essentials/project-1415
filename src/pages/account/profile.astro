@@ -1,0 +1,107 @@
+---
+import Layout from '@/app/layout.astro';
+import { members } from '@wix/members';
+import { resolveMemberAvatarUrl } from '@/features/account/member-avatar';
+import { localize, useTranslation } from '@/shared/i18n';
+import { ProfileForm } from '@/features/account/profile-form';
+import type { Member } from '@wix/auto_sdk_members_members';
+
+const { t } = useTranslation();
+
+let member: Member | null = null;
+try {
+  const res = await members.getCurrentMember({ fieldsets: ['FULL'] });
+  member = res.member ?? null;
+} catch {
+  member = null;
+}
+
+if (!member) {
+  return Astro.redirect(localize(`/api/auth/login?returnToUrl=${localize('/account/profile')}`));
+}
+
+const contactName = [member.contact?.firstName, member.contact?.lastName]
+  .filter((part): part is string => Boolean(part))
+  .join(' ');
+const displayName = member.profile?.nickname?.trim() || contactName || member.loginEmail || t('account.member');
+const initials = displayName.charAt(0).toUpperCase();
+const photoUrl = await resolveMemberAvatarUrl(member, 192, 192);
+
+const initialProfile = {
+  firstName: member.contact?.firstName ?? '',
+  lastName: member.contact?.lastName ?? '',
+  nickname: member.profile?.nickname ?? '',
+};
+
+const labels = {
+  title: t('profile.title'),
+  firstName: t('profile.first-name'),
+  lastName: t('profile.last-name'),
+  nickname: t('profile.nickname'),
+  'nickname-hint': t('profile.nickname-hint'),
+  submit: t('profile.submit'),
+  submitting: t('profile.submitting'),
+  success: t('profile.success'),
+  error: t('profile.error'),
+  retry: t('profile.retry'),
+};
+---
+
+<Layout noindex>
+  <section class="relative z-2 bg-paper px-4 pt-24 pb-24 text-ink sm:px-8 lg:px-20 lg:pt-32 lg:pb-32">
+    <div class="mx-auto max-w-2xl">
+      <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">
+        <a href={localize('/')} class="transition-colors hover:text-accent">{t('nav.home')}</a>
+        <span aria-hidden="true"> · </span>
+        <a href={localize('/account')} class="transition-colors hover:text-accent">{t('account.eyebrow')}</a>
+        <span aria-hidden="true"> · </span>
+        <span aria-current="page" class="text-ink">{t('profile.title')}</span>
+      </nav>
+
+      <p class="mt-6 text-xs font-medium tracking-widest text-accent uppercase">{t('account.eyebrow')}</p>
+      <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">{t('profile.title')}</h1>
+
+      <div class="mt-10 rounded-md border border-rule bg-paper-warm/40 p-6 sm:p-8">
+        <div class="flex items-center gap-5">
+          {
+            photoUrl && (
+              <img
+                src={photoUrl}
+                width="96"
+                height="96"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                referrerpolicy="no-referrer"
+                onerror="this.hidden=true;this.nextElementSibling.hidden=false"
+                class="size-24 shrink-0 rounded-full border border-rule object-cover"
+              />
+            )
+          }
+          <span
+            aria-hidden="true"
+            hidden={Boolean(photoUrl)}
+            class="flex size-24 shrink-0 items-center justify-center rounded-full border border-rule bg-paper font-display text-3xl text-accent"
+          >
+            {initials}
+          </span>
+          <div class="min-w-0">
+            <h2 class="font-display text-2xl text-ink">{displayName}</h2>
+            {member.loginEmail && <p class="mt-1 truncate text-sm text-mute">{member.loginEmail}</p>}
+            <p class="mt-1 text-xs text-ink-soft">Avatar display only — photo upload is managed by the Member Avatar app.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <ProfileForm client:idle initial={initialProfile} labels={labels} />
+      </div>
+
+      <p class="mt-8">
+        <a href={localize('/account')} class="text-sm text-ink-soft transition-colors hover:text-accent">
+          {t('profile.back-to-account')}
+        </a>
+      </p>
+    </div>
+  </section>
+</Layout>

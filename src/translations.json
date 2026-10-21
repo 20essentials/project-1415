@@ -425,5 +425,17 @@
   "wishlist.add": "Add to wishlist",
   "wishlist.remove": "Remove from wishlist",
   "wishlist.sign-in": "Sign in to save plants to your wishlist",
-  "wishlist.error": "Couldn't update your wishlist. Please try again."
+  "wishlist.error": "Couldn't update your wishlist. Please try again.",
+  "profile.title": "Edit your profile",
+  "profile.first-name": "First name",
+  "profile.last-name": "Last name",
+  "profile.nickname": "Nickname",
+  "profile.nickname-hint": "Shown as your display name when provided.",
+  "profile.submit": "Save changes",
+  "profile.submitting": "Saving…",
+  "profile.success": "Profile updated successfully.",
+  "profile.error": "We could not update your profile. Please try again.",
+  "profile.retry": "Try again",
+  "profile.back-to-account": "Back to your account",
+  "account.profile": "Profile"
 }
