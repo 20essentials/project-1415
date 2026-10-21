@@ -72,22 +72,3 @@ export function couponErrorMessage(code: CouponErrorCode, messages: CouponMessag
       return messages.unknown;
   }
 }
-
-export function couponDiscount(
-  cart: any,
-  _couponIdOrCode?: string
-): number | null {
-  const summary = cart?.summary;
-  const discounts = summary?.discounts;
-  if (!Array.isArray(discounts)) return null;
-
-  let total = 0;
-  for (const d of discounts) {
-    const amount = d?.discount?.amount;
-    if (typeof amount === 'number' && Number.isFinite(amount)) {
-      total += amount;
-    }
-  }
-  if (total === 0) return 0;
-  return total;
-}

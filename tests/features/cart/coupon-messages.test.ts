@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { couponDiscount, couponErrorCode, couponErrorMessage } from '@/features/cart/coupon-messages';
+import { couponErrorCode, couponErrorMessage } from '@/features/cart/coupon-messages';
 
 describe('coupon-messages', () => {
   it('maps invalid codes', () => {
@@ -38,12 +38,5 @@ describe('coupon-messages', () => {
     expect(couponErrorMessage('COUPON_GIFT_CARD', msgs)).toBe('gift');
     expect(couponErrorMessage('NETWORK', msgs)).toBe('net');
     expect(couponErrorMessage('UNKNOWN', msgs)).toBe('unk');
-  });
-
-  it('extracts discount', () => {
-    expect(couponDiscount({ summary: { discounts: [{ discount: { amount: 5 } }] } })).toBe(5);
-    expect(couponDiscount({ summary: { discounts: [{ discount: { amount: 2 } }, { discount: { amount: 3 } }] } })).toBe(5);
-    expect(couponDiscount({ summary: {} })).toBeNull();
-    expect(couponDiscount({})).toBeNull();
   });
 });
