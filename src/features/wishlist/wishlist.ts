@@ -25,7 +25,7 @@ interface WishlistQuery {
   find(): Promise<{ items?: WishlistRecord[] }>;
 }
 
-const COLLECTION = 'wishlist';
+const COLLECTION = '@d960960gm/petals-pre-983314f4/wishlist';
 
 const queryWishlistElevated = auth.elevate(items.query) as (collectionId: string) => WishlistQuery;
 const insertWishlistElevated = auth.elevate(items.insert) as (

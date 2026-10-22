@@ -7,6 +7,8 @@ import {
   removeFromWishlist,
 } from '@/features/wishlist/wishlist';
 
+const COLLECTION = '@d960960gm/petals-pre-983314f4/wishlist';
+
 const query = vi.fn();
 const insert = vi.fn();
 const remove = vi.fn();
@@ -87,7 +89,7 @@ describe('listWishlist', () => {
 
     const result = await listWishlist('m1');
 
-    expect(query).toHaveBeenCalledWith('wishlist');
+    expect(query).toHaveBeenCalledWith(COLLECTION);
     expect(builder.calls).toEqual([
       { method: 'eq', args: ['memberId', 'm1'] },
       { method: 'descending', args: ['createdDate'] },
@@ -149,7 +151,7 @@ describe('addToWishlist', () => {
 
     expect(insert).toHaveBeenCalledTimes(1);
     const [collection, item] = insert.mock.calls[0] as unknown as [string, Record<string, unknown>];
-    expect(collection).toBe('wishlist');
+    expect(collection).toBe(COLLECTION);
     expect(item).toMatchObject({ memberId: 'm1', productId: 'p1', slug: 'venus-flytrap' });
     expect(item.createdDate).toBeInstanceOf(Date);
   });
@@ -177,8 +179,8 @@ describe('removeFromWishlist', () => {
     await removeFromWishlist('m1', 'p1');
 
     expect(remove).toHaveBeenCalledTimes(2);
-    expect(remove).toHaveBeenNthCalledWith(1, 'wishlist', 'w1');
-    expect(remove).toHaveBeenNthCalledWith(2, 'wishlist', 'w2');
+    expect(remove).toHaveBeenNthCalledWith(1, COLLECTION, 'w1');
+    expect(remove).toHaveBeenNthCalledWith(2, COLLECTION, 'w2');
   });
 
   it('skips records without an id', async () => {

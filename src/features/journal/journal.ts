@@ -32,7 +32,7 @@ interface GuideQuery {
   find(): Promise<{ items?: GuideRecord[] }>;
 }
 
-const COLLECTION = 'care-guides';
+const COLLECTION = '@d960960gm/petals-pre-983314f4/care-guides';
 const queryGuidesElevated = auth.elevate(items.query) as (collectionId: string) => GuideQuery;
 
 function toDate(value: Date | string | undefined): Date | null {

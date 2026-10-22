@@ -33,7 +33,7 @@ interface LookbookQuery {
   find(): Promise<{ items?: LookbookRecord[] }>;
 }
 
-const COLLECTION = 'lookbook';
+const COLLECTION = '@d960960gm/petals-pre-983314f4/lookbook';
 const queryLookbookElevated = auth.elevate(items.query) as (collectionId: string) => LookbookQuery;
 
 function toEntry(record: LookbookRecord): LookbookEntry {
