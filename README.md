@@ -1,6 +1,7 @@
 # Petals & Predators
 
 - No usamos python, solo nodejs.
+- Recuerd
 
 > Tienda headless de plantas carnívoras y flores — Astro + Wix Managed Headless.
 

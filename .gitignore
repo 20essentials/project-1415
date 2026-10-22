@@ -1,5 +1,6 @@
 # wix integration
 .wix/
+opencode.json
 text-just-for-me.txt
 
 # build output
