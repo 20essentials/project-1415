@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import wix from '@wix/astro';
 import wixPages from '@wix/astro-pages';
 
@@ -22,5 +22,21 @@ export default defineConfig({
     domains: ['static.wixstatic.com']
   },
 
-  output: 'server'
+  output: 'server',
+
+  env: {
+    schema: {
+      PLAYWRIGHT_BASE_URL: envField.string({
+        context: 'client',
+        access: 'public',
+        optional: true,
+        default: 'http://localhost:4321',
+      }),
+      CI: envField.string({
+        context: 'server',
+        access: 'public',
+        optional: true,
+      }),
+    },
+  },
 });

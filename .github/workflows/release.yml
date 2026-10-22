@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      comment:
+        description: 'Release comment (optional)'
+        required: false
+        type: string
+      version-type:
+        description: 'Version type for app releases (if applicable)'
+        required: false
+        type: choice
+        options:
+          - ''
+          - minor
+          - major
+        default: ''
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Wix build
+        run: npx @wix/cli build
+
+      - name: Authenticate with Wix CLI (API key)
+        env:
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+        run: |
+          if [ -n "$WIX_API_KEY" ]; then
+            npx @wix/cli login --api-key "$WIX_API_KEY"
+          else
+            echo "WIX_API_KEY secret not set; ensure the runner is authenticated or provide secret."
+            exit 1
+          fi
+
+      - name: Wix release
+        env:
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+          CI: 'true'
+        run: |
+          COMMENT="${{ github.event.inputs.comment || format('Release {0}', github.ref_name) }}"
+          VT="${{ github.event.inputs.version-type }}"
+          if [ -n "$VT" ]; then
+            npx @wix/cli release -c "$COMMENT" -t "$VT"
+          else
+            npx @wix/cli release -c "$COMMENT"
+          fi

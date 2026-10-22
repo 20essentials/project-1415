@@ -1,8 +1,20 @@
-# Release — step 23 (build + deploy)
+# Release — build + deploy
 
-Fecha: 2026-10-16 · CLI `@wix/cli@1.1.263` · login `whoami` OK.
+## Manual release (local)
 
-## URLs
+```bash
+npm run build          # wix build
+npx @wix/cli preview
+npx @wix/cli release -c "Release message"
+```
+
+No existe `wix deploy`: el flujo CLI es `preview` → `release`.
+
+## CI release
+
+See `.github/workflows/release.yml`. Requires GitHub Secret `WIX_API_KEY` (create via Wix account/API key). Authenticate in CI with `wix login --api-key`. Trigger via `workflow_dispatch` or pushing a tag `v*`.
+
+## URLs (step 23 snapshot)
 
 | Entorno | URL |
 |---|---|
@@ -10,16 +22,6 @@ Fecha: 2026-10-16 · CLI `@wix/cli@1.1.263` · login `whoami` OK.
 | Producción (alias en `.wix/topology.json`) | https://hbinsl-petals-d960960gm-0609.wix-site-host.com |
 | Preview | https://dcpyuf-petals-d960960gm-0609.wix-site-host.com |
 | Dashboard | https://manage.wix.com/dashboard/c6608ff9-497b-4734-8fe9-74132892d04c |
-
-## Comandos
-
-```bash
-npm run build          # wix build (verde)
-npx @wix/cli@latest preview
-npx @wix/cli@latest release -c "Step 23: build + release"
-```
-
-No existe `wix deploy`: el flujo CLI es `preview` → `release`.
 
 ## Precheck (arreglado durante el paso)
 

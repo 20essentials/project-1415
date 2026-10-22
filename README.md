@@ -107,6 +107,31 @@ Necesitas sesión de Wix activa (`wix login`) y el proyecto enlazado (ver `step-
 | `npm run test:e2e:ui` | E2E en modo UI |
 | `npm run wix` | CLI de Wix (translate, env, generate, …) |
 
+## CI/CD
+
+- **CI**: `.github/workflows/ci.yml` runs on push/PR (`npm ci`, `npm run check`, `npm test`, Playwright Chromium E2E, `npx @wix/cli build`).
+- **Release**: `.github/workflows/release.yml` supports manual dispatch (`workflow_dispatch`) or tags (`v*`). Uses `wix build` + `wix login --api-key` + `wix release` with secrets (never commit secrets). Set `WIX_API_KEY` in GitHub Secrets (and use environment `production` as desired).
+
+## Environment variables
+
+Use the Wix CLI to manage env vars:
+
+```bash
+# Set a public/server variable on Wix (shared with collaborators)
+npx @wix/cli env set --key=MY_VAR --value=...
+
+# Pull variables from Wix to .env.local (required for secrets/shared vars)
+npx @wix/cli env pull
+
+# Remove a variable
+npx @wix/cli env remove --key=MY_VAR
+```
+
+Notes:
+- Secrets are stored on Wix servers; `wix env pull` downloads them locally. Public vars can be stored in `.env.local` or via `wix env set/pull`.
+- Never commit real secrets. `.env`, `.env.local`, `.env.*.local` are gitignored. See `.env.example` for non-secret placeholders.
+- Schema is typed in `astro.config.mjs` via `envField` (Astro env schema). Access client vars via `astro:env/client`, server vars via `astro:env/server`.
+
 ---
 
 ## Cómo se construye
