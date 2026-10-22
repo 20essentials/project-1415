@@ -3,7 +3,7 @@ description: Step 34 — CI/CD + env tipado · Petals & Predators
 ---
 # Step 34 — CI/CD + env tipado
 
-> **Siguiente:** `/step-35-analytics-eventos-faltantes-plataformas-externas-consentimiento-granular` (o `/generate-next-steps`)
+> **Siguiente:** `/step-35-analytics-eventos-faltantes-plataformas-externas-consentimiento-granular`
 
 ## Objetivo
 

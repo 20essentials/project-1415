@@ -2,6 +2,7 @@
 .wix/
 opencode.json
 text-just-for-me.txt
+.opencode/opencode.json
 
 # build output
 dist/
