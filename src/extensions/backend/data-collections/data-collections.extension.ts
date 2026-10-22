@@ -6,8 +6,15 @@ import lookbookCollection from './lookbook';
 
 import wishlistCollection from './wishlist';
 
+import restockAlertsCollection from './restock-alerts';
+
 export default extensions.dataCollections({
   id: '9e51c9e9-0726-4bc7-9f9b-4dd93e03edd9',
   name: 'Data Collections',
-  collections: [careGuidesCollection, lookbookCollection, wishlistCollection],
+  collections: [
+    careGuidesCollection,
+    lookbookCollection,
+    wishlistCollection,
+    restockAlertsCollection
+  ],
 });
