@@ -333,6 +333,12 @@ export function CartView({
           quantity: item.quantity,
         })),
       });
+      // Checkout hosted by Wix: CheckoutStep/AddPaymentInfo not instrumentable here.
+      trackEvent("StartPayment", {
+        origin: "Cart Page",
+        currency,
+        value: total ?? undefined,
+      });
       window.location.href = fullUrl;
     } catch (err) {
       setError(err instanceof Error ? err.message : labels.errorCheckout);

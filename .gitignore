@@ -40,3 +40,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# temporary files for opencode
+/.tmp/

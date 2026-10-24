@@ -28,6 +28,15 @@ describe('trackEvent', () => {
 
   it('forwards the event once accepted', () => {
     window.localStorage.setItem(CONSENT_STORAGE_KEY, 'accepted');
+    window.localStorage.setItem('pp_consent_v1_granular', JSON.stringify({
+      essential: true,
+      functional: true,
+      preferences: true,
+      analytics: true,
+      marketing: false,
+      advertising: false,
+      dataToThirdParty: false,
+    }));
     trackEvent('AddToCart', { name: 'Venus Flytrap', quantity: 2 });
 
     expect(analyticsCalls).toEqual([

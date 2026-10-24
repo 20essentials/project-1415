@@ -5,13 +5,17 @@ export type AnalyticsEventName =
   | "AddToCart"
   | "RemoveFromCart"
   | "InitiateCheckout"
+  | "StartPayment"
+  | "AddPaymentInfo"
+  | "CheckoutStep"
   | "Purchase"
   | "ViewContent"
   | "ClickProduct"
+  | "AddProductImpression"
+  | "Schedule"
   | "Lead"
   | "ArticleView"
   | "FormSubmit"
-  | "AddProductImpression"
   | "CustomEvent"
   | (string & {});
 

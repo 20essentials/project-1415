@@ -3,6 +3,8 @@ import Layout from "@/app/layout.astro";
 import { useTranslation, localize } from '@/shared/i18n';
 
 const { t } = useTranslation();
+
+const orderId = Astro.url.searchParams.get('orderId') || Astro.url.searchParams.get('orderNumber') || Astro.url.searchParams.get('transactionId');
 ---
 
 <Layout noindex>
@@ -20,4 +22,28 @@ const { t } = useTranslation();
       </div>
     </div>
   </div>
+  <script is:inline define:vars={{ orderId }}>
+    (function () {
+      try {
+        var id = orderId;
+        if (!id) return;
+        // Defer to ensure analytics/consent loaded
+        if (typeof window !== 'undefined') {
+          window.addEventListener('load', function () {
+            try {
+              // Use dynamic import to respect consent gating
+              import('/src/shared/analytics.ts').then(function (mod) {
+                if (mod && typeof mod.trackEvent === 'function') {
+                  mod.trackEvent('Purchase', {
+                    transaction_id: id,
+                    // value/currency/contents omitted if not available to avoid PII/excess
+                  });
+                }
+              }).catch(function () {});
+            } catch (e) {}
+          }, { once: true });
+        }
+      } catch (e) {}
+    })();
+  </script>
 </Layout>

@@ -5,10 +5,10 @@ import { currentLanguage, localize, useTranslation } from '@/shared/i18n';
 
 const { t } = useTranslation();
 
-const id = Astro.url.searchParams.get('id');
+const id = Astro.url.searchParams.get('id') || Astro.url.searchParams.get('bookingId') || Astro.url.searchParams.get('bookingNumber');
 const service = Astro.url.searchParams.get('service');
-const start = Astro.url.searchParams.get('start');
-const end = Astro.url.searchParams.get('end');
+const start = Astro.url.searchParams.get('start') || Astro.url.searchParams.get('startDate');
+const end = Astro.url.searchParams.get('end') || Astro.url.searchParams.get('endDate');
 
 const hasBooking = Boolean(id && service && start && end);
 
@@ -19,9 +19,9 @@ const sessionDay = hasBooking && start
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-    }).format(new Date(`${start.slice(0, 10)}T12:00:00Z`))
+    }).format(new Date(`${String(start).slice(0, 10)}T12:00:00Z`))
   : null;
-const sessionRange = hasBooking && start && end ? `${start.slice(11, 16)}–${end.slice(11, 16)}` : null;
+const sessionRange = hasBooking && start && end ? `${String(start).slice(11, 16)}–${String(end).slice(11, 16)}` : null;
 ---
 
 <Layout noindex>
@@ -78,4 +78,25 @@ const sessionRange = hasBooking && start && end ? `${start.slice(11, 16)}–${en
       }
     </div>
   </section>
+  {hasBooking && (
+    <script is:inline define:vars={{ id, service }}>
+      (function () {
+        try {
+          if (typeof window === 'undefined') return;
+          window.addEventListener('load', function () {
+            try {
+              import('/src/shared/analytics.ts').then(function (mod) {
+                if (mod && typeof mod.trackEvent === 'function') {
+                  mod.trackEvent('Schedule', {
+                    id: id || undefined,
+                    service: service || undefined,
+                  });
+                }
+              }).catch(function () {});
+            } catch (e) {}
+          }, { once: true });
+        } catch (e) {}
+      })();
+    </script>
+  )}
 </Layout>

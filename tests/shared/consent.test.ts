@@ -40,6 +40,15 @@ describe('getConsentState', () => {
 
 describe('consentPolicyFor', () => {
   it('grants every category when accepted', () => {
+    window.localStorage.setItem('pp_consent_v1_granular', JSON.stringify({
+      essential: true,
+      functional: true,
+      preferences: true,
+      analytics: true,
+      marketing: true,
+      advertising: true,
+      dataToThirdParty: true,
+    }));
     expect(consentPolicyFor('accepted')).toEqual({
       essential: true,
       functional: true,
@@ -88,5 +97,27 @@ describe('setConsentState', () => {
     });
 
     expect(() => setConsentState('accepted')).not.toThrow();
+  });
+});
+
+describe('granular consent', () => {
+  it('defaults analytics to false when only basic state is set', () => {
+    window.localStorage.setItem(CONSENT_STORAGE_KEY, 'accepted');
+    expect(hasAnalyticsConsent()).toBe(true);
+  });
+
+  it('respects analytics disabled in granular preferences', async () => {
+    const mod = await import('@/shared/consent');
+    window.localStorage.setItem(CONSENT_STORAGE_KEY, 'accepted');
+    window.localStorage.setItem('pp_consent_v1_granular', JSON.stringify({
+      essential: true,
+      functional: true,
+      preferences: true,
+      analytics: false,
+      marketing: false,
+      advertising: false,
+      dataToThirdParty: false,
+    }));
+    expect(mod.hasAnalyticsConsent()).toBe(false);
   });
 });

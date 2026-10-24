@@ -95,9 +95,55 @@ function pageHref(cursor: string | null): string | null {
   <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
     <div class="mx-auto max-w-6xl">
       <h2 class="sr-only">{t('nav.all-plants')}</h2>
+      <script is:inline>
+        (function () {
+          try {
+            if (typeof window === 'undefined') return;
+            var grid = document.querySelector('[data-product-grid]');
+            if (!grid) return;
+            var items = [];
+            grid.querySelectorAll('[data-product-card]').forEach(function (el, idx) {
+              if (idx >= 12) return;
+              items.push({
+                id: el.getAttribute('data-product-id') || undefined,
+                name: el.getAttribute('data-product-name') || undefined,
+                price: el.getAttribute('data-product-price') || undefined,
+                position: idx + 1,
+              });
+            });
+            if (items.length === 0) return;
+            window.addEventListener('load', function () {
+              try {
+                import('/src/shared/analytics.ts').then(function (mod) {
+                  if (mod && typeof mod.trackEvent === 'function') {
+                    mod.trackEvent('AddProductImpression', { items: items });
+                  }
+                }).catch(function () {});
+              } catch (e) {}
+            }, { once: true });
+            grid.addEventListener('click', function (e) {
+              var link = e.target && e.target.closest ? e.target.closest('[data-product-link]') : null;
+              if (!link) return;
+              var card = link.closest('[data-product-card]');
+              if (!card) return;
+              try {
+                import('/src/shared/analytics.ts').then(function (mod) {
+                  if (mod && typeof mod.trackEvent === 'function') {
+                    mod.trackEvent('ClickProduct', {
+                      id: card.getAttribute('data-product-id') || undefined,
+                      name: card.getAttribute('data-product-name') || undefined,
+                      price: card.getAttribute('data-product-price') || undefined,
+                    });
+                  }
+                }).catch(function () {});
+              } catch (e2) {}
+            });
+          } catch (e) {}
+        })();
+      </script>
       {
         productList.length > 0 ? (
-          <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+          <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4" data-product-grid>
             {productList.map((product, index) => (
               <ProductCard
                 product={product}

@@ -46,8 +46,8 @@ const indexLabel =
   typeof index === 'number' ? String(index + 1).padStart(2, '0') : null;
 ---
 
-<li class="relative">
-  <a href={localize(`/products/${product.slug}`)} class="group block">
+<li class="relative" data-product-card data-product-id={product._id ?? ''} data-product-slug={product.slug ?? ''} data-product-name={product.name ?? ''} data-product-price={price ?? ''}>
+  <a href={localize(`/products/${product.slug}`)} class="group block" data-product-link>
     <div class="relative aspect-4/5 overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule">
       {
         imageUrl ? (
