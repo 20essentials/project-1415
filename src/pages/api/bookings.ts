@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { WorkshopBookingError, createWorkshopBooking } from '@/features/workshops/bookings';
+import { WorkshopBookingError, WorkshopCheckoutError, createWorkshopBooking } from '@/features/workshops/bookings';
+import { createWorkshopCheckout } from '@/features/workshops/workshop-checkout';
 
 function json(data: Record<string, unknown>, status: number): Response {
   return new Response(JSON.stringify(data), {
@@ -21,6 +22,7 @@ const ERROR_STATUS: Record<string, number> = {
   INVALID_INPUT: 400,
   NOT_FOUND: 404,
   SLOT_UNAVAILABLE: 409,
+  CHECKOUT_UNAVAILABLE: 502,
 };
 
 function wixApplicationCode(error: unknown): string | undefined {
@@ -28,6 +30,14 @@ function wixApplicationCode(error: unknown): string | undefined {
   const details = (error as { details?: { applicationError?: { code?: unknown } } }).details;
   const code = details?.applicationError?.code;
   return typeof code === 'string' ? code : undefined;
+}
+
+function getOrigin(request: Request): string {
+  try {
+    return new URL(request.url).origin;
+  } catch {
+    return 'https://localhost';
+  }
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -38,7 +48,12 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'INVALID_INPUT' }, 400);
   }
 
-  const payload = (body ?? {}) as { serviceId?: unknown; localStartDate?: unknown; values?: unknown };
+  const payload = (body ?? {}) as {
+    serviceId?: unknown;
+    localStartDate?: unknown;
+    values?: unknown;
+    payment?: unknown;
+  };
   const values = asStringRecord(payload.values);
   if (
     typeof payload.serviceId !== 'string' ||
@@ -48,11 +63,45 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'INVALID_INPUT' }, 400);
   }
 
+  const payment = payload.payment === 'online' ? 'online' : 'offline';
+  const origin = getOrigin(request);
+
   try {
+    if (payment === 'online') {
+      const receipt = await createWorkshopBooking({
+        serviceId: payload.serviceId,
+        localStartDate: payload.localStartDate,
+        values,
+        paymentOption: 'ONLINE',
+      });
+
+      try {
+        const checkoutUrl = await createWorkshopCheckout({
+          serviceId: payload.serviceId,
+          localStartDate: payload.localStartDate,
+          timezone: 'Europe/Rome',
+          postFlowUrl: `${origin}/services?booking=cancelled&slug=${encodeURIComponent(payload.serviceId)}`,
+          thankYouPageUrl: `${origin}/booking-confirmation?id=${encodeURIComponent(receipt.id)}&service=${encodeURIComponent(receipt.serviceName)}&start=${encodeURIComponent(receipt.localStartDate)}&end=${encodeURIComponent(receipt.localEndDate)}`,
+        });
+        return json({ booking: receipt, checkoutUrl }, 200);
+      } catch (checkoutError) {
+        if (checkoutError instanceof WorkshopCheckoutError) {
+          const code = checkoutError.code === 'INVALID_INPUT' ? 'INVALID_INPUT' : 'CHECKOUT_UNAVAILABLE';
+          return json({ error: code }, code === 'INVALID_INPUT' ? 400 : 502);
+        }
+        if (checkoutError instanceof WorkshopBookingError) {
+          return json({ error: checkoutError.code }, ERROR_STATUS[checkoutError.code] ?? 400);
+        }
+        console.error('[bookings-api] checkout creation failed:', checkoutError);
+        return json({ error: 'CHECKOUT_UNAVAILABLE' }, 502);
+      }
+    }
+
     const receipt = await createWorkshopBooking({
       serviceId: payload.serviceId,
       localStartDate: payload.localStartDate,
       values,
+      paymentOption: 'OFFLINE',
     });
     return json({ booking: receipt }, 200);
   } catch (error) {

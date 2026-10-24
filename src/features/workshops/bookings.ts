@@ -212,6 +212,7 @@ export interface CreateWorkshopBookingInput {
   serviceId: string;
   localStartDate: string;
   values: Record<string, string>;
+  paymentOption?: 'OFFLINE' | 'ONLINE';
 }
 
 export async function createWorkshopBooking(
@@ -224,6 +225,8 @@ export async function createWorkshopBooking(
   const workshop = await getWorkshopById(input.serviceId);
   if (!workshop) throw new WorkshopBookingError('NOT_FOUND', 'Unknown service');
 
+  const paymentOption = input.paymentOption === 'ONLINE' ? 'ONLINE' : 'OFFLINE';
+
   const date = input.localStartDate.slice(0, 10);
   const slots = await resolveAvailableSlots(workshop, date);
   const slot = slots.find((candidate) => candidate.localStartDate === input.localStartDate);
@@ -234,8 +237,8 @@ export async function createWorkshopBooking(
   const created = await createBookingElevated(
     {
       totalParticipants: BOOKING_PARTICIPANTS,
-      status: 'CONFIRMED',
-      selectedPaymentOption: 'OFFLINE',
+      status: paymentOption === 'ONLINE' ? 'PENDING' : 'CONFIRMED',
+      selectedPaymentOption: paymentOption,
       bookedEntity: {
         slot: {
           serviceId: workshop.id,
@@ -269,9 +272,21 @@ export async function createWorkshopBooking(
 
   return {
     id: booking._id ?? '',
-    status: booking.status ?? 'CONFIRMED',
+    status: booking.status ?? (paymentOption === 'ONLINE' ? 'PENDING' : 'CONFIRMED'),
     serviceName: workshop.name,
     localStartDate: slot.localStartDate,
     localEndDate: slot.localEndDate,
   };
+}
+
+export type WorkshopCheckoutCode = 'INVALID_INPUT' | 'CHECKOUT_UNAVAILABLE';
+
+export class WorkshopCheckoutError extends Error {
+  constructor(
+    public readonly code: WorkshopCheckoutCode,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'WorkshopCheckoutError';
+  }
 }

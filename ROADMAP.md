@@ -14,7 +14,7 @@ la fuente de verdad del **CÓMO** ejecutar cada paso.
 | 38 | 🟡 materialized | Loyalty: puntos y recompensas |
 | step-x | ⚪ pending | Dominio propio + Wix Pages domain + AI discovery (requiere coste) |
 
-**Total:** 35/39 pasos completados · 3 materializados · 1 pendiente
+**Total:** 36/39 pasos completados · 2 materializados · 1 pendiente
 
 ---
 

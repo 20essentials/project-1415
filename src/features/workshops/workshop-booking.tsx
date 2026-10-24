@@ -17,9 +17,15 @@ export interface WorkshopBookingLabels {
   detailsTitle: string;
   submit: string;
   submitting: string;
+  submitOnline?: string;
+  submittingOnline?: string;
   formError: string;
   invalid: string;
   timezoneNote: string;
+  checkoutUnavailable?: string;
+  payOffline?: string;
+  cancelledBanner?: string;
+  retryBooking?: string;
 }
 
 interface WorkshopBookingProps {
@@ -29,6 +35,7 @@ interface WorkshopBookingProps {
   confirmationBase: string;
   fields: BookingField[];
   labels?: Partial<WorkshopBookingLabels>;
+  allowOnlinePayment?: boolean;
 }
 
 interface SlotDto {
@@ -52,6 +59,7 @@ interface BookingReceiptDto {
 
 interface BookingResponse {
   booking?: BookingReceiptDto;
+  checkoutUrl?: string;
   error?: string;
 }
 
@@ -68,9 +76,15 @@ const DEFAULT_LABELS: WorkshopBookingLabels = {
   detailsTitle: "Your details",
   submit: "Reserve my spot",
   submitting: "Reserving…",
+  submitOnline: "Book & pay",
+  submittingOnline: "Redirecting…",
   formError: "Something went wrong. Please try again.",
   invalid: "Invalid value",
   timezoneNote: "Times are shown in the greenhouse’s local time.",
+  checkoutUnavailable: "Online checkout isn’t available right now.",
+  payOffline: "Reserve (pay on site)",
+  cancelledBanner: "Your spot isn't reserved yet",
+  retryBooking: "Try booking again",
 };
 
 const inputClass =
@@ -123,8 +137,11 @@ export function WorkshopBooking({
   confirmationBase,
   fields,
   labels: labelOverrides,
+  allowOnlinePayment = false,
 }: WorkshopBookingProps) {
   const labels = { ...DEFAULT_LABELS, ...labelOverrides };
+  const [paymentMode, setPaymentMode] = useState<'online' | 'offline'>(allowOnlinePayment ? 'online' : 'offline');
+  const [checkoutUnavailable, setCheckoutUnavailable] = useState(false);
   const dates = useMemo(() => nextDates(timeZone, DATE_RAIL_DAYS), [timeZone]);
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -185,6 +202,7 @@ export function WorkshopBooking({
           serviceId,
           localStartDate: selectedSlot.localStartDate,
           values,
+          payment: paymentMode,
         }),
       });
       const data = (await response.json()) as BookingResponse;
@@ -196,7 +214,19 @@ export function WorkshopBooking({
         setSubmitState("idle");
         return;
       }
+      if (data.error === "CHECKOUT_UNAVAILABLE") {
+        setCheckoutUnavailable(true);
+        setSubmitState("idle");
+        return;
+      }
       if (!response.ok || !data.booking) throw new Error(data.error ?? "REQUEST");
+
+      if (data.checkoutUrl && paymentMode === "online") {
+        if (typeof window !== "undefined") {
+          window.location.assign(data.checkoutUrl);
+        }
+        return;
+      }
 
       const params = new URLSearchParams({
         id: data.booking.id,

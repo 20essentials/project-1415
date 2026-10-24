@@ -437,5 +437,14 @@
   "profile.error": "We could not update your profile. Please try again.",
   "profile.retry": "Try again",
   "profile.back-to-account": "Back to your account",
-  "account.profile": "Profile"
+  "account.profile": "Profile",
+  "services.payment.book-and-pay": "Book & pay",
+  "services.payment.redirecting": "Redirecting…",
+  "services.payment.checkout-unavailable": "Online checkout isn’t available right now.",
+  "services.payment.pay-offline": "Reserve (pay on site)",
+  "services.cancelled-banner": "Your spot isn't reserved yet",
+  "services.retry-booking": "Try booking again",
+  "booking-confirmation.payment.status": "Payment status: see details from your booking confirmation.",
+  "booking-confirmation.payment.pending": "Payment pending",
+  "booking-confirmation.payment.confirmed": "Payment confirmed"
 }
