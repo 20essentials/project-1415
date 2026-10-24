@@ -4,6 +4,9 @@ opencode.json
 text-just-for-me.txt
 .opencode/opencode.json
 
+# temporary files for opencode
+/.tmp/
+
 # build output
 dist/
 .wix.config.json
