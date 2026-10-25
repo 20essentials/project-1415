@@ -13,6 +13,7 @@ export default {
     { key: 'body', displayName: 'Body', type: 'RICH_TEXT' },
     { key: 'plantTag', displayName: 'Plant tag', type: 'TEXT' },
     { key: 'coverImage', displayName: 'Cover image', type: 'IMAGE' },
+    { key: 'premium', displayName: 'Members only', type: 'BOOLEAN' },
   ],
   dataPermissions: {
     itemRead: 'ANYONE',

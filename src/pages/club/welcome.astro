@@ -1,0 +1,48 @@
+---
+import Layout from '@/app/layout.astro';
+import { localize, useTranslation } from '@/shared/i18n';
+
+const { t } = useTranslation();
+const planOrderId = Astro.url.searchParams.get('planOrderId') ?? '';
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>{t('club.welcome.meta-title')}</title>
+    <meta name="description" content={t('club.welcome.meta-description')} />
+  </Fragment>
+
+  <section class="relative z-2 bg-paper px-4 pt-24 pb-24 text-ink sm:px-8 lg:px-20 lg:pt-32 lg:pb-32">
+    <div class="mx-auto max-w-2xl">
+      <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('club.eyebrow')}</p>
+      <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">
+        {t('club.welcome.title')}
+      </h1>
+      <p class="mt-4 text-base leading-7 text-ink-soft">{t('club.welcome.body')}</p>
+
+      {
+        planOrderId && (
+          <p class="mt-6 text-sm text-mute">
+            {t('club.welcome.order')}{' '}
+            <span class="font-medium text-ink">{planOrderId.slice(0, 8)}…</span>
+          </p>
+        )
+      }
+
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a
+          href={localize('/journal')}
+          class="inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream"
+        >
+          <span class="text-trim">{t('club.welcome.read-guides')}</span>
+        </a>
+        <a
+          href={localize('/account')}
+          class="inline-flex h-11 items-center justify-center rounded-full border border-rule px-6 text-sm font-medium text-ink transition-colors duration-700 ease-fluid hover:border-accent hover:text-accent"
+        >
+          <span class="text-trim">{t('club.welcome.view-account')}</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

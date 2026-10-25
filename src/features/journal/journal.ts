@@ -11,6 +11,7 @@ export interface CareGuide {
   tag: string;
   cover: string | null;
   body: RicosDocument | string | null;
+  premium: boolean;
   createdDate: Date | null;
 }
 
@@ -22,6 +23,7 @@ interface GuideRecord {
   plantTag?: string;
   coverImage?: string;
   body?: unknown;
+  premium?: boolean;
   _createdDate?: Date | string;
 }
 
@@ -50,6 +52,7 @@ function toGuide(record: GuideRecord): CareGuide {
     tag: record.plantTag ?? '',
     cover: resolveWixImageUrl(record.coverImage, 900, 1125),
     body: (record.body as RicosDocument | string | undefined) ?? null,
+    premium: record.premium === true,
     createdDate: toDate(record._createdDate),
   };
 }

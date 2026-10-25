@@ -108,7 +108,14 @@ const formatDate = (date: Date | null): string =>
                       </p>
                       <h3 class="mt-2 font-display text-xl leading-snug text-ink">{guide.title}</h3>
                       <p class="mt-2 text-sm leading-6 text-ink-soft">{guide.intro}</p>
-                      {guide.createdDate && <p class="mt-3 text-xs text-mute">{formatDate(guide.createdDate)}</p>}
+                      <p class="mt-3 flex flex-wrap items-center gap-3">
+                        {guide.createdDate && <span class="text-xs text-mute">{formatDate(guide.createdDate)}</span>}
+                        {guide.premium && (
+                          <span class="rounded-full border border-accent px-3 py-0.5 text-xs font-medium tracking-widest text-accent uppercase">
+                            {t('journal.premium.badge')}
+                          </span>
+                        )}
+                      </p>
                     </a>
                   </li>
                 ))}

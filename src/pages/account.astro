@@ -2,6 +2,7 @@
 import Layout from '@/app/layout.astro';
 import { members } from '@wix/members';
 import { resolveMemberAvatarUrl } from '@/features/account/member-avatar';
+import { getMemberMembership } from '@/features/club/membership';
 import { localize, currentLanguage, useTranslation } from '@/shared/i18n';
 import type { Member } from '@wix/auto_sdk_members_members';
 
@@ -33,6 +34,13 @@ const memberSince =
   createdDate && !Number.isNaN(createdDate.getTime())
     ? new Intl.DateTimeFormat(currentLanguage(), { month: 'long', year: 'numeric' }).format(createdDate)
     : null;
+
+const clubMembership = member._id ? await getMemberMembership(member._id) : null;
+const clubEndDate = clubMembership?.endDate
+  ? new Intl.DateTimeFormat(currentLanguage(), { day: 'numeric', month: 'long', year: 'numeric' }).format(
+      clubMembership.endDate,
+    )
+  : null;
 ---
 
 <Layout noindex>
@@ -95,6 +103,21 @@ const memberSince =
             <dd class="mt-1 text-sm text-ink">{memberSince ?? '—'}</dd>
           </div>
         </dl>
+
+        {clubMembership && (
+          <div class="mt-8 rounded-md border border-rule bg-paper p-6">
+            <p class="text-xs font-medium tracking-widest text-mute uppercase">{t('account.club.title')}</p>
+            <p class="mt-2 text-sm font-medium text-ink">
+              {clubMembership.active
+                ? t('account.club.active', { plan: clubMembership.planName || 'Plant Parent Club' })
+                : t('account.club.pending', { plan: clubMembership.planName || 'Plant Parent Club' })}
+            </p>
+            {clubEndDate && <p class="mt-1 text-sm text-ink-soft">{t('account.club.ends')} {clubEndDate}</p>}
+            <a href={localize('/club')} class="mt-3 inline-block text-sm text-accent transition-colors hover:underline">
+              {t('account.club.link')}
+            </a>
+          </div>
+        )}
 
         <div class="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-rule pt-6">
           <div class="flex flex-wrap items-center gap-6">
