@@ -1,0 +1,31 @@
+{
+  "primaryLanguageCode": "en",
+  "supportedLanguages": [
+    {
+      "languageCode": "en",
+      "locale": {
+        "languageCode": "en",
+        "country": "US"
+      },
+      "isPrimary": true,
+      "isVisitorPrimary": true,
+      "resolutionMethod": "SUBDIRECTORY"
+    },
+    {
+      "languageCode": "es",
+      "locale": {
+        "languageCode": "es",
+        "country": "ES"
+      },
+      "resolutionMethod": "SUBDIRECTORY"
+    },
+    {
+      "languageCode": "it",
+      "locale": {
+        "languageCode": "it",
+        "country": "IT"
+      },
+      "resolutionMethod": "SUBDIRECTORY"
+    }
+  ]
+}

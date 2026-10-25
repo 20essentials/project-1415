@@ -1,5 +1,9 @@
 # wix integration
-.wix/
+.wix/*
+!.wix/multilingual/
+.wix/multilingual/*
+!.wix/multilingual/metadata.json
+!.wix/multilingual/translations/
 opencode.json
 text-just-for-me.txt
 .opencode/opencode.json
