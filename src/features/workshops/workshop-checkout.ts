@@ -1,5 +1,6 @@
 import { redirects } from '@wix/redirects';
 import { WorkshopCheckoutError } from '@/features/workshops/bookings';
+import { readSiteLanguage } from '@/shared/i18n';
 
 export interface CreateWorkshopCheckoutInput {
   serviceId: string;
@@ -32,14 +33,6 @@ function toUtcEnd(localStartDate: string, endDate?: string): string {
   const start = new Date(toUtcStart(localStartDate));
   start.setHours(start.getHours() + 1);
   return start.toISOString().replace(/\.\d{3}Z$/, 'Z');
-}
-
-function readSiteLanguage(): string {
-  if (typeof document !== 'undefined') {
-    const lang = document.documentElement.lang;
-    if (lang) return lang;
-  }
-  return 'en';
 }
 
 export async function createWorkshopCheckout(input: CreateWorkshopCheckoutInput): Promise<string> {

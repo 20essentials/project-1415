@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { WorkshopBookingError, WorkshopCheckoutError, createWorkshopBooking } from '@/features/workshops/bookings';
 import { createWorkshopCheckout } from '@/features/workshops/workshop-checkout';
+import { localeUrl } from '@/shared/i18n';
 
 function json(data: Record<string, unknown>, status: number): Response {
   return new Response(JSON.stringify(data), {
@@ -53,6 +54,7 @@ export const POST: APIRoute = async ({ request }) => {
     localStartDate?: unknown;
     values?: unknown;
     payment?: unknown;
+    language?: unknown;
   };
   const values = asStringRecord(payload.values);
   if (
@@ -62,6 +64,11 @@ export const POST: APIRoute = async ({ request }) => {
   ) {
     return json({ error: 'INVALID_INPUT' }, 400);
   }
+
+  const language =
+    typeof payload.language === 'string' && /^[a-z]{2,3}$/i.test(payload.language)
+      ? payload.language.toLowerCase()
+      : 'en';
 
   const payment = payload.payment === 'online' ? 'online' : 'offline';
   const origin = getOrigin(request);
@@ -80,7 +87,8 @@ export const POST: APIRoute = async ({ request }) => {
           serviceId: payload.serviceId,
           localStartDate: payload.localStartDate,
           timezone: 'Europe/Rome',
-          postFlowUrl: `${origin}/services?booking=cancelled&slug=${encodeURIComponent(payload.serviceId)}`,
+          language,
+          postFlowUrl: `${origin}${localeUrl(`/services/${receipt.slug}?booking=cancelled`, language)}`,
           thankYouPageUrl: `${origin}/booking-confirmation?id=${encodeURIComponent(receipt.id)}&service=${encodeURIComponent(receipt.serviceName)}&start=${encodeURIComponent(receipt.localStartDate)}&end=${encodeURIComponent(receipt.localEndDate)}`,
         });
         return json({ booking: receipt, checkoutUrl }, 200);

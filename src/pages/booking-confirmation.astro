@@ -1,6 +1,6 @@
 ---
 import Layout from '@/app/layout.astro';
-import { SITE_TIMEZONE } from '@/features/workshops/bookings';
+import { SITE_TIMEZONE, getWorkshopBookingState, type WorkshopBookingState } from '@/features/workshops/bookings';
 import { currentLanguage, localize, useTranslation } from '@/shared/i18n';
 
 const { t } = useTranslation();
@@ -10,7 +10,24 @@ const service = Astro.url.searchParams.get('service');
 const start = Astro.url.searchParams.get('start') || Astro.url.searchParams.get('startDate');
 const end = Astro.url.searchParams.get('end') || Astro.url.searchParams.get('endDate');
 
+let resolved: WorkshopBookingState | null = null;
+if (id) {
+  resolved = await getWorkshopBookingState(id);
+}
+
+const statusParam = Astro.url.searchParams.get('status');
+const status = resolved?.status ?? (statusParam ? statusParam.toUpperCase() : null);
+const paymentStatus = resolved?.paymentStatus ?? null;
+
 const hasBooking = Boolean(id && service && start && end);
+
+const confirmed = status === 'CONFIRMED' || paymentStatus === 'PAID';
+const pending = status === 'PENDING' || status === 'CREATED';
+const paymentLine = confirmed
+  ? t('booking-confirmation.payment.confirmed')
+  : pending
+    ? t('booking-confirmation.payment.pending')
+    : t('booking-confirmation.payment.status');
 
 const sessionDay = hasBooking && start
   ? new Intl.DateTimeFormat(currentLanguage(), {
@@ -35,7 +52,7 @@ const sessionRange = hasBooking && start && end ? `${String(start).slice(11, 16)
               {t('booking-confirmation.title')}
             </h1>
             <p class="mt-4 text-sm leading-6 text-ink-soft">{t('booking-confirmation.body')}</p>
-            <p class="mt-2 text-sm leading-6 text-ink-soft">{t('booking-confirmation.payment.status')}</p>
+            <p class="mt-2 text-sm leading-6 text-ink-soft">{paymentLine}</p>
 
             <dl class="mt-8 flex flex-col gap-4 rounded-md border border-rule bg-paper-warm p-5">
               <div class="flex flex-col gap-1">
@@ -79,7 +96,7 @@ const sessionRange = hasBooking && start && end ? `${String(start).slice(11, 16)
       }
     </div>
   </section>
-  {hasBooking && (
+  {hasBooking && confirmed && (
     <script is:inline define:vars={{ id, service }}>
       (function () {
         try {

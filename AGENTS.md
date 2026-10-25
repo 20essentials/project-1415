@@ -114,6 +114,11 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 - Si `Edit` falla con "Could not find oldString" en un bloque multilínea pero encuentra una sola línea, sospechar diferencias de fin de línea (CRLF vs LF). Diagnosticar la causa antes de recurrir a reescribir archivos enteros.
 - Ante un error de herramienta, entender por qué falla; no aplicar el primer workaround que "funcione".
 
+### Archivos temporales (siempre dentro del workspace)
+
+- Todo output temporal (logs de servidores, respuestas curl, dumps, patches) se escribe en `./.tmp/` de este proyecto (ya en `.gitignore`). Setup ref: `/setup-opencode-temp`.
+- **Nunca escribir en `/tmp`, `C:\Temp` ni `AppData\Local\Temp`**: el shell no está autorizado ahí y cada escritura dispara el prompt de permisos y ataja al usuario la sesión. Redirecciones tipo `npm run dev > /tmp/x.log` o `curl ... > /tmp/x.json` están prohibidas; usar `./.tmp/x.log`.
+
 ### Alcance (no asumir más de lo pedido)
 
 - No ampliar el alcance por inferencia (p. ej. "todo src" → convertir hojas CSS enteras, borrar scaffold). Si el alcance es ambiguo o implica cambios destructivos, preguntar antes de ejecutar.

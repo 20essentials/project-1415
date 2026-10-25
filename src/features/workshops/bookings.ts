@@ -1,4 +1,4 @@
-import { availabilityTimeSlots, bookings, services } from '@wix/bookings';
+import { availabilityTimeSlots, bookings, extendedBookings, services } from '@wix/bookings';
 import { auth } from '@wix/essentials';
 
 export const SITE_TIMEZONE = 'Europe/Rome';
@@ -47,6 +47,7 @@ export const BOOKING_FORM_FIELDS: BookingFormField[] = [
 export interface BookingReceipt {
   id: string;
   status: string;
+  slug: string;
   serviceName: string;
   localStartDate: string;
   localEndDate: string;
@@ -273,10 +274,33 @@ export async function createWorkshopBooking(
   return {
     id: booking._id ?? '',
     status: booking.status ?? (paymentOption === 'ONLINE' ? 'PENDING' : 'CONFIRMED'),
+    slug: workshop.slug,
     serviceName: workshop.name,
     localStartDate: slot.localStartDate,
     localEndDate: slot.localEndDate,
   };
+}
+
+export interface WorkshopBookingState {
+  status: string | null;
+  paymentStatus: string | null;
+}
+
+const queryExtendedBookingsElevated = auth.elevate(extendedBookings.queryExtendedBookings);
+
+export async function getWorkshopBookingState(id: string): Promise<WorkshopBookingState | null> {
+  try {
+    const result = await queryExtendedBookingsElevated({
+      filter: { id: { $eq: id } },
+      cursorPaging: { limit: 1 },
+    });
+    const booking = result.extendedBookings?.[0]?.booking;
+    if (!booking) return null;
+    return { status: booking.status ?? null, paymentStatus: booking.paymentStatus ?? null };
+  } catch (error) {
+    console.error('[bookings] booking state query failed:', error);
+    return null;
+  }
 }
 
 export type WorkshopCheckoutCode = 'INVALID_INPUT' | 'CHECKOUT_UNAVAILABLE';

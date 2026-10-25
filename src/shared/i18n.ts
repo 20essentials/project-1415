@@ -30,3 +30,12 @@ export function localeUrl(pathname: string, locale: string): string {
   if (locale === PRIMARY_LOCALE) return clean;
   return clean === '/' ? `/${locale}` : `/${locale}${clean}`;
 }
+
+// Wix sets the `wixLanguage` cookie for the visitor's current locale (see the
+// Astro localization middleware); guests routed to Wix-hosted pages must render
+// in the same language.
+export function readSiteLanguage(): string {
+  if (typeof document === 'undefined') return PRIMARY_LOCALE;
+  const match = /(?:^|;\s*)wixLanguage=([a-z]{2,3})/i.exec(document.cookie);
+  return match?.[1] ?? PRIMARY_LOCALE;
+}

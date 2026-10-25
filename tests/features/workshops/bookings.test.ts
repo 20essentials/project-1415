@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { availabilityTimeSlots, bookings, services } from '@wix/bookings';
+import { availabilityTimeSlots, bookings, extendedBookings, services } from '@wix/bookings';
 import { auth } from '@wix/essentials';
-import { createWorkshopBooking } from '@/features/workshops/bookings';
+import { createWorkshopBooking, getWorkshopBookingState } from '@/features/workshops/bookings';
 
 vi.mock('@wix/bookings', () => ({
   availabilityTimeSlots: {
@@ -12,6 +12,9 @@ vi.mock('@wix/bookings', () => ({
   },
   services: {
     queryServices: vi.fn(),
+  },
+  extendedBookings: {
+    queryExtendedBookings: vi.fn(),
   },
 }));
 
@@ -77,5 +80,37 @@ describe('createWorkshopBooking payment', () => {
     expect(receipt.status).toBe('CONFIRMED');
     const arg = (bookings.createBooking as any).mock.calls[0][0];
     expect(arg.selectedPaymentOption).toBe('OFFLINE');
+  });
+
+  it('exposes the workshop slug on the receipt', async () => {
+    const receipt = await createWorkshopBooking({
+      serviceId: 'svc-1',
+      localStartDate: '2026-10-25T10:00:00',
+      values: { first_name: 'Ana', last_name: 'Lo', email: 'ana@example.com' },
+    });
+    expect(receipt.slug).toBe('care-101');
+  });
+});
+
+describe('getWorkshopBookingState', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (auth.elevate as any) = (fn: any) => fn;
+  });
+
+  it('reads status and paymentStatus from extended bookings', async () => {
+    (extendedBookings.queryExtendedBookings as any).mockResolvedValue({
+      extendedBookings: [{ booking: { _id: 'b-1', status: 'PENDING', paymentStatus: 'NOT_PAID' } }],
+    });
+    const state = await getWorkshopBookingState('b-1');
+    expect(state).toEqual({ status: 'PENDING', paymentStatus: 'NOT_PAID' });
+    expect((extendedBookings.queryExtendedBookings as any).mock.calls[0][0].filter.id).toEqual({ $eq: 'b-1' });
+  });
+
+  it('returns null when Wix fails or the booking is missing', async () => {
+    (extendedBookings.queryExtendedBookings as any).mockRejectedValue(new Error('boom'));
+    await expect(getWorkshopBookingState('b-1')).resolves.toBeNull();
+    (extendedBookings.queryExtendedBookings as any).mockResolvedValue({ extendedBookings: [] });
+    await expect(getWorkshopBookingState('b-1')).resolves.toBeNull();
   });
 });

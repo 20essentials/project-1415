@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { readSiteLanguage } from "@/shared/i18n";
 
 export interface BookingField {
   target: string;
@@ -203,6 +204,7 @@ export function WorkshopBooking({
           localStartDate: selectedSlot.localStartDate,
           values,
           payment: paymentMode,
+          language: readSiteLanguage(),
         }),
       });
       const data = (await response.json()) as BookingResponse;
@@ -215,6 +217,9 @@ export function WorkshopBooking({
         return;
       }
       if (data.error === "CHECKOUT_UNAVAILABLE") {
+        // Fall back to the offline flow so the form stays consistent; the
+        // visitor pays on site instead of hitting a broken hosted checkout.
+        setPaymentMode("offline");
         setCheckoutUnavailable(true);
         setSubmitState("idle");
         return;
@@ -244,6 +249,17 @@ export function WorkshopBooking({
 
   const stepTitle = "mt-2 font-display text-lg text-ink";
   const stepEyebrow = "text-xs font-medium tracking-widest text-accent uppercase";
+  const idleLabel = checkoutUnavailable
+    ? labels.payOffline ?? labels.submit
+    : paymentMode === "online"
+      ? labels.submitOnline ?? labels.submit
+      : labels.submit;
+  const submittingLabel =
+    submitState === "submitting"
+      ? paymentMode === "online"
+        ? labels.submittingOnline ?? labels.submitting
+        : labels.submitting
+      : idleLabel;
 
   return (
     <div className="flex flex-col gap-6 rounded-md border border-rule bg-paper-warm p-5 sm:p-6">
@@ -412,10 +428,17 @@ export function WorkshopBooking({
             <button
               type="submit"
               disabled={submitState === "submitting"}
+              aria-busy={submitState === "submitting"}
               className="inline-flex h-11 w-full items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
-              {submitState === "submitting" ? labels.submitting : labels.submit}
+              {submittingLabel}
             </button>
+
+            {checkoutUnavailable && (
+              <p role="status" className="text-sm text-mute">
+                {labels.checkoutUnavailable ?? DEFAULT_LABELS.checkoutUnavailable}
+              </p>
+            )}
 
             {submitState === "error" && (
               <p role="alert" className="text-sm text-error">

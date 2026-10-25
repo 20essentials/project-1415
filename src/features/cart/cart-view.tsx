@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { currentCart, currentCartV2 } from "@wix/ecom";
 import { redirects } from "@wix/redirects";
 import { trackEvent } from "@/shared/analytics";
+import { readSiteLanguage } from "@/shared/i18n";
 import { resolveWixImageUrl } from "@/shared/wix-image";
 import {
   couponErrorCode,
@@ -11,15 +12,6 @@ import {
 import { normalizeCart, type CartLineItem } from "./cart-shape";
 
 const CART_CACHE_KEY = "cart:last-snapshot";
-
-// Wix sets the `wixLanguage` cookie for the visitor's current locale (see the
-// Astro localization middleware); its language is passed to Wix-hosted
-// redirect sessions so checkout renders in the same language.
-function readSiteLanguage(): string {
-  if (typeof document === "undefined") return "en";
-  const match = /(?:^|;\s*)wixLanguage=([a-z]{2,3})/i.exec(document.cookie);
-  return match?.[1] ?? "en";
-}
 
 type Cart = unknown;
 
