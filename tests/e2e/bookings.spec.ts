@@ -1,5 +1,4 @@
 import { test, expect, type Page, type Route } from '@playwright/test';
-
 // Seeded Bookings service (see .wix/seeded.json → bookings.services: Care 101);
 // live slot availability in the dev site is empty, so every flow stubs
 // /api/slots and /api/bookings. The assertions check this repo's app behavior,

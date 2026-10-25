@@ -18,7 +18,7 @@ const newsletterLabels = {
   sending: t('footer.newsletter.sending'),
   success: t('footer.newsletter.success'),
   error: t('footer.newsletter.error'),
-  invalid: t('footer.newsletter.invalid'),
+  invalid: t('footer.newsletter.invalid')
 };
 
 const columns = [
@@ -28,49 +28,54 @@ const columns = [
       { href: links.shop, label: 'nav.all-plants' },
       { href: '/category/carnivorous', label: 'footer.carnivorous' },
       { href: '/category/flowers', label: 'footer.flowers' },
-      { href: '/category/kits-accessories', label: 'footer.kits' },
-    ],
+      { href: '/category/kits-accessories', label: 'footer.kits' }
+    ]
   },
   {
     title: 'footer.company',
     items: [
       { href: '/about', label: 'nav.about' },
-      { href: '/contact', label: 'nav.contact' },
-    ],
+      { href: '/contact', label: 'nav.contact' }
+    ]
   },
   {
     title: 'footer.care',
     items: [
       { href: '/contact#shipping', label: 'footer.shipping' },
-      { href: '/contact#care', label: 'footer.plant-care' },
-    ],
-  },
+      { href: '/contact#care', label: 'footer.plant-care' }
+    ]
+  }
 ];
 ---
 
-<footer class="relative bg-paper px-4 pt-24 pb-12 text-ink sm:px-8 lg:px-20">
-  <div class="mx-auto grid max-w-6xl gap-12 md:grid-cols-2 lg:grid-cols-5">
-    <div class="flex flex-col gap-4 lg:col-span-2">
-      <Logo class="text-base" />
-      <p class="max-w-xs text-sm leading-6 text-ink-soft">
+<footer class='relative bg-paper px-4 pt-24 pb-12 text-ink sm:px-8 lg:px-20'>
+  <div class='mx-auto grid max-w-6xl gap-12 md:grid-cols-2 lg:grid-cols-5'>
+    <div class='flex flex-col gap-4 lg:col-span-2'>
+      <Logo class='text-base' />
+      <p class='max-w-xs text-sm leading-6 text-ink-soft'>
         {t('footer.about')}
       </p>
       <a
         href={localize(links.shop)}
-        class="mt-2 inline-flex h-10 w-fit items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream"
+        class='mt-2 inline-flex h-10 w-fit items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream'
       >
-        <span class="text-trim">{t('common.shop-the-collection')}</span>
+        <span class='text-trim'>{t('common.shop-the-collection')}</span>
       </a>
     </div>
 
     {
-      columns.map((column) => (
-        <div class="flex flex-col gap-3 text-sm">
-          <h2 class="text-xs font-medium tracking-widest text-mute uppercase">{t(column.title)}</h2>
-          <ul class="flex flex-col gap-2">
-            {column.items.map((item) => (
+      columns.map(column => (
+        <div class='flex flex-col gap-3 text-sm'>
+          <h2 class='text-xs font-medium tracking-widest text-mute uppercase'>
+            {t(column.title)}
+          </h2>
+          <ul class='flex flex-col gap-2'>
+            {column.items.map(item => (
               <li>
-                <a href={localize(item.href)} class="link text-ink-soft hover:text-ink">
+                <a
+                  href={localize(item.href)}
+                  class='link text-ink-soft hover:text-ink'
+                >
                   {t(item.label)}
                 </a>
               </li>
@@ -81,33 +86,53 @@ const columns = [
     }
   </div>
 
-  <div class="mx-auto mt-16 max-w-6xl border-t border-rule pt-10">
-    <div class="grid gap-6 lg:grid-cols-2 lg:gap-16">
+  <div class='mx-auto mt-16 max-w-6xl border-t border-rule pt-10'>
+    <div class='grid gap-6 lg:grid-cols-2 lg:gap-16'>
       <div>
-        <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('footer.newsletter.eyebrow')}</p>
-        <h2 class="mt-3 font-display text-2xl leading-tight text-ink lg:text-3xl">{t('footer.newsletter.title')}</h2>
-        <p class="mt-2 max-w-md text-sm leading-6 text-ink-soft">{t('footer.newsletter.body')}</p>
+        <p class='text-xs font-medium tracking-widest text-accent uppercase'>
+          {t('footer.newsletter.eyebrow')}
+        </p>
+        <h2 class='mt-3 font-display text-2xl leading-tight text-ink lg:text-3xl'>
+          {t('footer.newsletter.title')}
+        </h2>
+        <p class='mt-2 max-w-md text-sm leading-6 text-ink-soft'>
+          {t('footer.newsletter.body')}
+        </p>
       </div>
-      <div class="lg:pt-2">
-        {newsletterFormId ? (
-          <NewsletterForm client:idle formId={newsletterFormId} labels={newsletterLabels} />
-        ) : (
-          <p class="text-sm leading-6 text-ink-soft">
-            {t('footer.newsletter.empty')}{' '}
-            <a href="mailto:hello@petalsandpredators.com" class="link text-accent">hello@petalsandpredators.com</a>.
-          </p>
-        )}
+      <div class='lg:pt-2'>
+        {
+          newsletterFormId ? (
+            <NewsletterForm
+              client:idle
+              formId={newsletterFormId}
+              labels={newsletterLabels}
+            />
+          ) : (
+            <p class='text-sm leading-6 text-ink-soft'>
+              {t('footer.newsletter.empty')}{' '}
+              <a
+                href='mailto:hello@petalsandpredators.com'
+                class='link text-accent'
+              >
+                hello@petalsandpredators.com
+              </a>
+              .
+            </p>
+          )
+        }
       </div>
     </div>
   </div>
 
-  <div class="mx-auto mt-16 flex max-w-6xl flex-col gap-3 border-t border-rule pt-8 text-xs text-mute sm:flex-row sm:items-center sm:justify-between">
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+  <div
+    class='mx-auto mt-16 flex max-w-6xl flex-col gap-3 border-t border-rule pt-8 text-xs text-mute sm:flex-row sm:items-center sm:justify-between'
+  >
+    <div class='flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4'>
       <p>{t('footer.rights', { year })}</p>
       <button
-        type="button"
+        type='button'
         data-pp-open-preferences
-        class="w-fit text-left text-xs text-mute underline-offset-4 hover:text-ink hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        class='w-fit text-left text-xs text-mute underline-offset-4 hover:text-ink hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent'
       >
         Cookie preferences
       </button>
@@ -117,70 +142,86 @@ const columns = [
 </footer>
 
 <div
-  id="pp-preferences-modal"
-  class="pp-prefs"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="pp-prefs-title"
+  id='pp-preferences-modal'
+  class='pp-prefs'
+  role='dialog'
+  aria-modal='true'
+  aria-labelledby='pp-prefs-title'
   hidden
 >
-  <div class="pp-prefs__backdrop" data-pp-prefs-close></div>
-  <div class="pp-prefs__panel" role="document">
-    <div class="pp-prefs__header">
-      <h2 id="pp-prefs-title" class="font-display text-lg text-ink">Cookie preferences</h2>
+  <div class='pp-prefs__backdrop' data-pp-prefs-close></div>
+  <div class='pp-prefs__panel' role='document'>
+    <div class='pp-prefs__header'>
+      <h2 id='pp-prefs-title' class='font-display text-lg text-ink'>
+        Cookie preferences
+      </h2>
       <button
-        type="button"
-        class="pp-prefs__close"
-        aria-label="Close"
+        type='button'
+        class='pp-prefs__close'
+        aria-label='Close'
         data-pp-prefs-close
       >
         ×
       </button>
     </div>
-    <div class="pp-prefs__body">
-      <p class="text-sm leading-6 text-ink-soft">
+    <div class='pp-prefs__body'>
+      <p class='text-sm leading-6 text-ink-soft'>
         Manage your consent preferences. Essential cookies are always enabled.
       </p>
-      <div class="pp-prefs__groups">
-        <label class="pp-prefs__row">
+      <div class='pp-prefs__groups'>
+        <label class='pp-prefs__row'>
           <div>
-            <div class="pp-prefs__label">Essential</div>
-            <div class="pp-prefs__desc">Required for the site to function.</div>
+            <div class='pp-prefs__label'>Essential</div>
+            <div class='pp-prefs__desc'>Required for the site to function.</div>
           </div>
-          <input type="checkbox" checked disabled />
+          <input type='checkbox' checked disabled />
         </label>
-        <label class="pp-prefs__row">
+        <label class='pp-prefs__row'>
           <div>
-            <div class="pp-prefs__label">Functional / Preferences</div>
-            <div class="pp-prefs__desc">Remember choices and improve experience.</div>
+            <div class='pp-prefs__label'>Functional / Preferences</div>
+            <div class='pp-prefs__desc'>
+              Remember choices and improve experience.
+            </div>
           </div>
-          <input type="checkbox" data-pp-pref="functional" />
+          <input type='checkbox' data-pp-pref='functional' />
         </label>
-        <label class="pp-prefs__row">
+        <label class='pp-prefs__row'>
           <div>
-            <div class="pp-prefs__label">Analytics</div>
-            <div class="pp-prefs__desc">Help us understand usage.</div>
+            <div class='pp-prefs__label'>Analytics</div>
+            <div class='pp-prefs__desc'>Help us understand usage.</div>
           </div>
-          <input type="checkbox" data-pp-pref="analytics" />
+          <input type='checkbox' data-pp-pref='analytics' />
         </label>
-        <label class="pp-prefs__row">
+        <label class='pp-prefs__row'>
           <div>
-            <div class="pp-prefs__label">Marketing / Advertising</div>
-            <div class="pp-prefs__desc">Personalized content and ads.</div>
+            <div class='pp-prefs__label'>Marketing / Advertising</div>
+            <div class='pp-prefs__desc'>Personalized content and ads.</div>
           </div>
-          <input type="checkbox" data-pp-pref="marketing" />
+          <input type='checkbox' data-pp-pref='marketing' />
         </label>
       </div>
     </div>
-    <div class="pp-prefs__footer">
-      <button type="button" class="pp-prefs__btn pp-prefs__btn--ghost" data-pp-prefs-reject>Reject all</button>
-      <button type="button" class="pp-prefs__btn pp-prefs__btn--primary" data-pp-prefs-save>Save preferences</button>
+    <div class='pp-prefs__footer'>
+      <button
+        type='button'
+        class='pp-prefs__btn pp-prefs__btn--ghost'
+        data-pp-prefs-reject>Reject all</button
+      >
+      <button
+        type='button'
+        class='pp-prefs__btn pp-prefs__btn--primary'
+        data-pp-prefs-save>Save preferences</button
+      >
     </div>
   </div>
 </div>
 
 <script>
-  import { getGranularConsentPreferences, saveGranularConsentPreferences, revokeAllConsent } from '@/shared/consent';
+  import {
+    getGranularConsentPreferences,
+    saveGranularConsentPreferences,
+    revokeAllConsent
+  } from '@/shared/consent';
 
   const openBtn = document.querySelector('[data-pp-open-preferences]');
   const modal = document.getElementById('pp-preferences-modal');
@@ -188,19 +229,25 @@ const columns = [
     const closeEls = modal.querySelectorAll('[data-pp-prefs-close]');
     const saveBtn = modal.querySelector('[data-pp-prefs-save]');
     const rejectBtn = modal.querySelector('[data-pp-prefs-reject]');
-    const prefInputs = Array.from(modal.querySelectorAll<HTMLInputElement>('input[data-pp-pref]'));
+    const prefInputs = Array.from(
+      modal.querySelectorAll<HTMLInputElement>('input[data-pp-pref]')
+    );
 
     const open = () => {
       const prefs = getGranularConsentPreferences();
-      prefInputs.forEach((input) => {
+      prefInputs.forEach(input => {
         const key = input.getAttribute('data-pp-pref');
-        if (key === 'functional') input.checked = !!(prefs.functional || prefs.preferences);
+        if (key === 'functional')
+          input.checked = !!(prefs.functional || prefs.preferences);
         if (key === 'analytics') input.checked = !!prefs.analytics;
-        if (key === 'marketing') input.checked = !!(prefs.marketing || prefs.advertising);
+        if (key === 'marketing')
+          input.checked = !!(prefs.marketing || prefs.advertising);
       });
       modal.hidden = false;
       document.body.style.overflow = 'hidden';
-      const focusable = modal.querySelector<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      const focusable = modal.querySelector<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
       focusable?.focus();
     };
     const close = () => {
@@ -209,22 +256,28 @@ const columns = [
     };
 
     openBtn.addEventListener('click', open);
-    closeEls.forEach((el) => el.addEventListener('click', close));
-    document.addEventListener('keydown', (e) => {
+    closeEls.forEach(el => el.addEventListener('click', close));
+    document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && !modal.hidden) close();
     });
 
     saveBtn?.addEventListener('click', () => {
-      const functional = !!modal.querySelector<HTMLInputElement>('input[data-pp-pref="functional"]')?.checked;
-      const analytics = !!modal.querySelector<HTMLInputElement>('input[data-pp-pref="analytics"]')?.checked;
-      const marketing = !!modal.querySelector<HTMLInputElement>('input[data-pp-pref="marketing"]')?.checked;
+      const functional = !!modal.querySelector<HTMLInputElement>(
+        'input[data-pp-pref="functional"]'
+      )?.checked;
+      const analytics = !!modal.querySelector<HTMLInputElement>(
+        'input[data-pp-pref="analytics"]'
+      )?.checked;
+      const marketing = !!modal.querySelector<HTMLInputElement>(
+        'input[data-pp-pref="marketing"]'
+      )?.checked;
       saveGranularConsentPreferences({
         functional,
         preferences: functional,
         analytics,
         marketing,
         advertising: marketing,
-        dataToThirdParty: marketing,
+        dataToThirdParty: marketing
       });
       close();
     });
