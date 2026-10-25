@@ -77,7 +77,7 @@ test.describe('club', () => {
     await page.getByRole('button', { name: 'Join the club' }).first().click();
     await checkoutPosted;
 
-    const invite = page.getByText('Checkout runs with a member account —');
+    const invite = page.getByRole('status').filter({ hasText: 'Checkout runs with a member account —' });
     await expect(invite).toBeVisible();
     await expect(page.getByRole('link', { name: 'log in or create one' })).toHaveAttribute(
       'href',
