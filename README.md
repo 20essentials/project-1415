@@ -1,8 +1,5 @@
 # Petals & Predators
 
-- No usamos python, solo nodejs.
-- Recuerd
-
 > Tienda headless de plantas carnívoras y flores — Astro + Wix Managed Headless.
 
 Un e-commerce en inglés construido sobre **Wix Stores** como backend (catálogo, carrito y
@@ -38,6 +35,32 @@ Fraunces + Inter. Ver `DESIGN.md`.
 - **Gift cards** con fallback si la app no está instalada.
 - **Miembros** — login, cuenta y logout (Wix Members Area).
 - **Multilenguaje** con selector de idioma y SEO por locale.
+
+---
+
+## Apps de Wix
+
+Apps que el proyecto usa (✅) y apps disponibles en la API de Wix que **no** están instaladas ni se usan (❌).
+
+| Estado | App de Wix | Features / páginas / secciones que usa esta web |
+| :----: |---|---|
+| ✅ | **Wix Stores** (catálogo) | Home (productos destacados) · Shop / grilla de productos · páginas por categoría · PDP (variantes, precio) · Site search |
+| ✅ | **Wix eCommerce** (carrito/checkout) | Carrito + badge reactivo en el nav · checkout nativo de Wix · Order history (pedidos) |
+| ✅ | **Wix CMS** (`@wix/data`) | Journal (care guides con rutas dinámicas) · Lookbook por temporada · Wishlist · Restock alerts |
+| ✅ | **Wix Forms** | Contact (formulario de contacto) · Newsletter (suscripción) |
+| ✅ | **Wix Reviews** | Rating y reseñas en la PDP · carrusel de reseñas en Home · formulario de crear reseña |
+| ✅ | **Wix Members** | Login / logout · página de cuenta (avatar, perfil) · desbloquea Wishlist y Order history por miembro |
+| ✅ | **Wix Bookings** | Workshops (Care 101, Repotting 101 — servicios APPOINTMENT) |
+| ✅ | **Wix Gift Cards** | Página Gift cards (eGift Card con 5 variantes preset) |
+| ✅ | **Wix Pricing Plans** | Club (suscripción, planes monthly / annual) |
+| ✅ | **Wix Multilingual** | Selector de idioma `en` / `es` / `it` · SEO y rutas por locale |
+| ❌ | **Wix Blog** | Sin uso — el Journal vive en CMS, no en Blog |
+| ❌ | **Wix Events** | Sin uso — no vendemos entradas ni RSVP |
+| ❌ | **Wix Donations** | Sin uso — e-commerce puro |
+| ❌ | **Wix Forum** | Sin uso |
+| ❌ | **Wix Portfolio** | Sin uso — el Lookbook es CMS propio |
+| ❌ | **Wix Restaurants** | Sin uso |
+| ❌ | **Wix Marketing** (email campaigns) | Sin uso — newsletter se envía vía Forms |
 
 ---
 
