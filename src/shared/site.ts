@@ -14,6 +14,7 @@ export const site = {
     { href: '/#tu-casa', label: 'nav.your-space' },
     { href: '/products', label: 'nav.all-plants' },
     { href: '/services', label: 'nav.services' },
+    { href: '/events', label: 'nav.events' },
     { href: '/lookbook', label: 'nav.lookbook' },
     { href: '/journal', label: 'nav.journal' },
     { href: '/blog', label: 'nav.blog' },
@@ -23,6 +24,7 @@ export const site = {
   ],
   navPrimary: [
     { href: '/services', label: 'nav.services' },
+    { href: '/events', label: 'nav.events' },
     { href: '/blog', label: 'nav.blog' },
     { href: '/products', label: 'nav.all-plants' },
     { href: '/lookbook', label: 'nav.lookbook' },
