@@ -5,7 +5,7 @@ import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
 
 const { t } = useTranslation();
 
-const posts = await listBlogPosts();
+const posts = await listBlogPosts(50, currentLanguage());
 const featured = posts[0] ?? null;
 const rest = posts.slice(1);
 

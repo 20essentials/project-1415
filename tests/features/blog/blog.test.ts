@@ -34,11 +34,11 @@ interface Chain {
   eq(propertyName: string, value: string): Chain;
   limit(count: number): Chain;
   find(): Promise<{ items?: Record<string, unknown>[] }>;
-  state: Record<string, unknown>;
+  state: { eq: [string, string][]; hasSome?: [string, unknown[]] };
 }
 
 function chain(items: Record<string, unknown>[]): Chain {
-  const state: Record<string, unknown> = {};
+  const state: { eq: [string, string][]; hasSome?: [string, unknown[]] } = { eq: [] };
   const link: Chain = {
     state,
     hasSome(propertyName, value) {
@@ -46,7 +46,7 @@ function chain(items: Record<string, unknown>[]): Chain {
       return link;
     },
     eq(propertyName, value) {
-      state.eq = [propertyName, value];
+      state.eq.push([propertyName, value]);
       return link;
     },
     limit() {
@@ -124,6 +124,26 @@ describe('blog data access', () => {
     expect(post.categoryIds).toEqual(['cat-1']);
   });
 
+  it('queries only the posts of the requested language', async () => {
+    queryPosts.mockReturnValue(chain([wixPost]));
+    queryCategories.mockReturnValue(chain([wixCategory]));
+
+    await listBlogPosts(20, 'it');
+
+    const link = queryPosts.mock.results[0].value as Chain;
+    expect(link.state.eq).toEqual([['language', 'it']]);
+  });
+
+  it('queries only the categories of the requested language', async () => {
+    queryCategories.mockReturnValue(chain([wixCategory]));
+
+    const categories = await listBlogCategories('es');
+
+    const link = queryCategories.mock.results[0].value as Chain;
+    expect(link.state.eq).toEqual([['language', 'es']]);
+    expect(categories.map((category) => category.label)).toEqual(['Care']);
+  });
+
   it('returns an empty list when the posts query fails', async () => {
     queryPosts.mockReturnValue({
       limit: () => ({ find: () => Promise.reject(new Error('boom')) }),
@@ -141,7 +161,10 @@ describe('blog data access', () => {
 
     const post = await getBlogPostBySlug('feeding-venus-flytraps');
 
-    expect(link.state.eq).toEqual(['slug', 'feeding-venus-flytraps']);
+    expect(link.state.eq).toEqual([
+      ['slug', 'feeding-venus-flytraps'],
+      ['language', 'en'],
+    ]);
     expect(link.state.hasSome).toBeUndefined();
     expect(post?.slug).toBe('feeding-venus-flytraps');
     expect(queryPosts).toHaveBeenCalledWith({ fieldsets: ['URL', 'RICH_CONTENT'] });
@@ -184,7 +207,10 @@ describe('blog data access', () => {
 
     const category = await getBlogCategoryBySlug('care');
 
-    expect(link.state.eq).toEqual(['slug', 'care']);
+    expect(link.state.eq).toEqual([
+      ['slug', 'care'],
+      ['language', 'en'],
+    ]);
     expect(category?.label).toBe('Care');
   });
 
@@ -196,6 +222,7 @@ describe('blog data access', () => {
 
     const link = queryPosts.mock.results[0].value as Chain;
     expect(link.state.hasSome).toEqual(['categoryIds', ['cat-1']]);
+    expect(link.state.eq).toEqual([['language', 'en']]);
     expect(related.map((post) => post.id)).toEqual(['related-1', 'related-2']);
     expect(related).toHaveLength(2);
   });

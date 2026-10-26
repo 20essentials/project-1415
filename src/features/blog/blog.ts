@@ -2,6 +2,7 @@ import { posts, categories } from '@wix/blog';
 import { auth } from '@wix/essentials';
 import { resolveWixImageUrl } from '@/shared/wix-image';
 import type { RicosDocument } from '@/shared/ricos';
+import { PRIMARY_LOCALE } from '@/shared/i18n';
 
 export interface BlogPost {
   id: string;
@@ -106,11 +107,11 @@ function toPost(record: PostRecord, labelsById: Map<string, string>): BlogPost {
   };
 }
 
-async function categoryLabelsById(ids: string[]): Promise<Map<string, string>> {
+async function categoryLabelsById(ids: string[], language: string): Promise<Map<string, string>> {
   const labelsById = new Map<string, string>();
   if (ids.length === 0) return labelsById;
   try {
-    const result = await queryCategoriesElevated().find();
+    const result = await queryCategoriesElevated().eq('language', language).find();
     const wanted = new Set(ids);
     for (const record of result.items ?? []) {
       if (record._id && wanted.has(record._id)) {
@@ -123,11 +124,11 @@ async function categoryLabelsById(ids: string[]): Promise<Map<string, string>> {
   return labelsById;
 }
 
-export async function listBlogPosts(limit = 50): Promise<BlogPost[]> {
+export async function listBlogPosts(limit = 50, language: string = PRIMARY_LOCALE): Promise<BlogPost[]> {
   try {
-    const result = await queryPostsElevated({ fieldsets: ['URL'] }).limit(limit).find();
+    const result = await queryPostsElevated({ fieldsets: ['URL'] }).eq('language', language).limit(limit).find();
     const records = (result.items ?? []).map((record) => ({ ...record, _id: record._id ?? '' }));
-    const labelsById = await categoryLabelsById(records.flatMap((record) => record.categoryIds ?? []));
+    const labelsById = await categoryLabelsById(records.flatMap((record) => record.categoryIds ?? []), language);
     return records.map((record) => toPost(record, labelsById)).filter((post) => post.slug.length > 0);
   } catch (error) {
     console.error('[blog] posts query failed:', error);
@@ -135,7 +136,7 @@ export async function listBlogPosts(limit = 50): Promise<BlogPost[]> {
   }
 }
 
-export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+export async function getBlogPostBySlug(slug: string, language: string = PRIMARY_LOCALE): Promise<BlogPost | null> {
   if (!slug) return null;
   try {
     // Runtime WQL maps `slug` to blogSeo.slug, which only accepts $eq despite
@@ -144,11 +145,12 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
       fieldsets: ['URL', 'RICH_CONTENT'],
     })
       .eq('slug', slug)
+      .eq('language', language)
       .limit(1)
       .find();
     const record = result.items?.[0];
     if (!record) return null;
-    const labelsById = await categoryLabelsById(record.categoryIds ?? []);
+    const labelsById = await categoryLabelsById(record.categoryIds ?? [], language);
     return toPost(record, labelsById);
   } catch (error) {
     console.error(`[blog] post lookup "${slug}" failed:`, error);
@@ -156,9 +158,9 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
   }
 }
 
-export async function listBlogCategories(): Promise<BlogCategory[]> {
+export async function listBlogCategories(language: string = PRIMARY_LOCALE): Promise<BlogCategory[]> {
   try {
-    const result = await queryCategoriesElevated({ fieldsets: ['URL'] }).find();
+    const result = await queryCategoriesElevated({ fieldsets: ['URL'] }).eq('language', language).find();
     const mapped = (result.items ?? []).map((record) => ({
       id: record._id ?? '',
       label: record.label ?? '',
@@ -172,10 +174,16 @@ export async function listBlogCategories(): Promise<BlogCategory[]> {
   }
 }
 
-export async function getBlogCategoryBySlug(slug: string): Promise<BlogCategory | null> {
+export async function getBlogCategoryBySlug(slug: string, language: string = PRIMARY_LOCALE): Promise<BlogCategory | null> {
   if (!slug) return null;
   try {
-    const result = await queryCategoriesElevated().eq('slug', slug).limit(1).find();
+    const result = await queryCategoriesElevated({
+      fieldsets: ['URL'],
+    })
+      .eq('slug', slug)
+      .eq('language', language)
+      .limit(1)
+      .find();
     const record = result.items?.[0];
     return record
       ? {
@@ -195,14 +203,16 @@ export async function relatedPosts(
   categoryIds: string[],
   excludeId: string,
   limit = 3,
+  language: string = PRIMARY_LOCALE,
 ): Promise<BlogPost[]> {
   if (categoryIds.length === 0) return [];
   try {
     const result = await queryPostsElevated({ fieldsets: ['URL'] })
       .hasSome('categoryIds', categoryIds)
+      .eq('language', language)
       .limit(limit + 10)
       .find();
-    const labelsById = await categoryLabelsById(categoryIds);
+    const labelsById = await categoryLabelsById(categoryIds, language);
     return (result.items ?? [])
       .filter((record) => record._id && record._id !== excludeId)
       .slice(0, limit)

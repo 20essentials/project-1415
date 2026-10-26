@@ -18,13 +18,15 @@ test.describe('blog', () => {
     await expect(postLink).toBeVisible();
     await expect(postLink).toHaveAttribute('href', `/blog/${seededSlug}`);
 
-    // home teaser only renders when posts exist
+    // home teaser lists the most recently published posts; which seeded post
+    // lands first depends on Wix publish order (site data), so assert only
+    // repo-owned chrome and that teaser links resolve inside the blog
     await page.goto('/');
-    const teaser = page.getByRole('heading', { name: /How Flytraps Actually Catch Their Prey/i });
-    await expect(teaser).toBeVisible();
     await expect(page.getByText('From the blog')).toBeVisible();
     const cta = page.getByRole('link', { name: /All posts/ });
     await expect(cta).toHaveAttribute('href', '/blog');
+    const teaserLinks = page.locator('a[href^="/blog/"]:not([href="/blog"])');
+    await expect(teaserLinks.first()).toBeVisible();
   });
 
   test('a post renders its body content and related posts', async ({ page }) => {

@@ -16,7 +16,7 @@ export const wixMetadata = {
 const { t } = useTranslation();
 
 const slug = Astro.params.slug ?? '';
-const category = await getBlogCategoryBySlug(slug);
+const category = await getBlogCategoryBySlug(slug, currentLanguage());
 
 if (!category) {
   Astro.response.status = 404;
@@ -29,7 +29,7 @@ const pageUrl =
     : Astro.url.href;
 
 const [posts, seoTagsServiceConfig] = await Promise.all([
-  category ? listBlogPosts() : Promise.resolve([]),
+  category ? listBlogPosts(50, currentLanguage()) : Promise.resolve([]),
   loadSEOTagsServiceConfig({
     pageUrl,
     itemType: seoTags.ItemType.BLOG_CATEGORY,

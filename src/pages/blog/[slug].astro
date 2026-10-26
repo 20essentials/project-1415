@@ -26,7 +26,7 @@ const pageUrl =
     : Astro.url.href;
 
 const [post, seoTagsServiceConfig] = await Promise.all([
-  getBlogPostBySlug(slug),
+  getBlogPostBySlug(slug, currentLanguage()),
   loadSEOTagsServiceConfig({
     pageUrl,
     itemType: seoTags.ItemType.BLOG_POST,
@@ -50,10 +50,10 @@ const published = post?.firstPublishedDate
 
 let related: BlogPost[] = [];
 if (post) {
-  related = await relatedPosts(post.categoryIds, post.id, 3);
+  related = await relatedPosts(post.categoryIds, post.id, 3, currentLanguage());
 }
 
-const categories: BlogCategory[] = await listBlogCategories();
+const categories: BlogCategory[] = await listBlogCategories(currentLanguage());
 const postCategories = post ? categories.filter((category) => post.categoryIds.includes(category.id)) : [];
 
 const articleJsonLd = post
