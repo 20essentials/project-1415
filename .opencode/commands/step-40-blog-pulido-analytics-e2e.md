@@ -3,7 +3,7 @@ description: Step 40 — Blog: pulido (teaser home, analytics, E2E) · Petals & 
 ---
 # Step 40 — Blog: pulido (teaser home, analytics, E2E)
 
-> **Siguiente:** `/generate-next-steps` (si hay un item `pending` nuevo)
+> **Siguiente:** `/step-41-blog-traduccion-posts-es-it` (documentación retroactiva — ya ejecutado)
 
 ## Objetivo
 

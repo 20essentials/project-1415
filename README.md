@@ -16,7 +16,7 @@ Fraunces + Inter. Ver `DESIGN.md`.
 | Frontend | Astro 5 (SSR) + islas React 18 |
 | Estilos | Tailwind CSS 4 (`@theme`) |
 | Backend | Wix Managed Headless (`@wix/astro`) |
-| Datos | Wix Stores, Wix CMS, Wix Forms, Wix Reviews, Wix Members |
+| Datos | Wix Stores, Wix CMS, Wix Forms, Wix Blog, Wix Reviews, Wix Members |
 | i18n | Wix Multilingual — `en`, `es`, `it` |
 | Tests | Vitest + Testing Library · Playwright (E2E) |
 | Gestor de paquetes | npm (ver `AGENTS.md`) |
@@ -47,6 +47,7 @@ Apps que el proyecto usa (✅) y apps disponibles en la API de Wix que **no** es
 | ✅ | **Wix Stores** (catálogo) | Home (productos destacados) · Shop / grilla de productos · páginas por categoría · PDP (variantes, precio) · Site search |
 | ✅ | **Wix eCommerce** (carrito/checkout) | Carrito + badge reactivo en el nav · checkout nativo de Wix · Order history (pedidos) |
 | ✅ | **Wix CMS** (`@wix/data`) | Journal (care guides con rutas dinámicas) · Lookbook por temporada · Wishlist · Restock alerts |
+| ✅ | **Wix Blog** | Índice `/blog` · posts `/blog/[slug]` con contenido ricos · categorías por slug `/blog/category/[slug]` · posts relacionados |
 | ✅ | **Wix Forms** | Contact (formulario de contacto) · Newsletter (suscripción) |
 | ✅ | **Wix Reviews** | Rating y reseñas en la PDP · carrusel de reseñas en Home · formulario de crear reseña |
 | ✅ | **Wix Members** | Login / logout · página de cuenta (avatar, perfil) · desbloquea Wishlist y Order history por miembro |
@@ -54,13 +55,12 @@ Apps que el proyecto usa (✅) y apps disponibles en la API de Wix que **no** es
 | ✅ | **Wix Gift Cards** | Página Gift cards (eGift Card con 5 variantes preset) |
 | ✅ | **Wix Pricing Plans** | Club (suscripción, planes monthly / annual) |
 | ✅ | **Wix Multilingual** | Selector de idioma `en` / `es` / `it` · SEO y rutas por locale |
-| ❌ | **Wix Blog** | Sin uso — el Journal vive en CMS, no en Blog |
 | ❌ | **Wix Events** | Sin uso — no vendemos entradas ni RSVP |
 | ❌ | **Wix Donations** | Sin uso — e-commerce puro |
+| ❌ | **Wix Restaurants** | Sin uso |
 | ❌ | **Wix Forum** | Sin uso |
 | ❌ | **Wix Portfolio** | Sin uso — el Lookbook es CMS propio |
-| ❌ | **Wix Restaurants** | Sin uso |
-| ❌ | **Wix Marketing** (email campaigns) | Sin uso — newsletter se envía vía Forms |
+
 
 ---
 
