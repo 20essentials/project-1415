@@ -3,7 +3,7 @@ description: Step 37 — Plant Parent Club: membresía con Pricing Plans · Peta
 ---
 # Step 37 — Plant Parent Club: membresía con Pricing Plans + contenido gated
 
-> **Siguiente:** `/step-38-loyalty-puntos-y-recompensas` (si aún no existe → `/generate-next-steps`)
+> **Siguiente:** `/step-38-blog-app-feature-feed-post`
 
 ## Objetivo
 
@@ -133,4 +133,4 @@ Existir como membresía real: `/club` muestra los planes mensual/anual, la compr
 ## Al terminar
 
 1. Marca el paso 37 como `✅ done` en `ROADMAP.md`.
-2. Siguiente: `/step-38-loyalty-puntos-y-recompensas` (o `/generate-next-steps`).
+2. Siguiente: `/step-38-blog-app-feature-feed-post` (o `/generate-next-steps`).
