@@ -3,6 +3,7 @@ import Layout from '@/app/layout.astro';
 import { getBlogPostBySlug, relatedPosts, listBlogCategories, type BlogPost, type BlogCategory } from '@/features/blog/blog';
 import { renderRicos } from '@/shared/ricos';
 import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
+import AnalyticsView from '@/shared/analytics-view.astro';
 import { WIX_APPS } from '@wix/essentials';
 import { SEO } from '@wix/seo/components';
 import { loadSEOTagsServiceConfig } from '@wix/seo/services';
@@ -70,6 +71,12 @@ const articleJsonLd = post
 ---
 
 <Layout noindex={!post}>
+  {post && (
+    <AnalyticsView
+      event="ViewContent"
+      payload={{ origin: 'Blog Post', label: post.slug, name: post.title }}
+    />
+  )}
   {
     seoTagsResolved ? (
       <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />

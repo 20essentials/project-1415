@@ -131,8 +131,8 @@ function renderBlockNode(node: RicosNode): string {
         console.warn("[ricos] unresolved IMAGE media id:", srcId);
         return "";
       }
-      const width = data.image.width;
-      const height = data.image.height;
+      const width = data.image?.width;
+      const height = data.image?.height;
       const alt = escapeAttr(data.altText ?? "");
       const dims = width && height ? ` width="${Math.floor(width)}" height="${Math.floor(height)}"` : "";
       return `<figure><img src="${escapeAttr(src)}" alt="${alt}"${dims} loading="lazy" decoding="async" /></figure>`;

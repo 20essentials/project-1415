@@ -1,11 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { renderRicos } from '@/shared/ricos';
-import { getScaledToFillImageUrl } from '@wix/sdk';
-import type { RicosDocument } from '@/shared/ricos';
+import { renderRicos, type RicosDocument } from '@/shared/ricos';
 
 vi.mock('@wix/sdk', () => ({
   media: {
-    getScaledToFillImageUrl: (...args: unknown[]) => getScaledToFillImageUrl(...args),
+    getScaledToFillImageUrl: vi.fn(),
     getImageUrl: (raw: string) => ({
       url: `https://static.wixstatic.com/media/${raw}`,
       width: undefined,
@@ -14,7 +12,7 @@ vi.mock('@wix/sdk', () => ({
   },
 }));
 
-const doc = (nodes: unknown[]): RicosDocument => ({ nodes });
+const doc = (nodes: NonNullable<RicosDocument['nodes']>): RicosDocument => ({ nodes });
 
 describe('renderRicos IMAGE', () => {
   it('renders an inline image from its media id with alt text and intrinsic size', () => {
@@ -24,7 +22,6 @@ describe('renderRicos IMAGE', () => {
           type: 'IMAGE',
           nodes: [],
           imageData: {
-            containerData: { width: { size: 'CONTENT' }, alignment: 'CENTER' },
             image: { src: { id: '600582_b252~mv2.png' }, width: 1024, height: 768 },
             altText: 'Trap close-up',
           },

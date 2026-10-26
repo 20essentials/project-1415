@@ -8,7 +8,8 @@ import RatingStars from '@/features/reviews/rating-stars.astro';
 import { site } from '@/shared/site';
 import { queryGuides } from '@/features/journal/journal';
 import { getFeaturedReviews } from '@/features/reviews/reviews';
-import { useTranslation, localize } from '@/shared/i18n';
+import { listBlogPosts } from '@/features/blog/blog';
+import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
 import AnalyticsView from '@/shared/analytics-view.astro';
 
 const { t } = useTranslation();
@@ -48,6 +49,12 @@ const guides = await queryGuides();
 const featuredGuide = guides[0] ?? null;
 
 const featuredReviews = await getFeaturedReviews();
+
+const blogTeaser = await listBlogPosts(3);
+const formatTeaserDate = (date: Date | null): string =>
+  date
+    ? new Intl.DateTimeFormat(currentLanguage(), { month: 'short', day: 'numeric', year: 'numeric' }).format(date)
+    : '';
 
 let products: {
   _id?: string | null;
@@ -277,6 +284,56 @@ try {
   }
 
   <!-- home:gift-cards -->
+
+  {
+    blogTeaser.length > 0 && (
+      <section class="relative z-2 bg-paper px-4 pb-24 text-ink sm:px-8 lg:px-20 lg:pb-32">
+        <div class="mx-auto max-w-6xl">
+          <div class="flex items-end justify-between gap-6">
+            <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('home.from-blog')}</p>
+            <a href={localize('/blog')} class="text-sm text-ink-soft transition-colors hover:text-accent">
+              {t('blog.all-posts')} →
+            </a>
+          </div>
+          <ul class="mt-8 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
+            {blogTeaser.map((post) => (
+              <li>
+                <a href={localize(`/blog/${post.slug}`)} class="group block">
+                  <div class="relative aspect-video overflow-hidden rounded-md bg-paper-warm ring-1 ring-rule">
+                    {post.hero && (
+                      <img
+                        src={post.hero.url}
+                        alt=""
+                        width={post.hero.width}
+                        height={post.hero.height}
+                        loading="lazy"
+                        decoding="async"
+                        class="h-full w-full object-cover transition-transform duration-500 ease-fluid group-hover:scale-105"
+                      />
+                    )}
+                  </div>
+                  <p class="mt-4 text-xs font-medium tracking-widest text-accent uppercase">
+                    {post.categories[0] ?? t('home.from-blog')}
+                  </p>
+                  <h3 class="mt-2 font-display text-xl leading-snug text-ink">{post.title}</h3>
+                  <p class="mt-3 flex flex-wrap items-center gap-3">
+                    {post.firstPublishedDate && (
+                      <span class="text-xs text-mute">{formatTeaserDate(post.firstPublishedDate)}</span>
+                    )}
+                    {post.minutesToRead != null && (
+                      <span class="text-xs text-mute">
+                        {t(post.minutesToRead === 1 ? 'blog.min-read-one' : 'blog.min-read', { count: post.minutesToRead })}
+                      </span>
+                    )}
+                  </p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
 
   <section class="relative z-2 bg-paper px-4 pb-24 text-ink sm:px-8 lg:px-20 lg:pb-32">
     <div class="mx-auto max-w-6xl">
