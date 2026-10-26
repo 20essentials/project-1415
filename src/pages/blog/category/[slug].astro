@@ -1,0 +1,153 @@
+---
+import Layout from '@/app/layout.astro';
+import { listBlogPosts, getBlogCategoryBySlug } from '@/features/blog/blog';
+import { WIX_APPS } from '@wix/essentials';
+import { SEO } from '@wix/seo/components';
+import { loadSEOTagsServiceConfig } from '@wix/seo/services';
+import { seoTags } from '@wix/seo';
+import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
+
+export const wixMetadata = {
+  appDefId: WIX_APPS.blogs.id,
+  pageIdentifier: WIX_APPS.blogs.categoryPageMetadata.pageIdentifier,
+  identifiers: { slug: WIX_APPS.blogs.categoryPageMetadata.identifiers.slug },
+};
+
+const { t } = useTranslation();
+
+const slug = Astro.params.slug ?? '';
+const category = await getBlogCategoryBySlug(slug);
+
+if (!category) {
+  Astro.response.status = 404;
+}
+
+const forwardedUrl = Astro.request.headers.get('x-wix-forwarded-url');
+const pageUrl =
+  forwardedUrl && URL.canParse(forwardedUrl) && /^https?:$/.test(new URL(forwardedUrl).protocol)
+    ? forwardedUrl
+    : Astro.url.href;
+
+const [posts, seoTagsServiceConfig] = await Promise.all([
+  category ? listBlogPosts() : Promise.resolve([]),
+  loadSEOTagsServiceConfig({
+    pageUrl,
+    itemType: seoTags.ItemType.BLOG_CATEGORY,
+    itemData: { slug },
+  }),
+]);
+
+const categoryId = category?.id ?? '';
+const inCategory = categoryId
+  ? posts.filter((post) => post.categoryIds.includes(categoryId))
+  : [];
+
+const formatDate = (date: Date | null): string =>
+  date
+    ? new Intl.DateTimeFormat(currentLanguage(), { month: 'short', day: 'numeric', year: 'numeric' }).format(date)
+    : '';
+---
+
+<Layout noindex={!category}>
+  {
+    seoTagsServiceConfig.tags.length > 0 ? (
+      <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />
+    ) : null
+  }
+  <Fragment slot="head">
+    {
+      category ? (
+        <>
+          <title>{t('blog.in-category', { category: category.label })} — Petals & Predators</title>
+          <meta name="description" content={t('blog.meta-description')} />
+        </>
+      ) : (
+        <>
+          <title>{t('blog.not-found.meta-title')}</title>
+          <meta name="description" content={t('blog.not-found.meta-description')} />
+        </>
+      )
+    }
+  </Fragment>
+  {
+    category ? (
+      <>
+        <section class="relative z-2 bg-paper px-4 pt-24 pb-12 text-ink sm:px-8 lg:px-20 lg:pt-32">
+          <div class="mx-auto max-w-6xl">
+            <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">
+              <a href={localize('/')} class="transition-colors hover:text-accent">{t('nav.home')}</a>
+              <span aria-hidden="true"> · </span>
+              <a href={localize('/blog')} class="transition-colors hover:text-accent">{t('nav.blog')}</a>
+              <span aria-hidden="true"> · </span>
+              <span aria-current="page" class="text-ink">{category.label}</span>
+            </nav>
+            <h1 class="mt-6 font-display text-4xl leading-tight text-ink lg:text-5xl">
+              {t('blog.in-category', { category: category.label })}
+            </h1>
+            <p class="mt-4 text-sm leading-6 text-ink-soft">
+              <a href={localize('/blog')} class="text-accent underline">{t('blog.all-posts')}</a>
+            </p>
+          </div>
+        </section>
+
+        <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
+          <div class="mx-auto max-w-6xl">
+            {
+              inCategory.length === 0 ? (
+                <p class="max-w-xl text-sm leading-6 text-ink-soft">{t('blog.empty-category')}</p>
+              ) : (
+                <ul class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+                  {inCategory.map((post) => (
+                    <li>
+                      <a href={localize(`/blog/${post.slug}`)} class="group block">
+                        <div class="relative aspect-video overflow-hidden rounded-md bg-paper-warm ring-1 ring-rule">
+                          {post.hero && (
+                            <img
+                              src={post.hero.url}
+                              alt=""
+                              width={post.hero.width}
+                              height={post.hero.height}
+                              loading="lazy"
+                              decoding="async"
+                              class="h-full w-full object-cover transition-transform duration-500 ease-fluid group-hover:scale-105"
+                            />
+                          )}
+                        </div>
+                        <h2 class="mt-4 font-display text-xl leading-snug text-ink">{post.title}</h2>
+                        <p class="mt-2 text-sm leading-6 text-ink-soft">{post.excerpt}</p>
+                        <p class="mt-3 flex flex-wrap items-center gap-3">
+                          {post.firstPublishedDate && <span class="text-xs text-mute">{formatDate(post.firstPublishedDate)}</span>}
+                          {post.minutesToRead != null && (
+                            <span class="text-xs text-mute">{t(post.minutesToRead === 1 ? 'blog.min-read-one' : 'blog.min-read', { count: post.minutesToRead })}</span>
+                          )}
+                        </p>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )
+            }
+          </div>
+        </section>
+      </>
+    ) : (
+      <section class="relative z-2 bg-paper px-4 pt-24 pb-24 text-ink sm:px-8 lg:px-20 lg:pt-32 lg:pb-32">
+        <div class="mx-auto max-w-2xl">
+          <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('blog.not-found.eyebrow')}</p>
+          <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">
+            {t('blog.not-found.title')}
+          </h1>
+          <p class="mt-4 text-sm leading-6 text-ink-soft">
+            {t('blog.not-found.body')}
+          </p>
+          <a
+            href={localize('/blog')}
+            class="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-paper transition-colors duration-700 ease-fluid hover:bg-cream"
+          >
+            <span class="text-trim">{t('blog.not-found.cta')}</span>
+          </a>
+        </div>
+      </section>
+    )
+  }
+</Layout>

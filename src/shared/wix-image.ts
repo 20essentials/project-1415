@@ -17,6 +17,11 @@ export function resolveWixImage(
       const resolved = media.getImageUrl(image);
       return { url: resolved.url, width: resolved.width, height: resolved.height };
     }
+    if (!/^(https?:)?\/\/|^data:|^wix:|^\/|^#/.test(image)) {
+      // Bare media id: the SDK helpers only parse wix: URIs, so build the
+      // canonical static URL directly.
+      return { url: `https://static.wixstatic.com/media/${image}` };
+    }
     return { url: image };
   }
 

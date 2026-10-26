@@ -28,6 +28,8 @@
  *   <div class="prose" set:html={html} />
  */
 
+import { resolveWixImageUrl } from "@/shared/wix-image";
+
 interface RicosLinkData {
   link?: { url?: string; target?: string; rel?: string };
 }
@@ -55,7 +57,13 @@ interface RicosNode {
   nodes?: RicosNode[];
   textData?: RicosTextData;
   headingData?: { level?: number };
+  imageData?: RicosImageData;
   [key: string]: unknown;
+}
+
+interface RicosImageData {
+  image?: { src?: { id?: string | null }; width?: number; height?: number };
+  altText?: string;
 }
 
 export interface RicosDocument {
@@ -113,6 +121,22 @@ function renderBlockNode(node: RicosNode): string {
 
     case "DIVIDER":
       return "<hr />";
+
+    case "IMAGE": {
+      const data = node.imageData as RicosImageData | undefined;
+      const srcId = data?.image?.src?.id;
+      if (!srcId) return "";
+      const src = resolveWixImageUrl(srcId);
+      if (!src) {
+        console.warn("[ricos] unresolved IMAGE media id:", srcId);
+        return "";
+      }
+      const width = data.image.width;
+      const height = data.image.height;
+      const alt = escapeAttr(data.altText ?? "");
+      const dims = width && height ? ` width="${Math.floor(width)}" height="${Math.floor(height)}"` : "";
+      return `<figure><img src="${escapeAttr(src)}" alt="${alt}"${dims} loading="lazy" decoding="async" /></figure>`;
+    }
 
     default:
       return `<p>${renderInlineChildren(node)}</p>`;

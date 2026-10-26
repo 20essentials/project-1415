@@ -1,5 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { resolveWixImageUrl, scaledSrc, srcSet } from '@/shared/wix-image';
+
+const { getScaledToFillImageUrl } = vi.hoisted(() => ({
+  getScaledToFillImageUrl: vi.fn(),
+}));
+
+vi.mock('@wix/sdk', () => ({
+  media: { getScaledToFillImageUrl },
+}));
 
 describe('resolveWixImageUrl', () => {
   it('returns null for empty input', () => {
@@ -8,6 +16,12 @@ describe('resolveWixImageUrl', () => {
 
   it('passes a plain URL through unchanged', () => {
     expect(resolveWixImageUrl('https://cdn.example.com/a.png')).toBe('https://cdn.example.com/a.png');
+  });
+
+  it('resolves a bare media id through the media service', () => {
+    expect(resolveWixImageUrl('600582_b252~mv2.png')).toBe(
+      'https://static.wixstatic.com/media/600582_b252~mv2.png',
+    );
   });
 
   it('appends width and height as query params', () => {
