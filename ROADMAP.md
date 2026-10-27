@@ -14,11 +14,10 @@ la fuente de verdad del **CÓMO** ejecutar cada paso.
 | 38 – 40 | ✅ done | Blog con Wix Blog: app instalada por REST + feature headless (`src/features/blog/`) + 12 artículos seeded vía Draft Posts API (8 extra a pedido del propietario) + pulido (teaser, analytics, E2E). **El Journal se mantiene en CMS (`care-guides`) — blog es un canal de contenido adicional** · Release vivo (motivo de la última `wix release`) |
 | 41 | ✅ done | Blog: 12 posts traducidos a es + it vía Blog API (36 publicados en total) y feature blog ahora language-aware |
 | 42 | ✅ done | Wix Events: app instalada por REST + "Open Day" (RSVP) + Guided Tour (tickets, EUR 8) en `/events` + isla de registro + nav/i18n + tests |
+| 43 | 🟦 materialized | Wix Donations: campaña "nuevo local" con goal (`/donate`) — paso listo en `.opencode/commands/step-43-donations-campaign.md`, esperando ejecución |
+| 44 | 🟦 materialized | Wix Restaurants: cena selvática "Jungle Tasting" con Experiences (`/dining`) — paso listo en `.opencode/commands/step-44-restaurant-jungle-tasting.md`, esperando ejecución |
 
 | step-x | ⚪ pending | Dominio propio + Wix Pages domain + AI discovery (requiere coste) |
-
-<!-- TODO (proximo paso): al materializar/ejecutar 43 y 44, añadir sus filas ⚪/✅ tambien en este resumen rapido (la tabla de arriba quedo sin reflejar 43-44 la ultima vez) -->
-
 **Total:** 42/42 pasos completados · 2 materializados (43–44, esperando ejecución) · 2 pendientes (dominio propio; loyalty diferido a pedido explícito del propietario)
 
 ---

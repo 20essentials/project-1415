@@ -1,3 +1,5 @@
+[![Foto Preview](preview/project-1415.avif)](https://petals-d960960gm-0609.wix-site-host.com/)
+
 # Petals & Predators
 
 > Tienda headless de plantas carnívoras y flores — Astro + Wix Managed Headless.
@@ -173,3 +175,4 @@ fuente de verdad de qué hacer a continuación; ejecutar en orden.
 - [Wix Managed Headless + Astro](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/about-the-astro-integration)
 - [Wix REST API](https://dev.wix.com/docs/api-reference)
 - [Wix JS SDK](https://dev.wix.com/docs/sdk)
+
