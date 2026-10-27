@@ -27,6 +27,8 @@ export interface WorkshopBookingLabels {
   payOffline?: string;
   cancelledBanner?: string;
   retryBooking?: string;
+  prevMonth?: string;
+  nextMonth?: string;
 }
 
 interface WorkshopBookingProps {
@@ -64,7 +66,7 @@ interface BookingResponse {
   error?: string;
 }
 
-const DATE_RAIL_DAYS = 14;
+const MONTH_VIEW_LIMIT = 6;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const DEFAULT_LABELS: WorkshopBookingLabels = {
@@ -86,6 +88,8 @@ const DEFAULT_LABELS: WorkshopBookingLabels = {
   payOffline: "Reserve (pay on site)",
   cancelledBanner: "Your spot isn't reserved yet",
   retryBooking: "Try booking again",
+  prevMonth: "Previous month",
+  nextMonth: "Next month",
 };
 
 const inputClass =
@@ -100,25 +104,43 @@ function siteToday(timeZone: string): string {
   }).format(new Date());
 }
 
-function nextDates(timeZone: string, days: number): string[] {
+function nextDates(timeZone: string): { year: number; month: number } {
   const today = siteToday(timeZone);
-  const anchor = Date.parse(`${today}T12:00:00Z`);
-  return Array.from({ length: days }, (_, index) =>
-    new Date(anchor + index * 86_400_000).toISOString().slice(0, 10),
+  return { year: Number(today.slice(0, 4)), month: Number(today.slice(5, 7)) - 1 };
+}
+
+type WeekdayLabel = { short: string; long: string };
+
+function weekdayLabels(locale: string, timeZone: string): WeekdayLabel[] {
+  const formatter = new Intl.DateTimeFormat(locale, { timeZone, weekday: "short" });
+  return Array.from({ length: 7 }, (_, index) => ({
+    // 2003-11-10 was a Monday; offset by one to start the week there.
+    short: formatter.format(new Date(Date.UTC(2003, 10, 10 + index))),
+    long: new Intl.DateTimeFormat(locale, { timeZone, weekday: "long" }).format(
+      new Date(Date.UTC(2003, 10, 10 + index)),
+    ),
+  }));
+}
+
+function monthHeader(year: number, month: number, locale: string, timeZone: string): string {
+  return new Intl.DateTimeFormat(locale, { timeZone, month: "long", year: "numeric" }).format(
+    new Date(`${year}-${String(month + 1).padStart(2, "0")}-15T12:00:00Z`),
   );
 }
 
-function dateLabel(date: string, locale: string, timeZone: string): { weekday: string; day: string } {
-  const formatter = new Intl.DateTimeFormat(locale, {
-    timeZone,
-    weekday: "short",
-    day: "numeric",
-  });
-  const parts = formatter.formatToParts(new Date(`${date}T12:00:00Z`));
-  return {
-    weekday: parts.find((part) => part.type === "weekday")?.value ?? "",
-    day: parts.find((part) => part.type === "day")?.value ?? "",
-  };
+// Weeks-starting-Monday grid of the month; leading/trailing cells are null.
+function monthGrid(year: number, month: number): Array<{ date: string; day: number } | null> {
+  const first = new Date(Date.UTC(year, month, 1));
+  const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+  const leading = (first.getUTCDay() + 6) % 7;
+  return Array.from({ length: leading + daysInMonth }, (_, index) =>
+    index < leading
+      ? null
+      : {
+          date: `${year}-${String(month + 1).padStart(2, "0")}-${String(index - leading + 1).padStart(2, "0")}`,
+          day: index - leading + 1,
+        },
+  );
 }
 
 function formatRange(start: string, end: string, locale: string, timeZone: string): string {
@@ -143,7 +165,28 @@ export function WorkshopBooking({
   const labels = { ...DEFAULT_LABELS, ...labelOverrides };
   const [paymentMode, setPaymentMode] = useState<'online' | 'offline'>(allowOnlinePayment ? 'online' : 'offline');
   const [checkoutUnavailable, setCheckoutUnavailable] = useState(false);
-  const dates = useMemo(() => nextDates(timeZone, DATE_RAIL_DAYS), [timeZone]);
+  const today = useMemo(() => siteToday(timeZone), [timeZone]);
+  const [view, setView] = useState(() => nextDates(timeZone));
+  const grid = useMemo(() => monthGrid(view.year, view.month), [view]);
+  const weekdays = useMemo(() => weekdayLabels(locale, timeZone), [locale, timeZone]);
+
+  const monthIndex = view.year * 12 + view.month;
+  const todayIndex =
+    Number(today.slice(0, 4)) * 12 + Number(today.slice(5, 7)) - 1;
+  const minMonthIndex = todayIndex;
+  const maxMonthIndex = todayIndex + MONTH_VIEW_LIMIT;
+  const isMonthNavDisabled = (direction: -1 | 1): boolean => {
+    const target = monthIndex + direction;
+    return target < minMonthIndex || target > maxMonthIndex;
+  };
+
+  const moveMonth = (direction: -1 | 1) => {
+    if (isMonthNavDisabled(direction)) return;
+    setView((prev) => {
+      const next = prev.year * 12 + prev.month + direction;
+      return { year: Math.floor(next / 12), month: ((next % 12) + 12) % 12 };
+    });
+  };
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [slotStatus, setSlotStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
@@ -173,8 +216,8 @@ export function WorkshopBooking({
   };
 
   useEffect(() => {
-    if (dates[0]) void fetchSlots(dates[0]);
-  }, [dates]);
+    if (today) void fetchSlots(today);
+  }, [today, timeZone]);
 
   const setValue = (target: string, value: string) =>
     setValues((prev) => ({ ...prev, [target]: value }));
@@ -268,31 +311,66 @@ export function WorkshopBooking({
         <h2 id="booking-date-heading" className={stepTitle}>
           {labels.selectDate}
         </h2>
-        <div
-          role="group"
-          aria-label={labels.selectDate}
-          className="mt-3 flex gap-2 overflow-x-auto pb-1"
-        >
-          {dates.map((date) => {
-            const { weekday, day } = dateLabel(date, locale, timeZone);
-            const isActive = date === selectedDate;
-            return (
-              <button
-                key={date}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => void fetchSlots(date)}
-                className={`shrink-0 rounded-sm border px-3 py-2 text-center transition-colors duration-500 ease-fluid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
-                  isActive
-                    ? "border-accent bg-accent/10 text-ink"
-                    : "border-rule bg-paper text-ink-soft hover:border-accent"
-                }`}
-              >
-                <span className="block text-xs text-mute uppercase">{weekday}</span>
-                <span className="block text-sm font-medium">{day}</span>
-              </button>
-            );
-          })}
+        <div className="mt-4">
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => moveMonth(-1)}
+              disabled={isMonthNavDisabled(-1)}
+              aria-label={labels.prevMonth ?? DEFAULT_LABELS.prevMonth}
+              className="inline-flex size-9 items-center justify-center rounded-full border border-rule text-ink-soft transition-colors duration-500 ease-fluid hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <span aria-hidden="true">‹</span>
+            </button>
+            <p aria-live="polite" className="font-display text-base text-ink">
+              {monthHeader(view.year, view.month, locale, timeZone)}
+            </p>
+            <button
+              type="button"
+              onClick={() => moveMonth(1)}
+              disabled={isMonthNavDisabled(1)}
+              aria-label={labels.nextMonth ?? DEFAULT_LABELS.nextMonth}
+              className="inline-flex size-9 items-center justify-center rounded-full border border-rule text-ink-soft transition-colors duration-500 ease-fluid hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <span aria-hidden="true">›</span>
+            </button>
+          </div>
+
+          <div className="mt-3 grid grid-cols-7 gap-1">
+            {weekdays.map((weekday) => (
+              <p key={weekday.long} className="py-1 text-center text-xs text-mute">
+                {weekday.short}
+              </p>
+            ))}
+            {grid.map((cell, index) => {
+              if (!cell) return <span key={`empty-${index}`} aria-hidden="true" />;
+              const isPast = cell.date < today;
+              const isToday = cell.date === today;
+              const isActive = cell.date === selectedDate;
+              const isDisabled = isPast;
+              return (
+                <button
+                  key={cell.date}
+                  type="button"
+                  disabled={isDisabled}
+                  aria-pressed={isActive}
+                  aria-current={isToday ? "date" : undefined}
+                  onClick={() => void fetchSlots(cell.date)}
+                  className={`relative flex size-9 items-center justify-center justify-self-center rounded-full text-sm transition-colors duration-500 ease-fluid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                    isActive
+                      ? "bg-accent text-paper"
+                      : isToday
+                        ? "text-ink ring-1 ring-accent"
+                        : isDisabled
+                          ? "text-mute opacity-50"
+                          : "text-ink hover:bg-accent/10"
+                  }`}
+                >
+                  {cell.day}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
 

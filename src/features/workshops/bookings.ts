@@ -19,6 +19,8 @@ export interface Workshop {
   durationMinutes: number | null;
   price: { amount: string; currency: string } | null;
   primaryResourceType: string | null;
+  image: { id: string; url: string; alt: string | null } | null;
+  aliases: string[];
 }
 
 export interface WorkshopSlot {
@@ -103,6 +105,15 @@ export async function listWorkshops(): Promise<Workshop[]> {
         const constraints = service.schedule?.availabilityConstraints;
         const price =
           service.payment?.rateType === 'FIXED' ? service.payment.fixed?.price : undefined;
+        // `media.mainMedia.image` is typed as string in the SDK even though the
+        // REST response can carry a structured image object.
+        type ServiceImage = string | { id?: string; url?: string; altText?: string } | undefined;
+        const mainImage = service.media?.mainMedia?.image as ServiceImage;
+        const mainImageId = typeof mainImage === 'string' ? mainImage : mainImage?.id;
+        const mainImageUrl =
+          typeof mainImage === 'string' ? mainImage : (mainImage?.url ?? mainImage?.id);
+        const mainImageAlt =
+          typeof mainImage === 'string' ? null : (mainImage?.altText ?? null);
         return {
           id: service._id,
           slug,
@@ -114,6 +125,13 @@ export async function listWorkshops(): Promise<Workshop[]> {
           price:
             price?.value && price.currency ? { amount: price.value, currency: price.currency } : null,
           primaryResourceType: service.primaryResourceType ?? null,
+          image:
+            mainImageId && mainImageUrl
+              ? { id: mainImageId, url: mainImageUrl, alt: mainImageAlt }
+              : null,
+          aliases: (service.supportedSlugs ?? [])
+            .map((candidate) => candidate.name)
+            .filter((name): name is string => Boolean(name) && name !== slug),
         };
       })
       .filter((workshop): workshop is Workshop => workshop !== null);
@@ -125,7 +143,11 @@ export async function listWorkshops(): Promise<Workshop[]> {
 
 export async function getWorkshopBySlug(slug: string): Promise<Workshop | null> {
   const workshops = await listWorkshops();
-  return workshops.find((workshop) => workshop.slug === slug) ?? null;
+  return (
+    workshops.find((workshop) => workshop.slug === slug) ??
+    workshops.find((workshop) => workshop.aliases.includes(slug)) ??
+    null
+  );
 }
 
 export async function getWorkshopById(id: string): Promise<Workshop | null> {
