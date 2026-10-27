@@ -1,0 +1,149 @@
+---
+import Layout from '@/app/layout.astro';
+import { ReservationForm } from '@/features/dining/reservation-form';
+import {
+  getReservationLocation,
+  getJungleExperience,
+  projectOccurrences,
+  SITE_TIMEZONE,
+} from '@/features/dining/reservations';
+import { getJungleMenu } from '@/features/dining/menu';
+import { localize, useTranslation, currentLanguage } from '@/shared/i18n';
+
+const { t } = useTranslation();
+const locale = currentLanguage();
+
+const menu = await getJungleMenu();
+const [experience, location] = await Promise.all([getJungleExperience(), getReservationLocation()]);
+const occurrences = experience ? projectOccurrences(experience, 8) : [];
+const nextOccurrence = occurrences[0] ?? null;
+
+const dateFormatter = new Intl.DateTimeFormat(locale, {
+  timeZone: SITE_TIMEZONE,
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+});
+
+function formatOccurrence(localStart: string): string {
+  const date = dateFormatter.format(new Date(`${localStart.slice(0, 10)}T12:00:00Z`));
+  return `${date}, ${localStart.slice(11, 16)}`;
+}
+---
+
+<Layout>
+  <Fragment slot="head">
+    <meta name="description" content={t('dining.meta-description')} />
+  </Fragment>
+
+  <section class="relative z-2 bg-paper px-4 pt-24 pb-10 text-ink sm:px-8 lg:px-20 lg:pt-32">
+    <div class="mx-auto max-w-6xl">
+      <nav class="text-sm text-ink-soft" aria-label="Breadcrumb">
+        <a href={localize('/')} class="transition-colors hover:text-accent">{t('nav.home')}</a>
+        <span aria-hidden="true"> · </span>
+        <span aria-current="page" class="text-ink">{t('nav.dining')}</span>
+      </nav>
+      <p class="mt-6 text-xs font-medium tracking-widest text-accent uppercase">{t('dining.eyebrow')}</p>
+      <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">{t('dining.title')}</h1>
+      <p class="mt-4 max-w-xl text-sm leading-6 text-ink-soft">{t('dining.intro')}</p>
+      <dl class="mt-8 grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-3">
+        <div>
+          <dt class="text-xs font-medium tracking-widest text-mute uppercase">{t('dining.detail.next')}</dt>
+          <dd data-testid="dining-next" class="mt-1 font-display text-lg text-ink capitalize">
+            {nextOccurrence ? formatOccurrence(nextOccurrence) : t('dining.next-tba')}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium tracking-widest text-mute uppercase">{t('dining.detail.per-guest')}</dt>
+          <dd class="mt-1 font-display text-lg text-ink">
+            {experience?.price ? `€${experience.price}` : '—'}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium tracking-widest text-mute uppercase">{t('dining.detail.duration-label')}</dt>
+          <dd class="mt-1 font-display text-lg text-ink">
+            {experience?.schedule?.durationInMinutes ? t('dining.duration', { minutes: experience.schedule.durationInMinutes }) : '—'}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  {
+    menu && menu.sections.length > 0 && (
+      <section class="relative z-2 bg-paper px-4 pb-16 text-ink sm:px-8 lg:px-20">
+        <div class="mx-auto max-w-3xl">
+          <h2 class="font-display text-3xl leading-tight sm:text-4xl">{menu.name}</h2>
+          {menu.description && <p class="mt-3 max-w-xl text-sm leading-6 text-ink-soft">{menu.description}</p>}
+          <div class="mt-10 flex flex-col gap-12">
+            {menu.sections.map((section) => (
+              <article>
+                <h3 class="font-display text-2xl text-ink">{section.name}</h3>
+                {section.description && (
+                  <p class="mt-1 text-sm text-ink-soft">{section.description}</p>
+                )}
+                <ul class="mt-5 flex flex-col gap-4">
+                  {section.items.map((item) => (
+                    <li
+                      data-testid="dining-menu-item"
+                      class="flex items-baseline justify-between gap-4 border-b border-rule pb-4 last:border-b-0"
+                    >
+                      <div>
+                        <p class="text-base text-ink">{item.name}</p>
+                        {item.description && (
+                          <p class="mt-1 text-sm leading-6 text-ink-soft">{item.description}</p>
+                        )}
+                      </div>
+                      <p class="shrink-0 text-sm font-medium text-ink">{item.price ? `€${item.price}` : ''}</p>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="relative z-2 bg-paper px-4 pb-24 text-ink sm:px-8 lg:px-20 lg:pb-32">
+    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-2">
+      <div>
+        <h2 class="font-display text-3xl leading-tight sm:text-4xl">{t('dining.experience.title')}</h2>
+        <p class="mt-4 max-w-md text-sm leading-6 text-ink-soft">{t('dining.experience.body')}</p>
+        <ul class="mt-6 flex max-w-md flex-col gap-3 text-sm text-ink-soft">
+          <li>{t('dining.experience.point-1')}</li>
+          <li>{t('dining.experience.point-2')}</li>
+          <li>{t('dining.experience.point-3')}</li>
+        </ul>
+      </div>
+      <div id="dining-reservation">
+        <h2 class="sr-only">{t('dining.form-title')}</h2>
+        <ReservationForm
+          client:load
+          occurrences={occurrences}
+          partySize={location?.partySize ?? { min: 1, max: 6 }}
+          locale={locale}
+          timeZone={SITE_TIMEZONE}
+          labels={{
+            pickDate: t('dining.form.pick-date'),
+            pickParty: t('dining.form.party'),
+            noOccurrences: t('dining.next-tba'),
+            detailsTitle: t('dining.form.details'),
+            firstName: t('dining.field.first-name'),
+            lastName: t('dining.field.last-name'),
+            email: t('dining.field.email'),
+            phone: t('dining.field.phone'),
+            invalid: t('dining.form.invalid'),
+            submit: t('dining.form.submit'),
+            submitting: t('dining.form.submitting'),
+            formError: t('dining.form.error'),
+            success: t('dining.form.success'),
+            requested: t('dining.form.requested'),
+            timezoneNote: t('dining.form.timezone'),
+          }}
+        />
+      </div>
+    </div>
+  </section>
+</Layout>

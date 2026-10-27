@@ -14,6 +14,7 @@ export const site = {
     { href: '/#tu-casa', label: 'nav.your-space' },
     { href: '/products', label: 'nav.all-plants' },
     { href: '/services', label: 'nav.services' },
+    { href: '/dining', label: 'nav.dining' },
     { href: '/events', label: 'nav.events' },
     { href: '/lookbook', label: 'nav.lookbook' },
     { href: '/journal', label: 'nav.journal' },

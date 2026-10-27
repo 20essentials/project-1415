@@ -10,6 +10,7 @@ import { queryGuides } from '@/features/journal/journal';
 import { getFeaturedReviews } from '@/features/reviews/reviews';
 import { getDonationCampaign } from '@/features/donations/donations';
 import { listBlogPosts } from '@/features/blog/blog';
+import { getJungleExperience, projectOccurrences } from '@/features/dining/reservations';
 import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
 import AnalyticsView from '@/shared/analytics-view.astro';
 
@@ -52,6 +53,17 @@ const featuredGuide = guides[0] ?? null;
 const featuredReviews = await getFeaturedReviews();
 
 const donationsCampaign = await getDonationCampaign();
+
+const diningExperience = await getJungleExperience();
+const diningOccurrences = diningExperience ? projectOccurrences(diningExperience, 1) : [];
+const diningNextDate = diningOccurrences.length > 0
+  ? new Intl.DateTimeFormat(currentLanguage(), {
+      timeZone: 'Europe/Rome',
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    }).format(new Date(`${diningOccurrences[0].slice(0, 10)}T12:00:00Z`))
+  : null;
 
 const blogTeaser = await listBlogPosts(3, currentLanguage());
 const formatTeaserDate = (date: Date | null): string =>
@@ -310,6 +322,27 @@ try {
       </section>
     )
   }
+
+  <section class="relative z-2 bg-paper px-4 pb-24 text-ink sm:px-8 lg:px-20 lg:pb-32">
+    <div class="mx-auto max-w-6xl">
+      <a
+        href={localize('/dining')}
+        class="group flex flex-col items-start justify-between gap-6 rounded-lg border border-rule bg-paper-warm p-8 transition-colors duration-700 ease-fluid hover:border-accent/40 sm:flex-row sm:items-center lg:p-12"
+      >
+        <div>
+          <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('home.dining.eyebrow')}</p>
+          <p class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">{t('home.dining.title')}</p>
+          <p class="mt-3 max-w-md text-sm leading-6 text-ink-soft">
+            {t('home.dining.body')}
+            {diningNextDate && <span class="mt-1 block font-medium text-ink capitalize">{diningNextDate}</span>}
+          </p>
+        </div>
+        <span class="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-paper transition-colors duration-700 ease-fluid group-hover:bg-cream">
+          <span class="text-trim">{t('home.dining.cta')}</span>
+        </span>
+      </a>
+    </div>
+  </section>
 
   {
     blogTeaser.length > 0 && (
