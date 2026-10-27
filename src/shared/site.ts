@@ -19,6 +19,7 @@ export const site = {
     { href: '/journal', label: 'nav.journal' },
     { href: '/blog', label: 'nav.blog' },
     { href: '/gift-cards', label: 'nav.gift-cards' },
+    { href: '/donate', label: 'nav.donate' },
     { href: '/about', label: 'nav.about' },
     { href: '/contact', label: 'nav.contact' },
   ],

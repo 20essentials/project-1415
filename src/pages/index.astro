@@ -8,6 +8,7 @@ import RatingStars from '@/features/reviews/rating-stars.astro';
 import { site } from '@/shared/site';
 import { queryGuides } from '@/features/journal/journal';
 import { getFeaturedReviews } from '@/features/reviews/reviews';
+import { getDonationCampaign } from '@/features/donations/donations';
 import { listBlogPosts } from '@/features/blog/blog';
 import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
 import AnalyticsView from '@/shared/analytics-view.astro';
@@ -49,6 +50,8 @@ const guides = await queryGuides();
 const featuredGuide = guides[0] ?? null;
 
 const featuredReviews = await getFeaturedReviews();
+
+const donationsCampaign = await getDonationCampaign();
 
 const blogTeaser = await listBlogPosts(3, currentLanguage());
 const formatTeaserDate = (date: Date | null): string =>
@@ -284,6 +287,29 @@ try {
   }
 
   <!-- home:gift-cards -->
+
+  <!-- home:donations -->
+  {
+    donationsCampaign && (
+      <section class="relative z-2 bg-paper px-4 pb-24 text-ink sm:px-8 lg:px-20 lg:pb-32">
+        <div class="mx-auto max-w-6xl">
+          <a
+            href={localize('/donate')}
+            class="group flex flex-col items-start justify-between gap-6 rounded-lg border border-rule bg-paper-warm p-8 transition-colors duration-700 ease-fluid hover:border-accent/40 sm:flex-row sm:items-center lg:p-12"
+          >
+            <div>
+              <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('donations.eyebrow')}</p>
+              <p class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">{t('home.donations.title')}</p>
+              <p class="mt-3 max-w-md text-sm leading-6 text-ink-soft">{t('home.donations.body')}</p>
+            </div>
+            <span class="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-accent px-6 text-sm font-medium text-paper transition-colors duration-700 ease-fluid group-hover:bg-cream">
+              <span class="text-trim">{t('home.donations.cta')}</span>
+            </span>
+          </a>
+        </div>
+      </section>
+    )
+  }
 
   {
     blogTeaser.length > 0 && (

@@ -78,11 +78,50 @@ montos sugeridos, barra de progreso hacia la meta y checkout hosted de Wix Donat
 
 ## Verificación
 
-- [ ] `npx @wix/cli@latest build` en verde · `npm run check` 0 errores · `npm test` verde · `npm run test:e2e` en verde
-- [ ] `/donate` 200 con campaña/montos o fallback informativo si la API no entrega la campaña; redirect al checkout real verificado en `wix dev`
-- [ ] Fila 43 del ROADMAP con hallazgos del API + tradeoffs documentados
+- [x] `npx @wix/cli@latest build` en verde · `npm run check` 0 errores · `npm test` verde · `npm run test:e2e` en verde
+- [x] `/donate` 200 con campaña/montos o fallback informativo si la API no entrega la campaña; redirect al checkout real verificado en `wix dev`
+- [x] Fila 43 del ROADMAP con hallazgos del API + tradeoffs documentados
 
 ## Al terminar
 
 1. Marca el paso 43 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-44-restaurant-jungle-tasting`.
+
+## Hallazgos del research (verificados con docs dev.wix.com + skill how-to-code-donations)
+
+- **App:** Wix Donations `appDefId` `333b456e-dd48-4d6b-b32b-9fd48d74e163`
+  ([skill create-and-update-donation-campaigns](https://dev.wix.com/docs/api-reference/business-solutions/donations/skills/create-and-update-donation-campaigns)).
+  En headless hace falta también su dependencia **eCommerce checkout** `1380b703-ce81-ff05-f115-39571d94dfcd`
+  para aceptar pagos. La app SÍ se instala y las campañas SÍ se crean/editan por REST
+  (`donation-campaigns/v2/donation-campaigns`) → no hay tradeoff de "API débil".
+- **SDK `@wix/donations`**, namespace `donationCampaigns`: `queryDonationCampaigns`,
+  `getDonationCampaign`, `getDonationCampaignMetrics`. Todos requieren
+  `SCOPE.DONATIONS.MANAGE-CAMPAIGNS` → **siempre con `auth.elevate`**, incluso del lado
+  visitante. La campaña vive en formato REST (`donationCampaigns`, `id`) y SDK (`items`, `_id`).
+- **Lectura como donante:** query con `filter { archived: false }` + sort `createdDate DESC`;
+  status `COLLECTING` = aceptando donaciones (un goal alcanzado NO cierra la campaña si
+  `acceptDonationsAfterGoal`). Métricas de progreso (`donationCount`, `totalAmount` en
+  `currencyMetricsList`) solo existen si `campaignGoal` fue configurado (400 `CAMPAIGN_GOAL_NOT_SET`
+  si no). Moneda = la default del sitio (EUR).
+- **Checkout hosted (one-time):** receta headless
+  ([how-to-code-donations](https://github.com/wix/skills/blob/main/skills/wix-headless/references/inline-recipes/how-to-code-donations.md)):
+  1. `POST /ecom/v2/carts` con `{ "cart": { "source": { "channelType": "WEB" } },
+     "catalogItems": [{ "quantity": 1, "catalogReference": { "appId": "333b456e-…",
+     "catalogItemId": "<CAMPAIGN_ID>", "options": { "amount": 25 } } }] }` — SDK
+     `cartV2.createCart` (`@wix/ecom` Cart V2 flows). **El `options.amount` es número JSON,
+     los precios de la campaña son strings decimales** → convertir/validar. Para one-time
+     **se OMITE `frequency`** (solo `WEEK|MONTH|YEAR` van en el cart). `donorCoveringFees`
+     solo si el donante optó (el flag suma el 2.9%; nunca inflar el monto a mano).
+  2. El `cart.id` devuelto ES el `checkoutId`: `redirects.createRedirectSession({
+     ecomCheckout: { checkoutId: <CART_ID> }, callbacks: { postFlowUrl, thankYouPageUrl } })`.
+     **NO hay create-checkout V1** en este flujo y el carrito de donación es un Cart V2
+     separado del carrito de compras actual.
+  3. Navegar el documento completo a `redirectSession.fullUrl` (no SPA router/iframe).
+- **Campaign object:** sin slug ni story; los presets (`predefinedDonationAmounts[].id`
+  UUID + `price.amount` decimal string + `description` ≤200 chars) y
+  `customAmountOptions.minimum/maximum` son las únicas fuentes de montos/copy de impacto.
+  `name` 1–65 chars identifica la causa también en el checkout. `donationFrequencies`
+  `['ONE_TIME']` para esta campaña (a pedido del step). Crear la campaña la activa en
+  COLLECTING inmediatamente; PATCH exige `revision` incremental.
+- **Decisión de config:** meta confirmada por el propietario — goal €20,000, presets
+  €10/€25/€50/€100 con textos de impacto en inglés, monto libre habilitado con mínimo €5.
