@@ -56,3 +56,7 @@ navbar, y checkout redirigiendo al checkout alojado de Wix + página de agradeci
 
 1. Marca el paso 7 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-8-create-about-and-contact`
+
+## Resultado
+
+**Docs:** [About Wix Hosted Pages](https://dev.wix.com/docs/go-headless/business-solutions/wix-hosted-pages/about-wix-hosted-pages#about-wix-hosted-pages) · [Redirect using the JS SDK](https://dev.wix.com/docs/go-headless/business-solutions/wix-hosted-pages/redirect-using-the-js-sdk#redirect-to-wix-hosted-pages-using-the-js-sdk)

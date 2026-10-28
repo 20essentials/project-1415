@@ -123,6 +123,12 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 - No ampliar el alcance por inferencia (p. ej. "todo src" → convertir hojas CSS enteras, borrar scaffold). Si el alcance es ambiguo o implica cambios destructivos, preguntar antes de ejecutar.
 - Cambios que pueden romper el build o alterar el diseño (conversión masiva de CSS, borrado de archivos) se confirman primero.
 
+### ROADMAP.md: filas cortas, detalle en el step
+
+- `ROADMAP.md` es un índice, no documentación: cada fila de la tabla queda **corta y simple** — `| N | Paso | Status | \`step-N-archivo.md\` |`. La celda Notas nunca excede una línea (en el Resumen rápido, una frase corta tipo `Wix Events: Open Day (RSVP) + tour pagado en /events`).
+- El detalle (hallazgos, gotchas, IDs, verificaciones, tradeoffs, docs links) va a la sección `## Resultado` al final del `.opencode/commands/step-N-*.md` de ese paso, no en la fila.
+- Items `pending` sin step file: fila de una frase en la tabla y el detalle como prosa/debajo de la tabla; al materializar (`/generate-next-steps`) se expande al step.
+
 ### Tests: assertear solo lo que controla la app (nunca output inyectado por Wix)
 
 - **No assertear valores que Wix inyecta en SSR**: `<title>`, meta tags de SEO, etc. El home no tiene `<title>` en el repo — Wix pone `Home | Petals & Predators` desde la config SEO del sitio. Assertear eso testea la config del sitio, no el código: es frágil y falla por causas ajenas a la app.

@@ -78,3 +78,7 @@ el perfil del miembro y permite cerrar sesión.
 
 1. Marca el paso 10 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-11-plant-care-journal`.
+
+## Resultado
+
+app Wix Members Area + `@wix/members`; nav "Log in"/"Account" + `/account` (perfil + logout)

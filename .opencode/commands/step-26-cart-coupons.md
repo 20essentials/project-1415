@@ -74,3 +74,7 @@ El carrito acepta un código de cupón: se aplica al carrito actual de Wix, mues
 
 1. Marca el paso 26 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-27-write-product-review` (o `/generate-next-steps`).
+
+## Resultado
+
+input de cupón en `cart-view` (`currentCartV2.addCouponToCurrentCart`/`removeCouponFromCurrentCart`), chip aplicado + fila Discount/Total, errores mapeados, claves i18n

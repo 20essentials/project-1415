@@ -35,6 +35,9 @@ clave que filtre los items del roadmap (p.ej. `/generate-next-steps journal`).
 ## Reglas
 
 - Nunca renumera ni sobrescribe un `step-N` existente.
+- La fila del roadmap queda corta (solo `step-N-archivo.md` en Notas); el detalle
+  de hallazgos/gotchas/tradeoffs lo recoge la sección `## Resultado` del step
+  generado. Reglas completas en `AGENTS.md`.
 - El sitio debe quedar compilando tras cada paso: toda verificación incluye
   `npx @wix/cli@latest build` en verde.
 - Si un item del roadmap es ambiguo, amplía con sentido común dentro del tono de
@@ -101,6 +104,7 @@ description: Step <N> — <Título corto> · Petals & Predators
 
 ## Al terminar
 
-1. Marca el paso <N> como `✅ done` en `ROADMAP.md`.
-2. Siguiente: `/step-<N+1>-<slug>` (o `/generate-next-steps`).
+1. Documenta hallazgos, tradeoffs y docs links en la sección `## Resultado` de este mismo archivo (nunca en la fila del roadmap; ver AGENTS.md → "ROADMAP.md: filas cortas").
+2. Marca el paso <N> como `✅ done` en `ROADMAP.md` con celda Notas = solo `step-N-archivo.md`.
+3. Siguiente: `/step-<N+1>-<slug>` (o `/generate-next-steps`).
 ```

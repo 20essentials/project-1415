@@ -40,9 +40,13 @@ El blog queda integrado al resto del sitio: teaser **"From the blog"** en el hom
 - [ ] Home muestra el teaser con 3 posts y CTA a `/blog`; al vaciar el blog la sección desaparece
 - [ ] `ViewContent` se emite en post detail SOLO con consentimiento analytics (método step 21/35)
 - [ ] Release a producción OK y smoke verde de `/blog`, un post y una categoría
-- [ ] Fila 40 con verificaciones + tradeoffs completados en `ROADMAP.md`
+- [ ] Verificaciones + tradeoffs en la sección `## Resultado` de este archivo (fila 40 del ROADMAP corta, ver AGENTS.md)
 
 ## Al terminar
 
 1. Marca el paso 40 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/generate-next-steps` (o el paso que el propietario pida).
+
+## Resultado
+
+**Teaser home:** sección condicional `blogTeaser.length > 0` tras `<!-- home:gift-cards -->` en `src/pages/index.astro` — los 3 posts más recientes (`listBlogPosts(3)`) en grilla 1/2/3 columnas (cover aspect-video + categoría + título H3 + fecha `Intl.DateTimeFormat` + min-read con claves PLURALES existentes `blog.min-read[-one]`, CTA "All posts" a `/blog`, sin estado vacío); clave nueva `home.from-blog` en en/es/it (503 claves c/u, el resto de copy reutiliza `blog.*` del step 38) · **Analytics:** `AnalyticsView event="ViewContent"` en `/blog/[slug]` con payload sin PII (`origin: 'Blog Post'`, `label = post.slug`, `name = post.title`), emitido solo con aceptación analytics del step 21/35 (patrón `hasAnalyticsConsent` de `src/shared/analytics.ts`); nada en feed/categoría · **E2E `tests/e2e/blog.spec.ts`** (5 tests, asserts solo de lo que controla el repo): `/blog` 200 + título sembrado y link `/blog/how-flytraps-…`, teaser home visible con eyebrow "From the blog" + CTA href `/blog`, `/blog/<slug>` con `<h1>` + `<h2> "The rule of two touches"` + `figure img` visible, slug inventado → 404 + copy `not-found`, `/blog/category/stories` con sus 2 posts, `/es/blog` `html[lang="es"]` + link `/es/blog` localizado · **Bug del propio step corregido:** el CTA apuntaba a la clave inexistente `home.all-posts` (la correcta es `blog.all-posts`) — `npm run check` lo dejó pasar literal, lo atrapó el E2E · **Tradeoffs:** el sitemap de Wix no indexa items de blog (mismo que `/journal/[slug]`, step 13); comentarios/likes de la app Blog no embebidos en headless (fuera de alcance) · **Release:** `npx @wix/cli@latest` bloqueado por Node 22 (mín. 24.18.0) pero el binario local `node_modules/.bin/wix` (1.1.258) sí sirve — `wix build` verde 46s y **`wix release` publicado** en https://petals-d960960gm-0609.wix-site-host.com · **Smoke producción:** `/blog`, `/blog/how-flytraps-actually-catch-their-prey` y `/blog/category/stories` → 200 · **Verificado:** `npm run check` 0 errores (141 files) · `npm test` 176/176 · `npx astro build` verde · `npm run test:e2e` 28/28 (23 previos + 5 de blog)

@@ -100,7 +100,7 @@ la cena-experiencia** (Experiences) con decoración de plantas.
 - [ ] `/dining` 200 con el menú "Jungle Tasting" seeded (secciones + precios legibles) y la isla de reserva hidratada
 - [ ] Reserva real en `wix dev` contra una availability seeded; cancelar la reserva de prueba al terminar (sitio limpio, como step 20)
 - [ ] Sin availability sembrada la página no se rompe (copy "next date TBA")
-- [ ] Fila 44 del ROADMAP con hallazgos + IDs seeded
+- [ ] Hallazgos + IDs seeded en la sección `## Resultado` de este archivo (fila 44 del ROADMAP corta, ver AGENTS.md)
 
 ## Al terminar
 

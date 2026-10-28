@@ -86,3 +86,7 @@ Un miembro logueado edita su nombre, apellido y nickname desde `/account/profile
 
 1. Marca el paso 29 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-30-gift-cards-official-app` (o `/generate-next-steps`).
+
+## Resultado
+
+`src/features/account/member-profile.ts` (updateMember + auth.elevate + error codes), `src/pages/api/member-profile.ts`, `src/features/account/profile-form.tsx`, `src/pages/account/profile.astro` (avatar + email read-only), link in `src/pages/account.astro`, profile keys in `src/translations.json` + `.wix/multilingual/translations/{es,it}.json`, tests in `tests/features/account/member-profile.test.ts`. Avatar upload out of scope.

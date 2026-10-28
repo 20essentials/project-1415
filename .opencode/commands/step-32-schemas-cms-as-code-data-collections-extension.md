@@ -75,3 +75,7 @@ Codificar las colecciones CMS usadas por el sitio (`care-guides`, `lookbook`, `w
 
 1. Marca el paso 32 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-33-restock-alerts-event-extension-dashboard-page` (o `/generate-next-steps`).
+
+## Resultado
+
+Las colecciones `care-guides`, `lookbook` y `wishlist` se crearon por REST durante el seeding; un clone limpio no las reproduce. Crear extensión de Data Collections (`wix generate`) con fields/types/permissions/indexes equivalentes, migrar sin perder datos y actualizar el seeding/`.wix/seeded.json`; registrar con `wix release` y verificar lectura/escritura desde las features. **Docs:** [About extensions](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/extensions/about-extensions)

@@ -87,3 +87,7 @@ fotos y productos destacados, más un CTA desde el home y un link en el nav.
 
 1. Marca el paso 15 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-16-product-reviews`.
+
+## Resultado
+
+Colección CMS `lookbook` (`season`, `title`, `tagline`, `story` RICH_TEXT, `heroImage` IMAGE, `gallery` MEDIA_GALLERY, `productSlugs` ARRAY_STRING, `orderIndex`) + 3 estaciones seeded (15 fotos importadas) + `src/utils/lookbook.ts` (`queryLookbook` con `auth.elevate`, `orderIndex` asc, `try/catch`→`[]`) + `/lookbook` (hero full-bleed de la 1ª estación + mosaico asimétrico por estación + story vía `renderRicos` + fila de productos mapeada por `slug`) + link "Lookbook" en `site.nav` y `site.navPrimary` + CTA en home + claves en `en`/`es`/`it` (266 c/u). **Item 6 (sitemap) obsoleto:** `sitemap.xml.ts` no existe (Wix sirve el sitemap; tradeoff step 13 ya excluye `/lookbook`). Verificado con `wix dev`: 200 en `/lookbook`, `/es/lookbook`, `/it/lookbook`; las 3 estaciones con títulos/seasons, imágenes y productos por slug renderizados; estado vacío solo en el dict i18n del cliente

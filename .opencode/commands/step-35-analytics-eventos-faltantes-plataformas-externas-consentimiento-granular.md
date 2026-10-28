@@ -89,3 +89,7 @@ Completar eventos de analytics faltantes (`Purchase`, `Schedule`, `AddProductImp
 
 1. Marca el paso 35 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-36-workshops-pagados-checkout-online-bookings` (o `/generate-next-steps`).
+
+## Resultado
+
+Purchase en thank-you (orderId/query), Schedule en booking-confirmation, AddProductImpression/ClickProduct en grids (limitados), StartPayment antes de redirect a checkout hosted (CheckoutStep/AddPaymentInfo no instrumentables documentados), consentimiento granular con persistencia/migración + modal accesible en footer para reabrir/revocar, hasAnalyticsConsent respeta categoría analytics, docs/analytics.md con GA4/GTM/Meta desde dashboard. Tests de gating granulares actualizados.

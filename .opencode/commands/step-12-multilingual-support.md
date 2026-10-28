@@ -101,3 +101,7 @@ carpetas en `src/pages`.
 
 1. Marca el paso 12 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-13-seo-main-pages`.
+
+## Resultado
+
+**Docs:** [Add multilingual support](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/feature-guides/add-multilingual-support#add-multilingual-support) · Integración i18n con Wix Managed Headless. URLs `/`, `/es/*`, `/it/*` servidas por el middleware de Wix Multilingual (mantener `src/pages` plano — no crear carpetas por locale); idioma actual con `i18n.getLanguage()`. 108 claves planas en `src/translations.json` + seeds `es`/`it` en `.wix/multilingual/translations/`; selector de idioma (dropdown) en header (desktop) y menú móvil; nav recortado a 5 links (`site.navPrimary`) para evitar el wrapping; hreflang/canonical/`og:locale` + sitemap por locale; `lang` en login/logout. Textos editables desde dashboard de Wix (Translation) vía `npm run wix translation push` / `npm run wix translation pull` — **push requiere terminal interactivo (TTY)**; mientras tanto los textos ya viajan en el bundle. Ver: [Add multilingual support](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/feature-guides/add-multilingual-support#add-multilingual-support)

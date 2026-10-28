@@ -112,3 +112,7 @@ retirando del layout los tags hardcodeados que compiten, y dejando que Wix sea q
 
 1. Marca el paso 13 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-14-seo-item-pages`.
+
+## Resultado
+
+**Docs:** [SEO support](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/feature-guides/seo/about-seo-support#about-seo-support) · [Manage SEO for main pages](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/feature-guides/seo/manage-seo-for-main-pages#manage-seo-for-main-pages) · [Sitemaps](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/feature-guides/seo/about-sitemaps-in-the-astro-integration#about-sitemaps-in-the-astro-integration) · **Límite:** la inyección automática cubre solo main pages; verificar únicamente en el sitio publicado, no en `wix dev` · `<head>` sin `title`/`description`/`canonical`/OG/Twitter/`hreflang` (manda el dashboard; Wix inyecta los tags con `wix-seo-tag`); `meta robots` solo si `noindex`; `robots.txt` y `sitemap.xml` servidos por Wix (borrados `robots.txt.ts`/`sitemap.xml.ts` y `robots: { enable: false }`). Publicado en `petals-d960960gm-0609.wix-site-host.com`. **Pendiente manual (no hay API para main pages headless):** SEO & GEO → SEO Settings → Main Pages (defaults + por página) y Robots.txt Editor. **Tradeoff aceptado:** se retiró el `hreflang` (Wix no lo reemplaza en el patrón); el sitemap index de Wix no incluye `/journal/[slug]` (CMS) ni `/lookbook`

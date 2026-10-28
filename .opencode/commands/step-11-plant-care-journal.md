@@ -84,3 +84,7 @@ una guía destacada en el home.
 
 1. Marca el paso 11 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-12-multilingual-support`.
+
+## Resultado
+
+Colección Wix CMS `care-guides` (title, slug, intro, body, plantTag, coverImage) + 4 guías seeded + rutas `/journal` y `/journal/[slug]` (404 si no existe) + link "Journal" en el nav + featured guide en home + sitemap

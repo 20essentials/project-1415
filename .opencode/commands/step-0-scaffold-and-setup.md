@@ -64,3 +64,7 @@ autenticada, proyecto scaffolded y aplanado en CWD, dependencias instaladas con
 
 1. Marca el paso 0 como `✅ done` en `ROADMAP.md` (nota cualquier desviación).
 2. Siguiente: `/step-1-create-hero-section`
+
+## Resultado
+
+**Docs:** [About the Astro integration](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/about-the-astro-integration#about-the-astro-integration) · [Astro templates](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/get-started/astro-templates#astro-templates-for-wix-managed-headless) · [About the Wix CLI](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/development/about-the-wix-cli#about-the-wix-cli) · [Env vars overview](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/development/environment-variables/about-environment-variables-in-the-cli#about-environment-variables-in-the-cli) · [Manage env vars](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/development/environment-variables/manage-environment-variables#manage-environment-variables-in-the-cli) · [Add apps with the REST API](https://dev.wix.com/docs/go-headless/project-management/add-apps-with-the-rest-api#add-apps-with-the-rest-api) · [Featured business solutions](https://dev.wix.com/docs/go-headless/business-solutions/featured-business-solutions#featured-business-solutions-for-wix-headless)

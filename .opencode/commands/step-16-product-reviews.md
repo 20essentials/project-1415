@@ -81,3 +81,7 @@ sección "What growers say" en el home.
 
 1. Marca el paso 16 como `✅ done` en `ROADMAP.md`.
 2. Siguiente: `/step-17-gift-cards-landing`.
+
+## Resultado
+
+**Docs:** [Add apps with the REST API](https://dev.wix.com/docs/go-headless/project-management/add-apps-with-the-rest-api#add-apps-with-the-rest-api) · App **Wix Reviews** instalada durante el seeding (no estaba; `POST /apps-installer-service/v1/app-instance/install`, appDefId `a95a5fce-e370-4402-9ce4-96956acc747d`). 8 reseñas seeded (APPROVED, `verified:false`) sobre los 5 productos + 6 contactos nuevos. `@wix/reviews` + `src/utils/reviews.ts` (`queryReviews` con `auth.elevate`, filtro `namespace:'stores'`+`entityId`, `getProductReviews`/`getFeaturedReviews`/`averageRating`, `try/catch`→`[]`) + `src/components/rating-stars.astro` (SVG accesible, medias estrellas, `role="img"`). PDP: fila de rating bajo `<h1>` + sección "What growers say" (≤3 reseñas) solo si hay reseñas. Home: sección "What growers say" (6 destacadas, orden rating desc) antes de `<!-- home:gift-cards -->`. Claves `reviews.sectionTitle`/`reviews.count`/`reviews.count-one`/`reviews.ratedOutOf` en `en`/`es`/`it` (270 c/u). Verificado con `wix dev`: 200 + sección/rating en los 5 PDPs y home, es/it OK; camino sin reseñas verificado rechazando temporalmente una reseña (200, sin sección) y restaurándola a APPROVED
