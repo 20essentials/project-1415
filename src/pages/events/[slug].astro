@@ -7,6 +7,7 @@ import { SEO } from '@wix/seo/components';
 import { loadSEOTagsServiceConfig } from '@wix/seo/services';
 import { seoTags } from '@wix/seo';
 import { currentLanguage, localize, useTranslation } from '@/shared/i18n';
+import { renderRicos } from '@/shared/ricos';
 
 export const wixMetadata = {
   appDefId: WIX_APPS.events.id,
@@ -48,6 +49,24 @@ const eventDate = event?.startUtc
       timeZone: event.timeZoneId || 'UTC',
     }).format(new Date(event.startUtc))
   : null;
+
+function formatTimeRange(start: string | null, end: string | null, timeZoneId: string | null): string {
+  if (!start) return '';
+  try {
+    const time = new Intl.DateTimeFormat(locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: timeZoneId || 'UTC',
+    });
+    const endDate = end ? ` – ${time.format(new Date(end))}` : '';
+    return `${time.format(new Date(start))}${endDate}`;
+  } catch {
+    return '';
+  }
+}
+
+const eventTime = event ? formatTimeRange(event.startUtc, event.endUtc, event.timeZoneId) : '';
+const descriptionHtml = event ? renderRicos(event.description) : '';
 ---
 
 <Layout>
@@ -108,18 +127,18 @@ const eventDate = event?.startUtc
             )}
           </div>
 
-          {event.description && (
-            <div class="border-t border-rule pt-5">
-              <p class="max-w-prose text-sm leading-6 whitespace-pre-line text-ink-soft">{event.description}</p>
-            </div>
+          {descriptionHtml && (
+            <div class="journal-body border-t border-rule pt-5 max-w-prose text-sm text-ink-soft" set:html={descriptionHtml} />
           )}
 
-          {event.venue && (
-            <div class="border-t border-rule pt-5">
-              <p class="text-xs font-medium tracking-widest text-mute uppercase">{t('events.venue')}</p>
-              <p class="mt-1 text-sm text-ink-soft">{event.venue}</p>
+          <div class="border-t border-rule pt-5">
+            <p class="text-xs font-medium tracking-widest text-mute uppercase">{t('events.where-when')}</p>
+            <div class="mt-2 flex flex-col gap-1 text-sm text-ink-soft">
+              {eventDate && <p>{eventDate}</p>}
+              {eventTime && <p>{eventTime}</p>}
+              {event.venue && <p>{event.venue}</p>}
             </div>
-          )}
+          </div>
 
           <div class="border-t border-rule pt-5">
             <EventRegistration
@@ -162,3 +181,44 @@ const eventDate = event?.startUtc
   </section>
   )}
 </Layout>
+
+<style is:global>
+  .journal-body h1,
+  .journal-body h2,
+  .journal-body h3 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    line-height: 1.3;
+    color: var(--color-ink);
+  }
+  .journal-body p + p {
+    margin-top: 0.75rem;
+  }
+  .journal-body ul {
+    margin-top: 0.75rem;
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+  .journal-body ol {
+    margin-top: 0.75rem;
+    padding-left: 1.25rem;
+    list-style: decimal;
+  }
+  .journal-body li {
+    margin-top: 0.35rem;
+  }
+  .journal-body blockquote {
+    margin-top: 1rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--color-accent);
+    font-style: italic;
+    color: var(--color-ink-soft);
+  }
+  .journal-body a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

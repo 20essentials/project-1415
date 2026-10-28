@@ -1,5 +1,6 @@
 import { orders, rsvpV2, ticketReservations, wixEventsV2 } from '@wix/events';
 import { auth } from '@wix/essentials';
+import type { RicosDocument } from '@/shared/ricos';
 import { resolveWixImageUrl } from '@/shared/wix-image';
 
 export interface EventInfo {
@@ -7,7 +8,7 @@ export interface EventInfo {
   slug: string;
   title: string;
   shortDescription: string | null;
-  description: string | null;
+  description: RicosDocument | string | null;
   initialType: 'RSVP' | 'TICKETING';
   registrationStatus: string | null;
   eventStatus: string | null;
@@ -45,8 +46,11 @@ interface EventRecord {
   slug?: string;
   title?: string;
   shortDescription?: string | null;
-  description?: string | null;
-  mainImage?: { id?: string; altText?: string | null; height?: number | null; width?: number | null } | null;
+  description?: RicosDocument | string | null;
+  mainImage?:
+    | string
+    | { id?: string; url?: string; altText?: string | null; height?: number | null; width?: number | null }
+    | null;
   dateAndTimeSettings?: {
     startDate?: Date | string | null;
     endDate?: Date | string | null;
@@ -79,6 +83,26 @@ function toInstant(value: Date | string | null | undefined): string | null {
   return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
+function eventImage(record: EventRecord): EventInfo['image'] {
+  if (!record.mainImage) return null;
+
+  let id: string | null = null;
+  let altText = record.title ?? '';
+  if (typeof record.mainImage === 'string') {
+    const path = record.mainImage.split('#')[0].split('/').filter(Boolean);
+    id = path[2] ?? null;
+    altText = path[3] ? decodeURIComponent(path[3]).replace(/\.[a-z0-9]+$/i, '') : altText;
+  } else {
+    id = record.mainImage.id ?? null;
+    altText = record.mainImage.altText ?? altText;
+  }
+  if (!id) return null;
+
+  const url = resolveWixImageUrl(`wix:image://v1/${id}/image`, EVENT_CARD_IMAGE_WIDTH, EVENT_CARD_IMAGE_HEIGHT);
+  if (!url) return null;
+  return { url, width: EVENT_CARD_IMAGE_WIDTH, height: EVENT_CARD_IMAGE_HEIGHT, altText };
+}
+
 function tierPriceValue(record: TierRecord): string {
   return record.price?.amount ?? record.price?.value ?? record.pricing?.fixedPrice?.value ?? '';
 }
@@ -88,14 +112,9 @@ function toEvent(record: EventRecord): EventInfo | null {
   const slug = record.slug ?? '';
   if (!id || !slug) return null;
 
-  const mainImage = record.mainImage?.id
-    ? {
-        url: resolveWixImageUrl({ id: record.mainImage.id }, EVENT_CARD_IMAGE_WIDTH, EVENT_CARD_IMAGE_HEIGHT) ?? '',
-        width: EVENT_CARD_IMAGE_WIDTH,
-        height: EVENT_CARD_IMAGE_HEIGHT,
-        altText: record.mainImage.altText ?? record.title ?? '',
-      }
-    : null;
+  // Over the JS SDK mainImage arrives as a prebuilt wix:image URI string with
+  // the alt text embedded as the file-name segment; over REST it's an object.
+  const mainImage = eventImage(record);
 
   const lowestPrice = record.registration?.tickets?.lowestPrice;
   const initialType = record.registration?.initialType;

@@ -22,6 +22,31 @@ function formatEventDate(event: EventInfo): string {
     return event.formattedDate ?? '';
   }
 }
+
+function formatEventTime(event: EventInfo): string {
+  if (!event.startUtc) return '';
+  try {
+    const time = new Intl.DateTimeFormat(locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: event.timeZoneId || 'UTC',
+    });
+    const start = time.format(new Date(event.startUtc));
+    const end = event.endUtc ? ` – ${time.format(new Date(event.endUtc))}` : '';
+    return `${start}${end}`;
+  } catch {
+    return '';
+  }
+}
+
+function formatEventPrice(event: EventInfo): string | null {
+  if (event.initialType === 'RSVP' || !event.lowestPrice?.value) return null;
+  const amount = Number(event.lowestPrice.value);
+  if (!Number.isFinite(amount)) return null;
+  const currency = event.lowestPrice.currency || 'EUR';
+  const formatted = new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount);
+  return t('events.card.from', { price: formatted });
+}
 ---
 
 <Layout>
@@ -75,11 +100,15 @@ function formatEventDate(event: EventInfo): string {
                     </span>
                   </div>
                   <p class="mt-4 text-xs font-medium tracking-widest text-accent uppercase">{formatEventDate(event)}</p>
+                  <p class="mt-1 text-xs font-medium tracking-widest text-mute uppercase">{formatEventTime(event)}</p>
                   <h3 class="mt-2 font-display text-base leading-tight text-ink lg:text-lg">{event.title}</h3>
                   {event.shortDescription && (
                     <p class="mt-1 text-sm leading-6 text-ink-soft">{event.shortDescription}</p>
                   )}
                   {event.venue && <p class="mt-1 text-sm text-ink-soft">{event.venue}</p>}
+                  {formatEventPrice(event) && (
+                    <p class="mt-2 text-sm font-medium text-ink">{formatEventPrice(event)}</p>
+                  )}
                   <p class="mt-2 text-sm font-medium text-accent transition-colors duration-700 ease-fluid group-hover:underline">
                     {event.initialType === 'RSVP' ? t('events.cta-rsvp') : t('events.cta-tickets')}
                   </p>

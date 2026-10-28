@@ -15,8 +15,13 @@ vi.mock('@wix/events', () => ({
 }));
 
 vi.mock('@/shared/wix-image', () => ({
-  resolveWixImageUrl: ({ id }: { id?: string }) =>
-    id ? `https://static.wixstatic.com/media/${id}` : null,
+  resolveWixImageUrl: (input?: unknown, width?: number, height?: number) => {
+    if (typeof input === 'string' && input.startsWith('wix:image://v1/')) {
+      const id = input.slice('wix:image://v1/'.length).split('/')[0];
+      return `https://static.wixstatic.com/media/${id}?w=${width}&h=${height}`;
+    }
+    return null;
+  },
 }));
 
 const ELEVATED_EVENT_FIELDS = ['DETAILS', 'TEXTS', 'REGISTRATION', 'URLS'];
@@ -90,6 +95,27 @@ describe('listEvents', () => {
         formattedDate: 'Sat, Nov 28, 2026, 11:00 AM',
         venue: 'Petals & Predators Greenhouse',
         image: null,
+      }),
+    ]);
+  });
+
+  it('resolves mainImage from a wix:image URI built on the bare media id', async () => {
+    queryEvents.mockResolvedValue({
+      events: [{
+        ...sdkEvent,
+        mainImage: { id: '600582_afbb948855834099a6b7f4b9ed278bc1~mv2.png', altText: 'Akai Ryu flytrap' },
+      }],
+    });
+    const { listEvents } = await loadFeature();
+
+    await expect(listEvents()).resolves.toEqual([
+      expect.objectContaining({
+        image: {
+          url: 'https://static.wixstatic.com/media/600582_afbb948855834099a6b7f4b9ed278bc1~mv2.png?w=800&h=800',
+          width: 800,
+          height: 800,
+          altText: 'Akai Ryu flytrap',
+        },
       }),
     ]);
   });
