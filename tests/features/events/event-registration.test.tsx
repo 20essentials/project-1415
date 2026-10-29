@@ -1,18 +1,17 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { EventRegistration } from '@/features/events/event-registration';
 
-const { createRsvp, listTicketTiers, reserveTickets, redirectsCreate } = vi.hoisted(() => ({
+const { tiersFetch, createRsvp, reserveTickets, redirectsCreate } = vi.hoisted(() => ({
+  tiersFetch: vi.fn(),
   createRsvp: vi.fn(),
-  listTicketTiers: vi.fn(),
   reserveTickets: vi.fn(),
   redirectsCreate: vi.fn(),
 }));
 
 vi.mock('@/features/events/events', () => ({
   createRsvp,
-  listTicketTiers,
   reserveTickets,
 }));
 
@@ -37,6 +36,25 @@ const enLabels = {
   error: "We couldn't register you right now. Please try again.",
   retry: 'Try again',
 };
+
+function tiersPayload(payload: unknown) {
+  return { ok: true, json: () => Promise.resolve(payload) };
+}
+
+const TIER_GENERAL = {
+  id: 'tier-1',
+  name: 'General Admission',
+  description: null,
+  priceValue: '8.00',
+  currency: 'EUR',
+  free: false,
+  saleStatus: 'SALE_STARTED',
+  limitPerCheckout: 4,
+};
+
+beforeEach(() => {
+  vi.stubGlobal('fetch', (...args: unknown[]) => tiersFetch(...args));
+});
 
 function mountRsvp() {
   render(
@@ -64,10 +82,11 @@ function fill({ firstName, lastName, email }: { firstName: string; lastName: str
 }
 
 afterEach(() => {
+  tiersFetch.mockReset();
   createRsvp.mockReset();
-  listTicketTiers.mockReset();
   reserveTickets.mockReset();
   redirectsCreate.mockReset();
+  vi.unstubAllGlobals();
 });
 
 describe('EventRegistration — RSVP mode', () => {
@@ -106,32 +125,35 @@ describe('EventRegistration — RSVP mode', () => {
     const alert = await waitFor(() => screen.getByRole('alert'));
     expect(alert).toHaveTextContent("We couldn't register you right now.");
   });
+
+  it('never fetches tiers in RSVP mode', async () => {
+    mountRsvp();
+    fill({ firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com' });
+    fireEvent.click(screen.getByText("I'm coming"));
+    await waitFor(() => expect(screen.getByRole('status')).toBeInTheDocument());
+    expect(tiersFetch).not.toHaveBeenCalled();
+  });
 });
 
 describe('EventRegistration — ticketed mode', () => {
-  it('loads tiers, enables the buyable one and disables the rest', async () => {
-    listTicketTiers.mockResolvedValue([
-      {
-        id: 'tier-1',
-        name: 'General Admission',
-        description: null,
-        priceValue: '8.00',
-        currency: 'EUR',
-        free: false,
-        saleStatus: 'SALE_STARTED',
-        limitPerCheckout: 4,
-      },
-      {
-        id: 'tier-old',
-        name: 'Early Bird',
-        description: null,
-        priceValue: '6.00',
-        currency: 'EUR',
-        free: false,
-        saleStatus: 'SALE_ENDED',
-        limitPerCheckout: 4,
-      },
-    ]);
+  it('loads tiers from the event-tiers API, enables the buyable one and disables the rest', async () => {
+    tiersFetch.mockResolvedValue(
+      tiersPayload({
+        tiers: [
+          TIER_GENERAL,
+          {
+            id: 'tier-old',
+            name: 'Early Bird',
+            description: null,
+            priceValue: '6.00',
+            currency: 'EUR',
+            free: false,
+            saleStatus: 'SALE_ENDED',
+            limitPerCheckout: 4,
+          },
+        ],
+      }),
+    );
     render(
       <EventRegistration mode="tickets" eventId="evt-2" slug="guided-tour-of-the-greenhouse-1" locale="en" />,
     );
@@ -140,10 +162,11 @@ describe('EventRegistration — ticketed mode', () => {
     expect(screen.getByText('General Admission')).toBeInTheDocument();
     expect(screen.getByText('Early Bird').closest('button')).toBeDisabled();
     expect(screen.getByText('€8.00')).toBeInTheDocument();
+    expect(tiersFetch).toHaveBeenCalledWith('/api/event-tiers?eventId=evt-2');
   });
 
   it('shows an accessible tiers error and allows a retry', async () => {
-    listTicketTiers.mockRejectedValue(new Error('boom'));
+    tiersFetch.mockResolvedValue(tiersPayload({ tiers: [], error: 'FAILED' }));
     render(
       <EventRegistration mode="tickets" eventId="evt-2" slug="guided-tour-of-the-greenhouse-1" locale="en" />,
     );
@@ -151,38 +174,27 @@ describe('EventRegistration — ticketed mode', () => {
     const alert = await waitFor(() => screen.getByRole('alert'));
     expect(alert).toHaveTextContent("We couldn't load the tickets.");
 
-    listTicketTiers.mockResolvedValue([
-      {
-        id: 'tier-1',
-        name: 'General Admission',
-        description: null,
-        priceValue: '8.00',
-        currency: 'EUR',
-        free: false,
-        saleStatus: 'SALE_STARTED',
-        limitPerCheckout: 4,
-      },
-    ]);
+    tiersFetch.mockResolvedValue(tiersPayload({ tiers: [TIER_GENERAL] }));
     fireEvent.click(screen.getByText('Try again'));
     await waitFor(() => expect(screen.getByText('General Admission')).toBeInTheDocument());
+  });
+
+  it('shows the tiers error when the API call itself fails', async () => {
+    tiersFetch.mockResolvedValue({ ok: false, json: () => Promise.resolve({}) });
+    render(
+      <EventRegistration mode="tickets" eventId="evt-2" slug="guided-tour-of-the-greenhouse-1" locale="en" />,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent("We couldn't load the tickets."),
+    );
   });
 
   it('reserves tickets and redirects to the hosted checkout with the localized paypal callbacks', async () => {
     const assign = vi.fn();
     vi.stubGlobal('location', { origin: 'https://site.test', pathname: '/events/tour', assign, href: '' });
 
-    listTicketTiers.mockResolvedValue([
-      {
-        id: 'tier-1',
-        name: 'General Admission',
-        description: null,
-        priceValue: '8.00',
-        currency: 'EUR',
-        free: false,
-        saleStatus: 'SALE_STARTED',
-        limitPerCheckout: 4,
-      },
-    ]);
+    tiersFetch.mockResolvedValue(tiersPayload({ tiers: [TIER_GENERAL] }));
     reserveTickets.mockResolvedValue('res-1');
     redirectsCreate.mockResolvedValue({ redirectSession: { fullUrl: 'https://checkout.example.com/tickets' } });
 
@@ -208,18 +220,7 @@ describe('EventRegistration — ticketed mode', () => {
 
   it('surfaces the payment-gate message instead of a generic failure', async () => {
     vi.stubGlobal('location', { origin: 'https://site.test', pathname: '/events/tour', assign: vi.fn(), href: '' });
-    listTicketTiers.mockResolvedValue([
-      {
-        id: 'tier-1',
-        name: 'General Admission',
-        description: null,
-        priceValue: '8.00',
-        currency: 'EUR',
-        free: false,
-        saleStatus: 'SALE_STARTED',
-        limitPerCheckout: 4,
-      },
-    ]);
+    tiersFetch.mockResolvedValue(tiersPayload({ tiers: [TIER_GENERAL] }));
     reserveTickets.mockRejectedValue(new Error('403: No payment method configured'));
 
     render(

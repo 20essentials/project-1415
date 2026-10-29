@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { currentCart } from "@wix/ecom";
 
 // CartView escribe { lineItems, summary } aquí; el badge lee la misma clave para
 // pintar el conteo cacheado antes de que corra el fetch fresco.
@@ -33,6 +32,24 @@ const DEFAULT_LABELS: CartBadgeLabels = {
   withCount: "Cart, {{count}} items",
 };
 
+interface CartPayload {
+  cart?: { lineItems?: CachedLineItem[] | null } | null;
+}
+
+// El conteo vive en /api/cart-current (SSR): `getCurrentCart` responde 404 si el
+// visitante aún no tiene carrito y ese 404 de red aparecía en la consola del
+// cliente en cada página; el route lo captura y devuelve 200 con cart:null.
+async function fetchCartSnapshot(): Promise<CachedSnapshot | null> {
+  try {
+    const res = await fetch("/api/cart-current");
+    if (!res.ok) return null;
+    const payload = (await res.json()) as CartPayload;
+    return payload.cart ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function countItems(lineItems: CachedLineItem[] | null | undefined): number {
   return (lineItems ?? []).reduce((sum, item) => sum + (item?.quantity ?? 0), 0);
 }
@@ -55,12 +72,8 @@ export function CartBadge({ labels = DEFAULT_LABELS, href = "/cart" }: CartBadge
   const [count, setCount] = useState(0);
 
   const fetchCount = async () => {
-    try {
-      const cart = await currentCart.getCurrentCart();
-      setCount(countItems(cart.lineItems));
-    } catch {
-      setCount(0);
-    }
+    const snapshot = await fetchCartSnapshot();
+    setCount(countItems(snapshot?.lineItems ?? null));
   };
 
   useEffect(() => {

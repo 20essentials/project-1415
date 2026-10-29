@@ -1,8 +1,27 @@
 import { useEffect, useState } from "react";
 import { redirects } from "@wix/redirects";
-import { createRsvp, listTicketTiers, reserveTickets, type EventTier } from "./events";
+import { createRsvp, reserveTickets, type EventTier } from "./events";
 import { trackEvent } from "@/shared/analytics";
 import { localize, readSiteLanguage } from "@/shared/i18n";
+
+// queryAvailableTickets (tiers) es un modulo elevado: solo corre server-side.
+// El cliente mira la respuesta del API route; con tiers vacios + error flag el
+// componente pinta su estado "ticketsError ? retry" (comportamiento por defecto).
+interface EventTiersPayload {
+  tiers?: unknown;
+  error?: string;
+}
+
+async function fetchEventTiers(eventId: string): Promise<{ tiers: EventTier[]; failed: boolean }> {
+  try {
+    const res = await fetch(`/api/event-tiers?eventId=${encodeURIComponent(eventId)}`);
+    const payload = (await res.json()) as EventTiersPayload;
+    if (!res.ok || payload.error) return { tiers: [], failed: true };
+    return { tiers: Array.isArray(payload.tiers) ? (payload.tiers as EventTier[]) : [], failed: false };
+  } catch {
+    return { tiers: [], failed: true };
+  }
+}
 
 export type EventRegistrationMode = "rsvp" | "tickets";
 
@@ -125,17 +144,17 @@ export function EventRegistration({
     if (mode !== "tickets") return;
     let cancelled = false;
     setTierStatus("loading");
-    listTicketTiers(eventId)
+    fetchEventTiers(eventId)
       .then((result) => {
         if (cancelled) return;
-        setTiers(result);
-        const firstBuyable = result.find((tier) => tier.saleStatus === "SALE_STARTED");
-        setSelectedTier(firstBuyable ?? result[0] ?? null);
+        setTiers(result.tiers);
+        if (result.failed) {
+          setTierStatus("error");
+          return;
+        }
+        const firstBuyable = result.tiers.find((tier) => tier.saleStatus === "SALE_STARTED");
+        setSelectedTier(firstBuyable ?? result.tiers[0] ?? null);
         setTierStatus("ready");
-      })
-      .catch((error) => {
-        console.error("[event-registration] tiers fetch failed:", error);
-        if (!cancelled) setTierStatus("error");
       });
     return () => {
       cancelled = true;
@@ -182,8 +201,7 @@ export function EventRegistration({
       });
       trackRegistration(eventId, slug, "rsvp");
       setSuccess(true);
-    } catch (error) {
-      console.error("[event-registration] rsvp failed:", error);
+    } catch {
       setNotice(labels.error);
       setSubmitState("error");
     }
@@ -212,7 +230,6 @@ export function EventRegistration({
       trackRegistration(eventId, slug, "tickets");
       window.location.assign(fullUrl);
     } catch (error) {
-      console.error("[event-registration] ticket checkout failed:", error);
       setNotice(
         isPaymentGateError(error)
           ? labels.paymentGate
@@ -255,13 +272,17 @@ export function EventRegistration({
               type="button"
               onClick={() => {
                 setTierStatus("loading");
-                listTicketTiers(eventId)
+                fetchEventTiers(eventId)
                   .then((result) => {
-                    setTiers(result);
-                    setSelectedTier(result[0] ?? null);
+                    setTiers(result.tiers);
+                    if (result.failed) {
+                      setTierStatus("error");
+                      return;
+                    }
+                    const firstBuyable = result.tiers.find((tier) => tier.saleStatus === "SALE_STARTED");
+                    setSelectedTier(firstBuyable ?? result.tiers[0] ?? null);
                     setTierStatus("ready");
-                  })
-                  .catch(() => setTierStatus("error"));
+                  });
               }}
               className="rounded-full border border-rule px-4 py-1.5 text-xs font-medium text-ink-soft transition-colors duration-500 ease-fluid hover:border-accent hover:text-accent"
             >

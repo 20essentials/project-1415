@@ -133,6 +133,10 @@ interface CartViewProps {
   thankYouPath?: string;
 }
 
+interface CartPayload {
+  cart?: unknown;
+}
+
 export function CartView({
   labels: labelOverrides,
   continueHref = "/products",
@@ -151,12 +155,19 @@ export function CartView({
   const refreshCart = async () => {
     setLoading(true);
     setError(null);
+    // Mismo route que el badge: el navegador no ve el 404 de getCurrentCart
+    // para un visitante sin carrito; cart null = carrito vacio.
     try {
-      const data = (await currentCart.getCurrentCart()) as unknown;
-      setCart(data);
-      publishCartUpdate(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : labels.errorLoad);
+      const res = await fetch("/api/cart-current");
+      if (!res.ok) {
+        setCart(null);
+      } else {
+        const payload = (await res.json()) as CartPayload;
+        setCart(payload.cart ?? null);
+        if (payload.cart) publishCartUpdate(payload.cart);
+      }
+    } catch {
+      setError(labels.errorLoad);
     } finally {
       setLoading(false);
     }
