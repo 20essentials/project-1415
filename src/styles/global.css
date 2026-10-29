@@ -9,7 +9,6 @@
 
   --color-bg: #131209;
   --color-crema: #f3eadb;
-  --color-teja: #d0703a;
 
   --color-paper: #08090a;
   --color-paper-warm: #0f0f12;
@@ -78,8 +77,8 @@
   }
 
   ::selection {
-    background-color: var(--color-teja);
-    color: var(--color-bg);
+    background-color: var(--color-accent);
+    color: var(--color-paper);
   }
 
   :focus-visible {
@@ -89,7 +88,7 @@
 }
 
 @layer components {
-  /* Botón principal: teja con texto oscuro. */
+  /* Botón principal: verde con texto oscuro. */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -126,13 +125,12 @@
   }
 
   .btn-primary {
-    background-color: var(--color-teja);
-    color: var(--color-bg);
+    background-color: var(--color-accent);
+    color: var(--color-paper);
   }
 
   .btn-primary:hover {
-    background-color: var(--color-crema);
-    transform: scale(1.02);
+    background-color: var(--color-cream);
   }
 
   .btn-ghost {
@@ -161,8 +159,8 @@
   }
 
   .link:hover {
-    color: var(--color-teja);
-    text-decoration-color: var(--color-teja);
+    color: var(--color-accent);
+    text-decoration-color: var(--color-accent);
   }
 
   /* Máscaras: arco, óvalo y espejo de borde orgánico. */
