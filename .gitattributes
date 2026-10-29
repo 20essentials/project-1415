@@ -1,0 +1,29 @@
+# Normalize line endings to LF (repo is edited on Windows, where CRLF breaks tooling)
+* text=auto eol=lf
+
+# Windows-specific metadata files
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Images
+*.avif binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.svg text
+
+# Fonts
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+
+# Media and archives
+*.webm binary
+*.mp4 binary
+*.mp3 binary
+*.zip binary
+*.pdf binary

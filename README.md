@@ -29,6 +29,7 @@ Inter type. See `DESIGN.md`.
 - [Environment variables](#environment-variables)
 - [How this is built](#how-this-is-built)
 - [Docs](#docs)
+- [License](#license)
 
 </details>
 
@@ -121,7 +122,7 @@ Here's a quick guide:
 6. Push to the Branch (`git push origin feature/AmazingFeature`)
 7. Open a [_pull request_](https://github.com/20essentials/project-1415/pulls)
 
-Before opening a PR, run the checks: `npm run check` (typecheck), `npm test` (unit) and `npm run test:e2e` (Playwright). Follow the conventions in [`AGENTS.md`](AGENTS.md) — Screaming Architecture, kebab-case, canonical Tailwind classes, no barrels.
+Please, see our [contributing guide](CONTRIBUTING.md) to learn how to get started in the best way and following [good practices](CONTRIBUTING.md#good-practices).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -249,6 +250,10 @@ source of truth for what to do next; run them in order.
 - [Wix JS SDK](https://dev.wix.com/docs/sdk)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## License
+
+Distributed under the [MIT License](LICENSE.md).
 
 [astro-url]: https://astro.build/
 [react-url]: https://react.dev/
