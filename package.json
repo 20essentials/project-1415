@@ -25,7 +25,7 @@
   "dependencies": {
     "@phosphor-icons/core": "2.1.1",
     "@tailwindcss/vite": "4.3.3",
-    "@wix/astro": "2.39.0",
+    "@wix/astro": "2.75.2",
     "@wix/astro-pages": "2.0.4",
     "@wix/auto_sdk_categories_categories": "1.0.147",
     "@wix/auto_sdk_ecom_cart-v-2": "1.0.216",
@@ -38,7 +38,7 @@
     "@wix/design-system": "1.340.0",
     "@wix/donations": "1.0.64",
     "@wix/ecom": "1.0.2540",
-    "@wix/essentials": "1.0.6",
+    "@wix/essentials": "1.0.15",
     "@wix/events": "1.0.892",
     "@wix/forms": "1.0.525",
     "@wix/media": "1.0.277",
