@@ -2,7 +2,6 @@
 > **One change per PR.** Scope to a single component or section — not a whole page. Split unrelated changes into separate PRs.
 
 ## Type
-
 <!-- Select exactly one. -->
 
 - [ ] feat
