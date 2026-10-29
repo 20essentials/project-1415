@@ -87,7 +87,15 @@ export function mountScrollWorld(container, config) {
     if (s.focusX != null) scene.style.setProperty('--sw-focus-x', s.focusX + '%');
     const img = el('img', 'sw-scene__still'); img.alt = ''; img.decoding = 'async'; img.loading = 'lazy';
     const poster = (isMobile() && s.stillM) ? s.stillM : s.still;
-    if (poster) img.src = poster;
+    if (poster) {
+      img.src = poster;
+      // The first still is the landing background: eager + high priority so it
+      // matches the <link rel="preload"> emitted for it in the page head.
+      if (s === SEGMENTS[0]) {
+        img.loading = 'eager';
+        img.setAttribute('fetchpriority', 'high');
+      }
+    }
     scene.appendChild(img); stage.appendChild(scene);
     s.el = scene; s.img = img; s.video = null; s.hasClip = false;
     s.loading = false; s.ready = false; s.cur = 0; s.target = 0; s.visible = false;

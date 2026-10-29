@@ -18,6 +18,8 @@ export default defineConfig({
   security: { checkOrigin: false },
   adapter: wixHostingAdapter(),
 
+  prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
+
   image: {
     domains: ['static.wixstatic.com']
   },

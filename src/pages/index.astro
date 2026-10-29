@@ -88,6 +88,7 @@ try {
 
 <Layout>
   <AnalyticsView event="CustomEvent" payload={{ eventCategory: 'Page', eventAction: 'ViewHome' }} />
+  <link slot="head" rel="preload" as="image" href={site.paseo.stops[0].poster} fetchpriority="high" />
   <ScrollWorld />
 
   <section class="relative z-2 bg-paper px-4 py-20 text-ink sm:px-8 lg:px-20 lg:py-28">
