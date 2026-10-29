@@ -42,12 +42,12 @@ async function openBookingForm(page: Page, respondBookings: (route: Route) => un
 
 test.describe('workshop booking checkout', () => {
   test('the service page shows the booking island and per-mode payment copy', async ({ page }) => {
+    await stubSlots(page);
     const response = await page.goto('/services/care-101');
     expect(response?.status()).toBe(200);
 
     // The calendar fetches today's slots on mount, so the stub must be
     // registered before navigation.
-    await stubSlots(page);
     await expect(page.getByRole('group', { name: 'Pick a date' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Your details' })).toBeHidden();
 
