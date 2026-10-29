@@ -1,5 +1,6 @@
+<a id="readme-top"></a>
 <a href="https://petals-d960960gm-0609.wix-site-host.com/" target="_blank" rel="noopener noreferrer">
-  <img width="300px" src="preview/project-1415.avif" alt="Petals & Predators" />
+  <img src="preview/project-1415.avif" alt="Petals & Predators" />
 </a>
 
 # Petals & Predators
