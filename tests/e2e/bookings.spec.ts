@@ -45,10 +45,12 @@ test.describe('workshop booking checkout', () => {
     const response = await page.goto('/services/care-101');
     expect(response?.status()).toBe(200);
 
+    // The calendar fetches today's slots on mount, so the stub must be
+    // registered before navigation.
+    await stubSlots(page);
     await expect(page.getByRole('group', { name: 'Pick a date' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Your details' })).toBeHidden();
 
-    await stubSlots(page);
     await expect(page.getByRole('group', { name: 'Pick a time' })).toBeVisible({ timeout: 15_000 });
     await page.getByRole('group', { name: 'Pick a time' }).locator('button').first().click();
     await expect(page.getByRole('button', { name: 'Book & pay' })).toBeVisible();
