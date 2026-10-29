@@ -13,6 +13,8 @@
  * what the dashboard editor produces:
  *
  *   - PARAGRAPH, HEADING (levels 1–6), BULLETED_LIST, ORDERED_LIST, LIST_ITEM
+ *     (list items may hold PARAGRAPH children — editor shape — or plain TEXT
+ *     children — CMS-stored shape)
  *   - BLOCKQUOTE, DIVIDER
  *   - TEXT decorations: BOLD, ITALIC, UNDERLINE, LINK
  *
@@ -99,6 +101,11 @@ function safeParse(raw: string): RicosDocument | null {
 
 function renderBlockNode(node: RicosNode): string {
   switch (node.type) {
+    case "TEXT":
+      // Some CMS-stored shapes hang the text directly off the list/block node
+      // (no PARAGRAPH in between); a TEXT node has no children of its own.
+      return `<p>${renderInlineNode(node)}</p>`;
+
     case "PARAGRAPH":
       return `<p>${renderInlineChildren(node)}</p>`;
 

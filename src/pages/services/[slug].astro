@@ -102,7 +102,10 @@ const relatedWorkshops = otherWorkshops.filter((candidate) => candidate.id !== w
       </nav>
 
       <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-        <div class="relative flex aspect-4/5 items-center justify-center overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule lg:sticky lg:top-24 lg:aspect-auto lg:min-h-120">
+        <div
+          class="relative flex aspect-4/5 items-center justify-center overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule lg:sticky lg:top-24 lg:aspect-auto lg:min-h-120"
+          transition:name={slug ? `service-${slug}` : undefined}
+        >
           {
             workshopImage ? (
               <img

@@ -296,7 +296,10 @@ const purchaseLabels = {
               </button>
             ))}
           </div>
-          <div class="relative aspect-4/5 overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule">
+          <div
+            class="relative aspect-4/5 overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule"
+            transition:name={slug ? `product-${slug}` : undefined}
+          >
             {
               gallery[0] ? (
                 <img

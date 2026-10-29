@@ -79,7 +79,10 @@ function formatEventPrice(event: EventInfo): string | null {
                   data-event-slug={event.slug}
                   class="group block h-full"
                 >
-                  <div class="relative flex aspect-4/5 items-center justify-center overflow-hidden rounded-lg bg-paper-warm px-6 ring-1 ring-rule">
+                  <div
+                    class="relative flex aspect-4/5 items-center justify-center overflow-hidden rounded-lg bg-paper-warm px-6 ring-1 ring-rule"
+                    transition:name={event.slug ? `event-${event.slug}` : undefined}
+                  >
                     {event.image ? (
                       <img
                         src={event.image.url}

@@ -142,7 +142,10 @@ const articleJsonLd = post
           </div>
 
           {post.hero && (
-            <div class="mx-auto mt-10 max-w-4xl overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule">
+            <div
+              class="mx-auto mt-10 max-w-4xl overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule"
+              transition:name={post.slug ? `blog-${post.slug}` : undefined}
+            >
               <img
                 src={post.hero.url}
                 alt=""

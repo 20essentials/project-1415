@@ -96,7 +96,10 @@ const descriptionHtml = event ? renderRicos(event.description) : '';
       </nav>
 
       <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-        <div class="relative flex aspect-4/5 items-center justify-center overflow-hidden rounded-lg bg-paper-warm px-6 ring-1 ring-rule lg:aspect-auto lg:min-h-120">
+        <div
+          class="relative flex aspect-4/5 items-center justify-center overflow-hidden rounded-lg bg-paper-warm px-6 ring-1 ring-rule lg:aspect-auto lg:min-h-120"
+          transition:name={event.slug ? `event-${event.slug}` : undefined}
+        >
           {event.image ? (
             <img
               src={event.image.url}

@@ -6,6 +6,7 @@ import ConsentBanner from '@/features/consent/consent-banner.astro';
 import ConsentBootstrap from '@/features/consent/consent-bootstrap.astro';
 import { members } from '@wix/members';
 import { currentLanguage } from '@/shared/i18n';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   noindex?: boolean;
@@ -31,6 +32,7 @@ const lang = currentLanguage();
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <slot name="seo-tags" />
+    <ClientRouter />
     <script is:inline>document.documentElement.classList.add('js');</script>
     <ConsentBootstrap />
     {noindex && <meta name="robots" content="noindex, follow" />}

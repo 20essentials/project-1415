@@ -25,7 +25,10 @@ const imageUrl = resolveWixImageUrl(workshop.image?.url ?? null, 640, 800);
 
 <li>
   <a href={localize(`/services/${workshop.slug}`)} class="group block">
-    <div class="relative flex aspect-4/5 items-center justify-center overflow-hidden rounded-lg bg-paper-warm px-6 ring-1 ring-rule">
+    <div
+      class="relative flex aspect-4/5 items-center justify-center overflow-hidden rounded-lg bg-paper-warm px-6 ring-1 ring-rule"
+      transition:name={workshop.slug ? `service-${workshop.slug}` : undefined}
+    >
       {
         imageUrl ? (
           <img

@@ -101,7 +101,10 @@ const articleJsonLd = guide
           </div>
 
           {guide.cover && (
-            <div class="mx-auto mt-10 max-w-4xl overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule">
+            <div
+              class="mx-auto mt-10 max-w-4xl overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule"
+              transition:name={guide.slug ? `journal-${guide.slug}` : undefined}
+            >
               <img
                 src={guide.cover}
                 alt=""

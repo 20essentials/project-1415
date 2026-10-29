@@ -53,3 +53,37 @@ describe('renderRicos IMAGE', () => {
     expect(html).toBe('<p>a &amp; &lt;b&gt;</p><figure><img src="https://static.wixstatic.com/media/abc" alt="" loading="lazy" decoding="async" /></figure>');
   });
 });
+
+describe('renderRicos lists', () => {
+  it('renders list items whose text nodes hold the content directly (CMS-stored shape)', () => {
+    const html = renderRicos(
+      doc([
+        {
+          type: 'BULLETED_LIST',
+          nodes: [
+            { type: 'LIST_ITEM', nodes: [{ type: 'TEXT', textData: { text: 'Top up the water tray daily' } }] },
+            { type: 'LIST_ITEM', nodes: [{ type: 'TEXT', textData: { text: 'Keep humidity high' } }] },
+          ],
+        },
+      ]),
+    );
+    expect(html).toBe('<ul><li><p>Top up the water tray daily</p></li><li><p>Keep humidity high</p></li></ul>');
+  });
+
+  it('renders list items containing paragraphs (Ricos editor shape)', () => {
+    const html = renderRicos(
+      doc([
+        {
+          type: 'ORDERED_LIST',
+          nodes: [
+            {
+              type: 'LIST_ITEM',
+              nodes: [{ type: 'PARAGRAPH', nodes: [{ type: 'TEXT', textData: { text: 'Drain after soaking' } }] }],
+            },
+          ],
+        },
+      ]),
+    );
+    expect(html).toBe('<ol><li><p>Drain after soaking</p></li></ol>');
+  });
+});
