@@ -154,15 +154,14 @@ Apps the project uses (✅) and Wix-API-available apps that are **not** installe
 |   ✅   | **Wix Forms**                     | Contact (contact form) · Newsletter (subscription)                                                                  |
 |   ✅   | **Wix Reviews**                   | Rating and reviews on the PDP · home reviews carousel · create-review form                                          |
 |   ✅   | **Wix Members**                   | Login / logout · account page (avatar, profile) · unlocks Wishlist and per-member Order history                     |
-|   ✅   | **Wix Bookings**                  | Workshops (Care 101, Repotting 101 — APPOINTMENT services)                                                          |
+|   ✅   | **Wix Bookings**                  | Workshops (The Repotting Bench · Build a Bog · Blooms & Jaws · Feed the Teeth — APPOINTMENT services)               |
 |   ✅   | **Wix Gift Cards**                | Gift cards page (eGift Card with 5 preset variants)                                                                 |
 |   ✅   | **Wix Pricing Plans**             | Club (subscription, monthly / annual plans)                                                                         |
 |   ✅   | **Wix Multilingual**              | Language selector `en` / `es` / `it` · SEO and routes per locale                                                    |
-|   ❌   | **Wix Events**                    | Unused — we don't sell tickets or RSVPs                                                                             |
-|   ❌   | **Wix Donations**                 | Unused — pure e-commerce                                                                                            |
-|   ❌   | **Wix Restaurants**               | Unused                                                                                                              |
-|   ❌   | **Wix Forum**                     | Unused                                                                                                              |
-|   ❌   | **Wix Portfolio**                 | Unused — the Lookbook is our own CMS                                                                                |
+|   ✅   | **Wix Events**                    | `/events` listing · Open Day (free RSVP via `rsvpV2`) · Guided Tour of the Greenhouse (paid tickets, hosted checkout) |
+|   ✅   | **Wix Donations**                 | `/donate` form (one-time donations, presets / custom) · progress bar vs goal · `/donations/thank-you`                |
+|   ✅   | **Wix Restaurants (Menus)**       | `/dining` menu (Jungle Tasting — display via `@wix/restaurants`)                                                     |
+|   ✅   | **Wix Table Reservations**        | `/dining` booking of the Jungle Tasting Dinner experience (`@wix/table-reservations`: slots → hold → reserve)        |
 
 ---
 
