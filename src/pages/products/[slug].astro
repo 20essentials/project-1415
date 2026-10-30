@@ -1,6 +1,8 @@
 ---
 import Layout from '@/app/layout.astro';
 import ProductCard from '@/features/product-catalog/product-card.astro';
+import ProductGallery from '@/features/product-catalog/product-gallery.astro';
+import { buildProductGallery } from '@/features/product-catalog/gallery-items';
 import { ProductPurchase } from '@/features/product-catalog/product-purchase';
 import RatingStars from '@/features/reviews/rating-stars.astro';
 import type { PurchaseProduct, VariantStock } from '@/features/product-catalog/product-purchase';
@@ -11,7 +13,6 @@ import { loadSEOTagsServiceConfig } from '@wix/seo/services';
 import { seoTags } from '@wix/seo';
 import { listProductsInCategory } from '@/features/product-catalog/categories';
 import { renderRicos, type RicosDocument } from '@/shared/ricos';
-import { resolveWixImageUrl } from '@/shared/wix-image';
 import { toMetaDescription } from '@/shared/seo';
 import { getProductReviews, averageRating } from '@/features/reviews/reviews';
 import { ReviewForm, type ReviewFormLabels } from '@/features/reviews/review-form';
@@ -35,6 +36,7 @@ const PRODUCT_FIELDS = [
   'PLAIN_DESCRIPTION',
   'DESCRIPTION',
   'MEDIA_ITEMS_INFO',
+  'THUMBNAIL',
   'DIRECT_CATEGORIES_INFO',
   'BREADCRUMBS_INFO',
 ] as const;
@@ -91,23 +93,7 @@ try {
   console.error(`[product] inventory query for "${slug}" failed:`, error);
 }
 
-const gallery: { full: string; thumb: string; alt: string }[] = [];
-for (const item of product.media?.itemsInfo?.items ?? []) {
-  if (item.video || !item.image) continue;
-  const full = resolveWixImageUrl(item.image, 1000, 1250);
-  if (!full) continue;
-  gallery.push({
-    full,
-    thumb: resolveWixImageUrl(item.image, 160, 200) ?? full,
-    alt: item.altText ?? product.name ?? t('product.photo-alt'),
-  });
-}
-if (gallery.length === 0 && product.media?.main) {
-  const main = product.media.main;
-  const image = main.image ?? main.url;
-  const full = resolveWixImageUrl(image, 1000, 1250);
-  if (full) gallery.push({ full, thumb: full, alt: main.altText ?? product.name ?? t('product.photo-alt') });
-}
+const gallery = buildProductGallery(product, t('product.photo-alt'));
 
 const options: PurchaseProduct['options'] = (product.options ?? [])
   .map((option) => ({
@@ -280,46 +266,8 @@ const purchaseLabels = {
         <span aria-current="page" class="text-ink">{product.name}</span>
       </nav>
 
-      <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-        <div class="flex flex-col-reverse gap-4 lg:flex-col">
-          <div class="flex gap-4 overflow-x-auto pb-1 lg:flex-wrap">
-            {gallery.map((image, index) => (
-              <button
-                type="button"
-                data-thumb={image.full}
-                data-alt={image.alt}
-                aria-label={t('product.view-image', { current: index + 1, total: gallery.length })}
-                aria-current={index === 0 ? 'true' : undefined}
-                class="shrink-0 rounded-sm ring-1 ring-rule transition-opacity duration-500 ease-fluid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent hover:opacity-80"
-              >
-                <img src={image.thumb} alt="" width="160" height="200" loading="lazy" decoding="async" class="h-24 w-20 rounded-sm object-cover sm:h-28 sm:w-24" />
-              </button>
-            ))}
-          </div>
-          <div
-            class="relative aspect-4/5 overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule"
-            transition:name={slug ? `product-${slug}` : undefined}
-          >
-            {
-              gallery[0] ? (
-                <img
-                  id="pg-main"
-                  src={gallery[0].full}
-                  alt={gallery[0].alt}
-                  width="1000"
-                  height="1250"
-                  fetchpriority="high"
-                  decoding="async"
-                  class="h-full w-full object-cover"
-                />
-              ) : (
-                <span class="flex h-full w-full items-center justify-center text-xs text-mute">
-                  {t('home.photo-coming')}
-                </span>
-              )
-            }
-          </div>
-        </div>
+      <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-start lg:gap-12">
+        <ProductGallery items={gallery} slug={slug} />
 
         <div class="flex flex-col gap-6">
           <div>
@@ -450,21 +398,6 @@ const purchaseLabels = {
     )
   }
 </Layout>
-
-<script>
-  const thumbs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-thumb]'));
-  const mainImage = document.getElementById('pg-main') as HTMLImageElement | null;
-
-  for (const thumb of thumbs) {
-    thumb.addEventListener('click', () => {
-      if (!mainImage || !thumb.dataset.thumb) return;
-      mainImage.src = thumb.dataset.thumb;
-      mainImage.alt = thumb.dataset.alt ?? '';
-      for (const other of thumbs) other.removeAttribute('aria-current');
-      thumb.setAttribute('aria-current', 'true');
-    });
-  }
-</script>
 
 <style is:global>
   .pg-description h1,

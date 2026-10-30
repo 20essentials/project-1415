@@ -1,0 +1,372 @@
+---
+import type { GalleryItem } from '@/features/product-catalog/gallery-items';
+import { useTranslation } from '@/shared/i18n';
+
+interface Props {
+  items: GalleryItem[];
+  slug?: string;
+}
+
+const { items, slug } = Astro.props;
+const { t } = useTranslation();
+
+const total = items.length;
+const MAX_TILES = 5;
+const visible = total > MAX_TILES ? items.slice(0, MAX_TILES) : items;
+const more = total - visible.length;
+
+let gridClass = 'grid-cols-1';
+if (total === 2 || total === 4) gridClass = 'grid-cols-2';
+else if (total === 3) gridClass = 'grid-cols-3';
+else if (total >= MAX_TILES) gridClass = 'grid-cols-4';
+
+const spansMain = total === 3 || total >= MAX_TILES;
+const viewTitle = (index: number) =>
+  t(items[index]?.kind === 'video' ? 'product.view-video' : 'product.view-image', {
+    current: index + 1,
+    total,
+  });
+---
+
+<div class="product-gallery" data-product-gallery>
+  {
+    total === 0 ? (
+      <div class="flex aspect-square items-center justify-center rounded-lg bg-paper-warm text-xs text-mute ring-1 ring-rule">
+        {t('home.photo-coming')}
+      </div>
+    ) : (
+      <>
+        <div class="flex flex-col-reverse gap-3 lg:hidden">
+          <div class="flex gap-2.5 overflow-x-auto pb-1">
+            {items.map((item, index) => (
+              <button
+                type="button"
+                data-gallery-thumb={index}
+                aria-label={viewTitle(index)}
+                aria-current={index === 0 ? 'true' : undefined}
+                class="group relative aspect-square w-16 shrink-0 overflow-hidden rounded-sm bg-paper-warm ring-1 ring-rule transition-opacity duration-500 ease-fluid hover:opacity-80 aria-[current=true]:ring-2 aria-[current=true]:ring-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                {item.thumb ? (
+                  <img
+                    src={item.thumb}
+                    alt=""
+                    width="320"
+                    height="320"
+                    loading="lazy"
+                    decoding="async"
+                    class="size-full object-cover"
+                  />
+                ) : null}
+                {item.kind === 'video' && (
+                  <span class="pointer-events-none absolute inset-0 flex items-center justify-center bg-paper/30">
+                    <span class="flex size-6 items-center justify-center rounded-full bg-paper/80 text-ink">
+                      <svg viewBox="0 0 24 24" fill="currentColor" class="size-3 translate-x-px" aria-hidden="true">
+                        <path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"></path>
+                      </svg>
+                    </span>
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div
+            class="relative aspect-square overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule"
+            transition:name={slug ? `product-${slug}` : undefined}
+          >
+            {items.map((item, index) =>
+              item.kind === 'video' ? (
+                <video
+                  data-gallery-stage={index}
+                  src={item.src}
+                  poster={item.poster || undefined}
+                  controls
+                  playsinline
+                  preload="metadata"
+                  class:list={['absolute inset-0 size-full object-cover', index !== 0 && 'hidden']}
+                />
+              ) : (
+                <img
+                  data-gallery-stage={index}
+                  src={item.src}
+                  alt={item.alt}
+                  width="1200"
+                  height="1200"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  fetchpriority={index === 0 ? 'high' : undefined}
+                  decoding="async"
+                  class:list={['absolute inset-0 size-full object-cover', index !== 0 && 'hidden']}
+                />
+              ),
+            )}
+            <button
+              type="button"
+              data-gallery-stage-open
+              data-gallery-open="0"
+              aria-label={viewTitle(0)}
+              hidden={items[0].kind === 'video'}
+              class="absolute inset-0 cursor-zoom-in focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+            ></button>
+          </div>
+        </div>
+
+        <div class="hidden lg:block">
+          <div class:list={['grid gap-2', gridClass]}>
+            {visible.map((item, index) => (
+              <button
+                type="button"
+                data-gallery-open={index}
+                aria-label={viewTitle(index)}
+                transition:name={index === 0 && slug ? `product-${slug}` : undefined}
+                class:list={[
+                  'group relative overflow-hidden rounded-md bg-paper-warm ring-1 ring-rule transition-shadow duration-500 ease-fluid hover:ring-accent/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
+                  spansMain && index === 0 ? 'row-span-2 col-span-2' : 'aspect-square',
+                ]}
+              >
+                {
+                  (spansMain && index === 0 ? item.src : item.preview) && (
+                    <img
+                      src={spansMain && index === 0 ? item.src : item.preview}
+                      alt=""
+                      width={spansMain && index === 0 ? '1200' : '640'}
+                      height={spansMain && index === 0 ? '1200' : '640'}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      fetchpriority={index === 0 ? 'high' : undefined}
+                      decoding="async"
+                      class="size-full object-cover transition-transform duration-700 ease-fluid group-hover:scale-105"
+                    />
+                  )
+                }
+
+                {item.kind === 'video' && (
+                  <span class="pointer-events-none absolute inset-0 flex items-center justify-center bg-paper/25">
+                    <span class="flex size-11 items-center justify-center rounded-full bg-paper/80 text-ink ring-1 ring-ink/15 backdrop-blur-sm">
+                      <svg viewBox="0 0 24 24" fill="currentColor" class="size-4 translate-x-px" aria-hidden="true">
+                        <path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"></path>
+                      </svg>
+                    </span>
+                  </span>
+                )}
+
+                {index === 0 && (
+                  <span class="pointer-events-none absolute left-2.5 top-2.5 rounded-full bg-paper/75 px-2 py-0.5 text-xs font-medium text-ink-soft backdrop-blur-sm">
+                    {index + 1} / {total}
+                  </span>
+                )}
+
+                {more > 0 && index === visible.length - 1 && (
+                  <span class="pointer-events-none absolute inset-0 flex items-center justify-center bg-paper/70 text-lg font-medium text-ink backdrop-blur-sm">
+                    +{more}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  <dialog
+    data-gallery-dialog
+    aria-label={t('product.gallery.title')}
+    class="m-0 h-dvh max-h-none w-full max-w-none border-0 bg-paper p-0 text-ink backdrop:bg-paper/80 backdrop:backdrop-blur-sm"
+  >
+    <div class="flex h-full flex-col">
+      <header class="flex shrink-0 items-center justify-between px-4 py-3 sm:px-6">
+        <p data-gallery-counter class="text-xs font-medium tracking-widest text-mute uppercase"></p>
+        <button
+          type="button"
+          data-gallery-close
+          aria-label={t('product.gallery.close')}
+          autofocus
+          class="flex size-9 items-center justify-center rounded-full text-ink-soft transition-colors duration-500 ease-fluid hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-5" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </header>
+
+      <div class="relative flex min-h-0 flex-1 items-center justify-center px-2 sm:px-16">
+        {total > 1 && (
+          <>
+            <button
+              type="button"
+              data-gallery-prev
+              aria-label={t('product.gallery.previous')}
+              class="absolute left-2 z-1 flex size-10 items-center justify-center rounded-full bg-paper/70 text-ink-soft ring-1 ring-rule transition-colors duration-500 ease-fluid hover:text-ink hover:ring-accent/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:left-4"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-5" aria-hidden="true">
+                <path d="m14 6-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </button>
+            <button
+              type="button"
+              data-gallery-next
+              aria-label={t('product.gallery.next')}
+              class="absolute right-2 z-1 flex size-10 items-center justify-center rounded-full bg-paper/70 text-ink-soft ring-1 ring-rule transition-colors duration-500 ease-fluid hover:text-ink hover:ring-accent/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:right-4"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="size-5" aria-hidden="true">
+                <path d="m10 6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </button>
+          </>
+        )}
+        <div data-gallery-media class="flex size-full items-center justify-center"></div>
+      </div>
+
+      <div class="shrink-0 overflow-x-auto px-4 pb-4 sm:px-6">
+        <div class="mx-auto flex w-max gap-2">
+          {items.map((item, index) => (
+            <button
+              type="button"
+              data-gallery-jump={index}
+              data-src={item.src}
+              data-poster={item.poster}
+              data-kind={item.kind}
+              data-alt={item.alt}
+              aria-label={viewTitle(index)}
+              class="group relative aspect-square w-14 shrink-0 overflow-hidden rounded-sm bg-paper-warm ring-1 ring-rule transition-opacity duration-500 ease-fluid hover:opacity-80 aria-[current=true]:ring-2 aria-[current=true]:ring-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              {item.thumb ? (
+                <img src={item.thumb} alt="" width="320" height="320" loading="lazy" decoding="async" class="size-full object-cover" />
+              ) : null}
+              {item.kind === 'video' && (
+                <span class="pointer-events-none absolute inset-0 flex items-center justify-center bg-paper/30">
+                  <span class="flex size-6 items-center justify-center rounded-full bg-paper/80 text-ink">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="size-3 translate-x-px" aria-hidden="true">
+                      <path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"></path>
+                    </svg>
+                  </span>
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-product-gallery]');
+
+  if (root) {
+    const dialog = root.querySelector<HTMLDialogElement>('[data-gallery-dialog]');
+    const media = root.querySelector<HTMLElement>('[data-gallery-media]');
+    const counter = root.querySelector<HTMLElement>('[data-gallery-counter]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-gallery-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-gallery-next]');
+    const closeButton = root.querySelector<HTMLButtonElement>('[data-gallery-close]');
+    const jumps = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-gallery-jump]'));
+    const thumbs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-gallery-thumb]'));
+    const stage = Array.from(root.querySelectorAll<HTMLElement>('[data-gallery-stage]'));
+    const stageOpen = root.querySelector<HTMLButtonElement>('[data-gallery-stage-open]');
+    const total = jumps.length;
+    let index = 0;
+
+    const setCurrent = (nodes: HTMLButtonElement[], active: number) => {
+      for (const node of nodes) {
+        const nodeIndex = Number(node.dataset.galleryThumb ?? node.dataset.galleryJump);
+        if (nodeIndex === active) node.setAttribute('aria-current', 'true');
+        else node.removeAttribute('aria-current');
+      }
+    };
+
+    const selectStage = (target: number) => {
+      for (const node of stage) {
+        const nodeIndex = Number(node.dataset.galleryStage);
+        const active = nodeIndex === target;
+        node.classList.toggle('hidden', !active);
+        if (node instanceof HTMLVideoElement && !active) node.pause();
+      }
+      setCurrent(thumbs, target);
+      if (stageOpen) {
+        stageOpen.dataset.galleryOpen = String(target);
+        stageOpen.hidden = jumps[target]?.dataset.kind === 'video';
+        stageOpen.setAttribute('aria-label', jumps[target]?.getAttribute('aria-label') ?? '');
+      }
+    };
+
+    const render = () => {
+      if (!media) return;
+      media.replaceChildren();
+      const active = jumps[index];
+      if (!active) return;
+
+      const isVideo = active.dataset.kind === 'video';
+      if (isVideo) {
+        const video = document.createElement('video');
+        video.src = active.dataset.src ?? '';
+        if (active.dataset.poster) video.poster = active.dataset.poster;
+        video.controls = true;
+        video.playsInline = true;
+        video.className = 'max-h-full max-w-full rounded-md';
+        media.append(video);
+      } else {
+        const image = document.createElement('img');
+        image.src = active.dataset.src ?? '';
+        image.alt = active.dataset.alt ?? '';
+        image.className = 'max-h-full max-w-full rounded-md object-contain';
+        media.append(image);
+      }
+
+      if (counter) counter.textContent = `${index + 1} / ${total}`;
+      setCurrent(jumps, index);
+    };
+
+    const open = (target: number) => {
+      index = ((target % total) + total) % total;
+      render();
+      if (!dialog) return;
+      if (!dialog.open) {
+        if (typeof dialog.showModal === 'function') dialog.showModal();
+        else dialog.setAttribute('open', '');
+      }
+      document.documentElement.classList.add('overflow-hidden');
+    };
+
+    const close = () => {
+      if (!dialog) return;
+      if (dialog.open) dialog.close();
+      else dialog.removeAttribute('open');
+    };
+
+    const step = (delta: number) => {
+      index = (index + delta + total) % total;
+      render();
+    };
+
+    for (const trigger of Array.from(root.querySelectorAll<HTMLElement>('[data-gallery-open]'))) {
+      trigger.addEventListener('click', () => open(Number(trigger.dataset.galleryOpen)));
+    }
+
+    for (const thumb of thumbs) {
+      thumb.addEventListener('click', () => selectStage(Number(thumb.dataset.galleryThumb)));
+    }
+
+    for (const jump of jumps) {
+      jump.addEventListener('click', () => open(Number(jump.dataset.galleryJump)));
+    }
+
+    prev?.addEventListener('click', () => step(-1));
+    next?.addEventListener('click', () => step(1));
+    closeButton?.addEventListener('click', close);
+
+    dialog?.addEventListener('click', (event) => {
+      if (event.target === dialog) close();
+    });
+
+    dialog?.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') step(1);
+      if (event.key === 'ArrowLeft') step(-1);
+      if (event.key === 'Escape') close();
+    });
+
+    dialog?.addEventListener('close', () => {
+      media?.replaceChildren();
+      document.documentElement.classList.remove('overflow-hidden');
+    });
+  }
+</script>
