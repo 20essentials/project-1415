@@ -1,0 +1,17 @@
+---
+import Layout from '@/app/layout.astro';
+import NotFoundHero from '@/features/not-found/not-found-hero.astro';
+import { useTranslation } from '@/shared/i18n';
+
+const { t } = useTranslation();
+
+Astro.response.status = 404;
+---
+
+<Layout noindex>
+  <Fragment slot="head">
+    <title>{t('not-found.meta-title')}</title>
+    <meta name="description" content={t('not-found.meta-description')} />
+  </Fragment>
+  <NotFoundHero />
+</Layout>
