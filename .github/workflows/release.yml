@@ -55,5 +55,10 @@ jobs:
 
       - name: Wix release
         env:
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
           CI: 'true'
-        run: npx @wix/cli release
+        run: |
+          if [ -n "$WIX_API_KEY" ]; then
+            npx @wix/cli login --api-key "$WIX_API_KEY" >/dev/null 2>&1 || true
+          fi
+          npx @wix/cli release

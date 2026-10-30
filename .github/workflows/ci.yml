@@ -54,7 +54,14 @@ jobs:
         run: npx @wix/cli build
 
       - name: Wix release
-        run: npx @wix/cli release
+        env:
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+          CI: 'true'
+        run: |
+          if [ -n "$WIX_API_KEY" ]; then
+            npx @wix/cli login --api-key "$WIX_API_KEY" >/dev/null 2>&1 || true
+          fi
+          npx @wix/cli release
 
       - name: Upload build artifacts (if present)
         if: always()
