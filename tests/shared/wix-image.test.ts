@@ -24,13 +24,46 @@ describe('resolveWixImageUrl', () => {
     );
   });
 
-  it('appends width and height as query params', () => {
+  it('appends width and height as query params for non-Wix URLs', () => {
     expect(resolveWixImageUrl('https://cdn.example.com/a.png', 100)).toBe(
       'https://cdn.example.com/a.png?w=100',
     );
     expect(resolveWixImageUrl({ url: 'https://cdn.example.com/a.png' }, 100, 200)).toBe(
       'https://cdn.example.com/a.png?w=100&h=200',
     );
+  });
+
+  it('uses the Wix fill transform when both dimensions are given', () => {
+    getScaledToFillImageUrl.mockReturnValueOnce('https://static.wixstatic.com/transformed.jpg');
+    expect(
+      resolveWixImageUrl('https://static.wixstatic.com/media/plant~mv2.jpg', 320, 400),
+    ).toBe('https://static.wixstatic.com/transformed.jpg');
+    expect(getScaledToFillImageUrl).toHaveBeenCalledWith(
+      'https://static.wixstatic.com/media/plant~mv2.jpg',
+      320,
+      400,
+      {},
+    );
+  });
+
+  it('resolves a bare media id before applying the fill transform', () => {
+    getScaledToFillImageUrl.mockReturnValueOnce('https://static.wixstatic.com/transformed.png');
+    expect(resolveWixImageUrl('plant~mv2.png', 96, 96)).toBe(
+      'https://static.wixstatic.com/transformed.png',
+    );
+    expect(getScaledToFillImageUrl).toHaveBeenCalledWith(
+      'https://static.wixstatic.com/media/plant~mv2.png',
+      96,
+      96,
+      {},
+    );
+  });
+
+  it('keeps width-only sizing on the query param path', () => {
+    expect(resolveWixImageUrl('https://static.wixstatic.com/media/plant~mv2.jpg', 320)).toBe(
+      'https://static.wixstatic.com/media/plant~mv2.jpg?w=320',
+    );
+    expect(getScaledToFillImageUrl).not.toHaveBeenCalled();
   });
 });
 

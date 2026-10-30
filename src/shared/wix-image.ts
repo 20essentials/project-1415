@@ -56,19 +56,22 @@ export function resolveWixImageUrl(
   height?: number,
 ): string | null {
   if (!image) return null;
+  const sized = width != null && height != null;
 
-  if (
-    typeof image === "string" &&
-    image.startsWith("wix:image://") &&
-    width != null &&
-    height != null
-  ) {
-    return media.getScaledToFillImageUrl(image, width, height, {});
+  if (typeof image === "string" && image.startsWith("wix:image://")) {
+    if (sized) return media.getScaledToFillImageUrl(image, width, height, {});
+    return media.getImageUrl(image).url;
   }
 
   const resolved = resolveWixImage(image);
   if (!resolved) return null;
   if (width == null && height == null) return resolved.url;
+
+  // Wix only resizes through the /v1/ transform path; ?w=&h= is ignored and
+  // still ships the full-resolution original.
+  if (sized && resolved.url.startsWith("https://static.wixstatic.com/")) {
+    return media.getScaledToFillImageUrl(resolved.url, width, height, {});
+  }
 
   const url = new URL(resolved.url);
   if (width != null) url.searchParams.set("w", String(width));
