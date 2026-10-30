@@ -24,6 +24,8 @@ import {
 } from '@/features/product-catalog/catalog-filters';
 import { toMetaDescription } from '@/shared/seo';
 import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
+import { CardHover } from '@/features/product-catalog/card-hover';
+import '@/features/product-catalog/card-hover.css';
 import AnalyticsView from '@/shared/analytics-view.astro';
 
 export const wixMetadata = {
@@ -143,6 +145,7 @@ function pageHref(next: string | null): string | null {
   <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
     <div class="mx-auto max-w-6xl">
       <h2 class="sr-only">{t('category.plants-in', { name: category.name })}</h2>
+      <CardHover client:idle />
       <script is:inline>
         (function () {
           try {

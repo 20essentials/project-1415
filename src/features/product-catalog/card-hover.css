@@ -1,0 +1,31 @@
+[data-product-media] {
+  position: relative;
+}
+
+[data-product-media]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    var(--card-glow-radius, 18rem) circle at
+      var(--card-glow-x, 50%)
+      var(--card-glow-y, 50%),
+    color-mix(in srgb, var(--color-accent) 14%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-fluid);
+  pointer-events: none;
+}
+
+[data-product-card]:hover [data-product-media]::after,
+[data-product-card]:focus-within [data-product-media]::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-product-media]::after {
+    transition: none;
+  }
+}

@@ -1,0 +1,213 @@
+/* Primitivas de movimiento data-motion. Todo basado en CSS puro +
+   IntersectionObserver; ninguna dependencia externa. Los tokens
+   (--color-*, --ease-fluid) son los de global.css. */
+
+@layer motion {
+  @keyframes motion-shiny {
+    from {
+      background-position: 200% 50%;
+    }
+    to {
+      background-position: -200% 50%;
+    }
+  }
+
+  [data-motion~="shiny-text"] {
+    background: linear-gradient(
+      120deg,
+      var(--motion-shiny-base, currentColor) 40%,
+      var(--motion-shiny-glint, color-mix(in srgb, currentColor 25%, #fff)) 50%,
+      var(--motion-shiny-base, currentColor) 60%
+    );
+    background-size: 200% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: motion-shiny var(--motion-shiny-duration, 5s) linear infinite;
+  }
+
+  @supports not ((background-clip: text) or (-webkit-background-clip: text)) {
+    [data-motion~="shiny-text"] {
+      background: none;
+      color: inherit;
+    }
+  }
+
+  @keyframes motion-gradient {
+    from {
+      background-position: 0% 50%;
+    }
+    to {
+      background-position: 100% 50%;
+    }
+  }
+
+  [data-motion~="gradient-text"] {
+    background: linear-gradient(
+      100deg,
+      var(--color-accent) 10%,
+      var(--color-ink) 38%,
+      var(--color-ink-soft) 62%,
+      var(--color-accent) 90%
+    );
+    background-size: 200% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: motion-gradient var(--motion-gradient-duration, 9s) ease-in-out infinite alternate;
+  }
+
+  @supports not ((background-clip: text) or (-webkit-background-clip: text)) {
+    [data-motion~="gradient-text"] {
+      background: none;
+      color: inherit;
+    }
+  }
+
+  @keyframes motion-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  [data-motion~="marquee"] {
+    overflow: hidden;
+  }
+
+  [data-motion~="marquee"] [data-motion-track] {
+    display: flex;
+    width: max-content;
+    animation: motion-marquee var(--motion-marquee-duration, 40s) linear infinite;
+  }
+
+  [data-motion~="marquee"][data-reverse] [data-motion-track] {
+    animation-direction: reverse;
+  }
+
+  [data-motion-copy] {
+    display: flex;
+    align-items: center;
+    gap: var(--motion-marquee-gap, 3rem);
+    padding-inline-end: var(--motion-marquee-gap, 3rem);
+  }
+
+  [data-motion~="marquee"]:hover [data-motion-track],
+  [data-motion~="marquee"]:focus-within [data-motion-track] {
+    animation-play-state: paused;
+  }
+
+  @keyframes motion-star-fall {
+    from {
+      transform: translateY(-110%);
+    }
+    to {
+      transform: translateY(440%);
+    }
+  }
+
+  [data-motion~="star-border"] {
+    position: relative;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
+  [data-motion~="star-border"]::before,
+  [data-motion~="star-border"]::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 30%;
+    transform: translateY(-110%);
+    pointer-events: none;
+  }
+
+  [data-motion~="star-border"]::before {
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--color-accent) 45%, transparent),
+      transparent
+    );
+    animation: motion-star-fall var(--motion-star-duration, 7s) linear infinite;
+  }
+
+  [data-motion~="star-border"]::after {
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--color-cream) 18%, transparent),
+      transparent
+    );
+    animation: motion-star-fall var(--motion-star-duration, 7s) linear infinite;
+    animation-delay: calc(var(--motion-star-duration, 7s) / -2);
+  }
+
+  [data-motion-star-content] {
+    position: relative;
+  }
+
+  [data-motion~="spotlight-card"] {
+    position: relative;
+  }
+
+  [data-motion~="spotlight-card"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      var(--motion-spot-radius, 16rem) circle at
+        var(--motion-spot-x, 50%)
+        var(--motion-spot-y, 50%),
+      color-mix(in srgb, var(--color-accent) 10%, transparent),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.6s var(--ease-fluid);
+    pointer-events: none;
+  }
+
+  [data-motion~="spotlight-card"]:hover::before,
+  [data-motion~="spotlight-card"]:focus-within::before {
+    opacity: 1;
+  }
+
+  [data-motion~="reveal"] {
+    transition:
+      opacity 0.7s var(--ease-fluid),
+      transform 0.7s var(--ease-fluid);
+  }
+
+  [data-motion~="reveal"][data-hidden] {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+}
+
+/* El Usuario Reduce Motion manda: congela todo, deja el contenido legible. */
+@media (prefers-reduced-motion: reduce) {
+  [data-motion~="shiny-text"] {
+    animation: none;
+  }
+  [data-motion~="gradient-text"] {
+    animation: none;
+  }
+  [data-motion~="marquee"] [data-motion-track] {
+    animation: none;
+  }
+  [data-motion~="star-border"]::before,
+  [data-motion~="star-border"]::after {
+    animation: none;
+    opacity: 0;
+  }
+  [data-motion~="spotlight-card"]::before {
+    transition: none;
+  }
+  [data-motion~="reveal"] {
+    transition: none;
+  }
+}

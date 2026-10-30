@@ -20,6 +20,7 @@ import { listWishlist } from '@/features/wishlist/wishlist';
 import { WishlistHeart } from '@/features/wishlist/wishlist-heart';
 import { members } from '@wix/members';
 import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
+import { StarBorder } from '@/shared/motion/star-border';
 import AnalyticsView from '@/shared/analytics-view.astro';
 import type { V3Product } from '@wix/auto_sdk_stores_products-v-3';
 
@@ -300,7 +301,9 @@ const purchaseLabels = {
             }
           </div>
 
-          <ProductPurchase client:load product={purchaseProduct} inventoryByVariant={inventoryByVariant} labels={purchaseLabels} cartHref={localize('/cart')} />
+          <StarBorder client:visible className="rounded-lg border border-rule bg-paper-warm p-6">
+            <ProductPurchase client:load product={purchaseProduct} inventoryByVariant={inventoryByVariant} labels={purchaseLabels} cartHref={localize('/cart')} />
+          </StarBorder>
 
           {
             descriptionHtml && (

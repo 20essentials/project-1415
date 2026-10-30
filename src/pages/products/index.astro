@@ -16,6 +16,9 @@ import {
   sortCatalogItems,
 } from '@/features/product-catalog/catalog-filters';
 import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
+import { ShinyText } from '@/shared/motion/shiny-text';
+import { CardHover } from '@/features/product-catalog/card-hover';
+import '@/features/product-catalog/card-hover.css';
 
 const { t } = useTranslation();
 
@@ -71,7 +74,9 @@ function pageHref(cursor: string | null): string | null {
         <span aria-hidden="true"> · </span>
         <span aria-current="page" class="text-ink">{t('shop.eyebrow')}</span>
       </nav>
-      <p class="mt-6 text-xs font-medium tracking-widest text-accent uppercase">{t('shop.eyebrow')}</p>
+      <p class="mt-6 text-xs font-medium tracking-widest text-accent uppercase">
+        <ShinyText client:visible>{t('shop.eyebrow')}</ShinyText>
+      </p>
       <h1 class="mt-3 font-display text-4xl leading-tight text-ink lg:text-5xl">{t('nav.all-plants')}</h1>
       <p class="mt-4 max-w-xl text-sm leading-6 text-ink-soft">
         {t('shop.hero.body')}
@@ -95,6 +100,7 @@ function pageHref(cursor: string | null): string | null {
   <section class="relative z-2 bg-paper px-4 pb-24 sm:px-8 lg:px-20 lg:pb-32">
     <div class="mx-auto max-w-6xl">
       <h2 class="sr-only">{t('nav.all-plants')}</h2>
+      <CardHover client:idle />
       <script is:inline>
         (function () {
           try {

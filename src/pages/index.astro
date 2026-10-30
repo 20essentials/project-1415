@@ -1,6 +1,12 @@
 ---
 import Layout from '@/app/layout.astro';
 import ScrollWorld from '@/features/home/scroll-world.astro';
+import { ShinyText } from '@/shared/motion/shiny-text';
+import { Reveal } from '@/shared/motion/reveal';
+import { CountUp } from '@/shared/motion/count-up';
+import { SpotlightCard } from '@/shared/motion/spotlight-card';
+import { CardHover } from '@/features/product-catalog/card-hover';
+import '@/features/product-catalog/card-hover.css';
 import { productsV3 } from '@wix/stores';
 import { listStoreCategories } from '@/features/product-catalog/categories';
 import ProductCard from '@/features/product-catalog/product-card.astro';
@@ -94,27 +100,29 @@ try {
   <section class="relative z-2 bg-paper px-4 py-20 text-ink sm:px-8 lg:px-20 lg:py-28">
     <ul class="mx-auto grid max-w-6xl gap-10 sm:grid-cols-3">
       {
-        claims.map((claim) => (
-          <li class="flex items-start gap-4">
-            <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.6"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                {claim.paths.map((d) => <path d={d} />)}
-              </svg>
-            </span>
-            <div>
-              <p class="font-display text-lg text-ink">{t(claim.title)}</p>
-              <p class="mt-1 text-sm leading-6 text-ink-soft">{t(claim.body)}</p>
-            </div>
+        claims.map((claim, index) => (
+          <li>
+            <Reveal delay={index * 90} className="flex items-start gap-4">
+              <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  {claim.paths.map((d) => <path d={d} />)}
+                </svg>
+              </span>
+              <div>
+                <p class="font-display text-lg text-ink">{t(claim.title)}</p>
+                <p class="mt-1 text-sm leading-6 text-ink-soft">{t(claim.body)}</p>
+              </div>
+            </Reveal>
           </li>
         ))
       }
@@ -125,9 +133,12 @@ try {
 
   <section class="relative z-2 bg-paper px-4 pb-20 text-ink sm:px-8 lg:px-20 lg:pb-28">
     <div class="mx-auto max-w-6xl">
+      <CardHover client:idle />
       <header class="flex flex-wrap items-end justify-between gap-6">
         <div>
-          <p class="text-xs font-medium tracking-widest text-accent uppercase">{t('home.featured')}</p>
+          <p class="text-xs font-medium tracking-widest text-accent uppercase">
+            <ShinyText client:visible>{t('home.featured')}</ShinyText>
+          </p>
           <h2 class="mt-3 font-display text-3xl leading-tight text-ink lg:text-4xl">
             {t('home.fresh')}
           </h2>
@@ -173,7 +184,8 @@ try {
                 <span>
                   <span class="block font-display text-2xl text-ink">{category.name}</span>
                   <span class="mt-1 block text-sm text-ink-soft">
-                    {category.itemCounter} {t(category.itemCounter === 1 ? 'home.plants-count-one' : 'home.plants-count-other')}
+                    <CountUp client:visible to={category.itemCounter} className="font-medium" />{' '}
+                    {t(category.itemCounter === 1 ? 'home.plants-count-one' : 'home.plants-count-other')}
                   </span>
                 </span>
                 <span class="text-sm font-medium text-accent">{t('home.explore')}</span>
@@ -283,14 +295,19 @@ try {
           <h2 class="font-display text-3xl leading-tight sm:text-4xl">{t('reviews.sectionTitle')}</h2>
           <ul class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {featuredReviews.map((review) => (
-              <li class="flex flex-col gap-4 rounded-md border border-rule bg-paper-warm p-6">
-                <RatingStars rating={review.content.rating} size="sm" />
-                <blockquote class="font-display text-base leading-6 text-ink">
-                  {review.content.body}
-                </blockquote>
-                <footer class="mt-auto text-xs font-medium text-ink-soft">
-                  {review.author.authorName ?? ''}
-                </footer>
+              <li>
+                <SpotlightCard
+                  client:visible
+                  className="flex h-full flex-col gap-4 rounded-md border border-rule bg-paper-warm p-6"
+                >
+                  <RatingStars rating={review.content.rating} size="sm" />
+                  <blockquote class="font-display text-base leading-6 text-ink">
+                    {review.content.body}
+                  </blockquote>
+                  <footer class="mt-auto text-xs font-medium text-ink-soft">
+                    {review.author.authorName ?? ''}
+                  </footer>
+                </SpotlightCard>
               </li>
             ))}
           </ul>

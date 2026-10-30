@@ -49,6 +49,7 @@ const indexLabel =
 <li class="relative" data-product-card data-product-id={product._id ?? ''} data-product-slug={product.slug ?? ''} data-product-name={product.name ?? ''} data-product-price={price ?? ''}>
   <a href={localize(`/products/${product.slug}`)} class="group block" data-product-link>
     <div
+      data-product-media
       class="relative aspect-4/5 overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule"
       transition:name={product.slug ? `product-${product.slug}` : undefined}
     >
