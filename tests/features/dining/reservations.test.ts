@@ -24,6 +24,24 @@ const LOCATION = {
   configuration: { onlineReservations: { approval: { mode: 'AUTOMATIC' }, partySize: { min: 1, max: 6 } } },
 };
 
+// La proyección de createDiningReservation usa "now": el fixture tiene que
+// reservar un viernes que siga siendo futuro cuando la suite crezca de fecha.
+const tomorrow = (offset: number): string =>
+  new Date(Date.parse(`${siteToday(new Date())}T12:00:00Z`) + offset * 86_400_000)
+    .toISOString()
+    .slice(0, 10);
+
+const nextFriday = (): string => {
+  const probe = new Date(Date.parse(`${siteToday(new Date())}T12:00:00Z`));
+  for (let offset = 0; offset < 7; offset += 1) {
+    const date = new Date(probe.getTime() + offset * 86_400_000);
+    if (new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Rome', weekday: 'long' }).format(date).toUpperCase() === 'FRIDAY') {
+      return date.toISOString().slice(0, 10);
+    }
+  }
+  return siteToday(new Date());
+};
+
 const EXPERIENCE: DiningExperience = {
   id: 'exp-1',
   name: 'Jungle Tasting Dinner',
@@ -32,7 +50,7 @@ const EXPERIENCE: DiningExperience = {
   schedule: {
     durationInMinutes: 90,
     entries: [
-      { recurrence: 'WEEKLY', weeklyOptions: { startDate: '2026-10-30', startDaysAndTimes: [{ day: 'FRIDAY', time: '19:30' }] } },
+      { recurrence: 'WEEKLY', weeklyOptions: { startDate: nextFriday(), startDaysAndTimes: [{ day: 'FRIDAY', time: '19:30' }] } },
     ],
   },
 };
@@ -53,7 +71,16 @@ beforeEach(() => {
 
 describe('projectOccurrences', () => {
   it('project next Friday occurrences in local datetime format', () => {
-    const occurrences = projectOccurrences(EXPERIENCE, 3, new Date('2026-10-27T15:00:00Z'));
+    const experience: DiningExperience = {
+      ...EXPERIENCE,
+      schedule: {
+        durationInMinutes: 90,
+        entries: [
+          { recurrence: 'WEEKLY', weeklyOptions: { startDate: '2026-10-30', startDaysAndTimes: [{ day: 'FRIDAY', time: '19:30' }] } },
+        ],
+      },
+    };
+    const occurrences = projectOccurrences(experience, 3, new Date('2026-10-27T15:00:00Z'));
     // 2026-10-30, 11-06 and 11-13 are Fridays, Europe/Rome local 19:30 seatings
     expect(occurrences[0]).toBe('2026-10-30T19:30:00');
     expect(occurrences[1]).toBe('2026-11-06T19:30:00');
@@ -81,7 +108,7 @@ describe('siteToday', () => {
 
 describe('createDiningReservation', () => {
   const input = {
-    startDate: '2026-10-30T19:30:00',
+    startDate: `${nextFriday()}T19:30:00`,
     partySize: 4,
     firstName: 'Aly',
     lastName: 'Peters',
