@@ -75,6 +75,7 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `✅ done` 
 | 42 | Wix Events: "Open Day" RSVP gratuito + tour guiado pagado (`/events`) | ✅ done | `step-42-events-open-day.md` |
 | 43 | Wix Donations: campaña "nuevo local" con goal (`/donate`) | ✅ done | `step-43-donations-campaign.md` |
 | 44 | Wix Restaurants: cena selvática "Jungle Tasting" con Experiences (`/dining`) | ✅ done | `step-44-restaurant-jungle-tasting.md` |
+| 45 | Motion React Bits sutil (shared/motion: 7 primitivas + card hover) en home, catálogo, PDP y lookbook | ✅ done | `step-45-motion-react-bits.md` |
 
 ## Aun no porque requiere comprar un plan de wix
 
