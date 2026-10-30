@@ -102,4 +102,33 @@ describe("buildProductGallery", () => {
     expect(items).toHaveLength(1);
     expect(items[0]).toMatchObject({ kind: "image", alt: "Main" });
   });
+
+  it("center the single video in a full 9-item gallery for the 3x3 mosaic", () => {
+    const media = [
+      ...Array.from({ length: 8 }, (_, index) => ({
+        image: { url: `${IMAGE_URL}?w=400#img-${index + 1}` },
+      })),
+      // Wix entrega el video al final del orden.
+      {
+        altText: "Overview video",
+        video: { resolutions: [{ url: "https://video.wixstatic.com/plant.mp4", format: "mp4" }] },
+      },
+    ];
+    const items = buildProductGallery(product({ itemsInfo: { items: media } }), "Product photo");
+
+    expect(items).toHaveLength(9);
+    expect(items[4]).toMatchObject({ kind: "video", alt: "Overview video" });
+    expect(items.filter((item) => item.kind === "image")).toHaveLength(8);
+  });
+
+  it("keeps Wix order for galleries other than full 3x3", () => {
+    const media = [
+      { image: IMAGE_URL },
+      { video: { resolutions: [{ url: "https://video.wixstatic.com/plant.mp4", format: "mp4" }] } },
+      { image: { url: "https://static.wixstatic.com/media/detail~mv2.jpg" } },
+    ];
+    const items = buildProductGallery(product({ itemsInfo: { items: media } }), "Product photo");
+
+    expect(items.map((item) => item.kind)).toEqual(["image", "video", "image"]);
+  });
 });

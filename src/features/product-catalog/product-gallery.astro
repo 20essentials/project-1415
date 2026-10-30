@@ -12,15 +12,19 @@ const { t } = useTranslation();
 
 const total = items.length;
 const MAX_TILES = 5;
-const visible = total > MAX_TILES ? items.slice(0, MAX_TILES) : items;
+// Con 9 medios rinde el mosaico completo: grilla 3×3 con todos los tiles y
+// sin badge "+N" (el tile central ya es el video, ver gallery-items.ts).
+const fullMosaic = total === 9;
+const visible = !fullMosaic && total > MAX_TILES ? items.slice(0, MAX_TILES) : items;
 const more = total - visible.length;
 
 let gridClass = 'grid-cols-1';
-if (total === 2 || total === 4) gridClass = 'grid-cols-2';
+if (fullMosaic) gridClass = 'grid-cols-3';
+else if (total === 2 || total === 4) gridClass = 'grid-cols-2';
 else if (total === 3) gridClass = 'grid-cols-3';
 else if (total >= MAX_TILES) gridClass = 'grid-cols-4';
 
-const spansMain = total === 3 || total >= MAX_TILES;
+const spansMain = !fullMosaic && (total === 3 || total >= MAX_TILES);
 const viewTitle = (index: number) =>
   t(items[index]?.kind === 'video' ? 'product.view-video' : 'product.view-image', {
     current: index + 1,

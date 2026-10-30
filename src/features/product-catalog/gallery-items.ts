@@ -124,5 +124,16 @@ export function buildProductGallery(product: V3Product, fallbackAlt: string): Ga
     if (main) items.push(main);
   }
 
-  return items;
+  return centerSingleVideo(items);
+}
+
+// El mosaico 3×3 del PDP reserva el tile central (fila 2, columna 2) para el
+// único video de la galería; Wix entrega los videos al final del orden.
+function centerSingleVideo(items: GalleryItem[]): GalleryItem[] {
+  if (items.length !== 9) return items;
+  const videos = items.filter((item) => item.kind === "video");
+  if (videos.length !== 1) return items;
+  const [video] = videos;
+  const images = items.filter((item) => item.kind === "image");
+  return [...images.slice(0, 4), video, ...images.slice(4)];
 }
