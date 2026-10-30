@@ -55,13 +55,5 @@ jobs:
 
       - name: Wix release
         env:
-          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
           CI: 'true'
-        run: |
-          COMMENT="${{ github.event.inputs.comment || format('Release {0}', github.ref_name) }}"
-          VT="${{ github.event.inputs.version-type }}"
-          if [ -n "$VT" ]; then
-            npx @wix/cli release -c "$COMMENT" -t "$VT"
-          else
-            npx @wix/cli release -c "$COMMENT"
-          fi
+        run: npx @wix/cli release

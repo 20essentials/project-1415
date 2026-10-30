@@ -54,7 +54,7 @@ jobs:
         run: npx @wix/cli build
 
       - name: Wix release
-        run: 'npx @wix/cli release -c "auto-release from CI: ${{ github.sha }}"'
+        run: npx @wix/cli release
 
       - name: Upload build artifacts (if present)
         if: always()
