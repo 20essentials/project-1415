@@ -1,4 +1,5 @@
 // @ts-check
+import { fileURLToPath } from 'node:url';
 import { defineConfig, envField } from 'astro/config';
 import wix from '@wix/astro';
 import wixPages from '@wix/astro-pages';
@@ -9,7 +10,14 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  vite: { plugins: [tailwindcss()] },
+  vite: {
+    plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
+    },
+  },
   integrations: [
     wix({ essentials: true, translations: true }),
     wixPages(),
