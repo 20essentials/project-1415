@@ -166,7 +166,7 @@ if (categoryId) {
 
 const productReviews = await getProductReviews(product._id ?? '');
 const productRating = averageRating(productReviews);
-const topReviews = productReviews.slice(0, 3);
+const topReviews = productReviews.slice(0, 6);
 const reviewDateFormatter = new Intl.DateTimeFormat(currentLanguage(), {
   year: 'numeric',
   month: 'long',
@@ -341,9 +341,9 @@ const purchaseLabels = {
                 </blockquote>
                 <footer class="mt-auto flex items-center justify-between gap-3 text-xs">
                   <span class="font-medium text-ink-soft">{review.author.authorName ?? ''}</span>
-                  {review.createdDate && (
-                    <time datetime={review.createdDate.toISOString()} class="text-mute">
-                      {formatReviewDate(review.createdDate)}
+                  {review.date && (
+                    <time datetime={review.date.toISOString()} class="text-mute">
+                      {formatReviewDate(review.date)}
                     </time>
                   )}
                 </footer>

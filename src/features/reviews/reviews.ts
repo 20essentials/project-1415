@@ -17,7 +17,7 @@ export interface ProductReview {
   entityId: string;
   author: ReviewAuthor;
   content: ReviewContent;
-  createdDate: Date | null;
+  date: Date | null;
   verified: boolean;
 }
 
@@ -27,6 +27,7 @@ interface ReviewRecord {
   author?: { contactId?: string | null; authorName?: string | null };
   content?: { title?: string | null; body?: string | null; rating?: number };
   _createdDate?: Date | string | null;
+  reviewDate?: Date | string | null;
   verified?: boolean;
 }
 
@@ -73,7 +74,9 @@ function toReview(record: ReviewRecord): ProductReview {
       body: record.content?.body ?? null,
       rating: record.content?.rating ?? 0,
     },
-    createdDate: toDate(record._createdDate),
+    // createdDate es read-only (fecha real de creación en Wix); la fecha visible
+    // es reviewDate, la misma que queda en el dashboard.
+    date: toDate(record.reviewDate) ?? toDate(record._createdDate),
     verified: record.verified ?? false,
   };
 }
@@ -92,7 +95,10 @@ export async function getProductReviews(productId: string): Promise<ProductRevie
       sort: [{ fieldName: 'createdDate', order: 'DESC' }],
       cursorPaging: { limit: PRODUCT_REVIEW_LIMIT },
     });
-    return (result.reviews ?? []).map(toReview).filter((review) => review.id.length > 0);
+    return (result.reviews ?? [])
+      .map(toReview)
+      .filter((review) => review.id.length > 0)
+      .sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
   } catch (error) {
     console.error('[reviews] product reviews query failed:', error);
     return [];
@@ -111,9 +117,7 @@ export async function getFeaturedReviews(): Promise<ProductReview[]> {
       .filter((review) => review.id.length > 0)
       .sort((a, b) => {
         if (b.content.rating !== a.content.rating) return b.content.rating - a.content.rating;
-        const aTime = a.createdDate?.getTime() ?? 0;
-        const bTime = b.createdDate?.getTime() ?? 0;
-        return bTime - aTime;
+        return (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0);
       })
       .slice(0, FEATURED_LIMIT);
   } catch (error) {
