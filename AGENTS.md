@@ -86,6 +86,13 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 - Antes de reportar, declarar **qué** se verificó y **cómo** (comando + resultado). Si algo no se pudo verificar, decirlo explícitamente en vez de presentarlo como hecho.
 - No afirmar hechos de los que no estoy seguro (p. ej. "esta clase no tiene equivalente canónico") sin comprobarlos. Un dato inventado presentado como certeza es peor que admitir la duda.
 
+### Features visuales: siempre screenshot + pedir revisión
+
+- Todo pedido visual (UI, layout, menú, sección, componente) termina con screenshots reales del cambio, no con "quedó lindo".
+- Levantar `npx astro dev` y sacar PNGs con Playwright en los viewports relevantes (móvil 390x844 y 360x640; tablet/desktop si aplica), guardándolos en `./.tmp/`.
+- Los screenshots son para el usuario: **recomendarle explícitamente que los abra y los revise** al final del reporte, con sus rutas.
+- Si el modelo no puede ver imágenes, decirlo y complementar con verificación programática (bounding boxes, overflow, colores muestreados, `elementFromPoint`).
+
 ### Tailwind: usar siempre la sintaxis canónica
 
 - Las clases con valores arbitrarios (`h-[2px]`, `gap-[5px]`, `z-[2]`, `opacity-[0.55]`, `aspect-[4/5]`, `max-w-[18rem]`, `duration-[600ms]`, `scale-[1.04]`) deben reescribirse a su forma canónica cuando exista (`h-0.5`, `gap-1.25`, `z-2`, `opacity-55`, `aspect-4/5`, `max-w-72`, `duration-600`, `scale-104`).
