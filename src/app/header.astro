@@ -4,9 +4,12 @@ import { CartBadge } from '@/features/cart/cart-badge';
 import LanguageSelector from './language-selector.astro';
 import SiteSearch from '@/features/site-search/site-search.astro';
 import { site } from '@/shared/site';
-import { useTranslation, localize } from '@/shared/i18n';
+import { useTranslation, localize, LOCALES, localeUrl, currentLanguage } from '@/shared/i18n';
 const { nav, navPrimary, links } = site;
 const { t } = useTranslation();
+const pathname = Astro.url.pathname;
+const currentLocale = currentLanguage();
+const localeCodes: Record<string, string> = { en: 'EN', es: 'ES', it: 'IT' };
 
 interface Props {
   loggedIn?: boolean;
@@ -93,36 +96,80 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
 
 <div
   id="menu"
-  class="menu invisible fixed inset-0 z-40 flex flex-col justify-between bg-paper/80 px-4 pt-32 pb-12 opacity-0 backdrop-blur-3xl transition-all duration-700 ease-fluid xl:hidden"
+  class="menu invisible fixed inset-0 z-40 bg-paper/95 opacity-0 backdrop-blur-2xl transition-[opacity,visibility] duration-500 ease-fluid xl:hidden"
   inert
 >
-  <nav aria-label={t('header.mobile-menu')}>
-    <ul class="flex flex-col items-center gap-6 text-center">
-      {
-        nav.map((item, i) => (
-          <li class="menu-item" style={`--i:${i}`}>
-            <a href={localize(item.href)} data-menu-link class="font-display text-4xl text-ink">
-              {t(item.label)}
-            </a>
-          </li>
-        ))
-      }
-      <li class="menu-item pt-6" style={`--i:${nav.length}`}>
+  <div class="menu-scroll h-full overflow-y-auto overscroll-contain px-4 pt-24 pb-8 sm:px-8">
+    <div class="mx-auto flex min-h-full w-full max-w-xl flex-col">
+      <nav aria-label={t('header.mobile-menu')}>
+        <ul class="grid grid-cols-2 gap-x-5 border-t border-rule/80 sm:gap-x-8">
+          {
+            nav.map((item, i) => (
+              <li class="menu-item border-b border-rule/80" style={`--i:${i}`}>
+                <a
+                  href={localize(item.href)}
+                  data-menu-link
+                  class="group flex min-h-12 items-center justify-between gap-2 py-2 text-ink transition-colors duration-500 ease-fluid hover:text-accent active:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  <span class="font-display text-xl leading-tight text-trim">{t(item.label)}</span>
+                  <span class="font-mono text-xs text-mute transition-colors duration-500 ease-fluid group-hover:text-accent">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="menu-item mt-6" style={`--i:${nav.length}`}>
         <a
           href={localize(links.shop)}
-          class="inline-flex h-11 items-center justify-center rounded-full bg-accent px-6 font-medium text-paper"
+          class="group flex h-12 w-full items-center justify-between rounded-full bg-accent pr-2 pl-5 text-sm font-medium text-paper transition-transform duration-700 ease-fluid hover:scale-101 active:scale-99 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           <span class="text-trim">{t('common.shop-the-collection')}</span>
+          <span
+            class="grid size-8 place-items-center rounded-full bg-paper text-accent transition-transform duration-700 ease-fluid group-hover:translate-x-0.5"
+          >
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="size-4" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4"></path>
+            </svg>
+          </span>
         </a>
-      </li>
-    </ul>
-  </nav>
+      </div>
 
-  <div class="menu-item flex flex-col items-center gap-2 text-sm text-ink-soft" style={`--i:${nav.length + 1}`}>
-    <LanguageSelector />
-    <a href={accountHref} class="link">{accountLabel}</a>
-    <a href={localize('/contact')} class="link">{t('header.contact')}</a>
-    <p>{t('header.tagline')}</p>
+      <div class="menu-item mt-auto pt-10" style={`--i:${nav.length + 1}`}>
+        <div class="flex items-center justify-between gap-4 border-t border-rule/80 pt-5">
+          <ul class="flex items-center gap-1" aria-label={t('header.language')}>
+            {
+              LOCALES.map((locale) => (
+                <li>
+                  <a
+                    href={localeUrl(pathname, locale)}
+                    hreflang={locale}
+                    lang={locale}
+                    aria-current={locale === currentLocale ? 'true' : undefined}
+                    class="flex h-8 items-center rounded-full px-3 font-mono text-xs text-mute transition-colors duration-500 ease-fluid hover:text-ink aria-[current=true]:bg-ink/10 aria-[current=true]:text-ink"
+                  >
+                    {localeCodes[locale]}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+          <a
+            href={accountHref}
+            class="flex h-8 items-center gap-1.5 text-sm text-ink-soft transition-colors duration-500 ease-fluid hover:text-accent"
+          >
+            <span class="text-trim">{accountLabel}</span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="size-3.5" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4"></path>
+            </svg>
+          </a>
+        </div>
+        <p class="mt-4 text-xs text-mute">{t('header.tagline')}</p>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -155,6 +202,22 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
     transform: translateY(0) rotate(-45deg);
   }
 
+  .menu::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(70% 45% at 100% 0%, color-mix(in oklab, var(--color-accent) 10%, transparent), transparent 72%);
+    pointer-events: none;
+  }
+
+  .menu-scroll {
+    scrollbar-width: none;
+  }
+
+  .menu-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
   .menu[data-open] {
     visibility: visible;
     opacity: 1;
@@ -162,16 +225,16 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
 
   .menu-item {
     opacity: 0;
-    transform: translateY(3rem);
+    transform: translateY(1.5rem);
     transition:
-      opacity 700ms var(--ease-fluid),
-      transform 700ms var(--ease-fluid);
+      opacity 600ms var(--ease-fluid),
+      transform 600ms var(--ease-fluid);
   }
 
   .menu[data-open] .menu-item {
     opacity: 1;
     transform: none;
-    transition-delay: calc(100ms + var(--i, 0) * 50ms);
+    transition-delay: calc(80ms + var(--i, 0) * 28ms);
   }
 
   /* Píldora que se desliza hasta la sección activa. */
@@ -200,6 +263,10 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
       transition: none;
     }
   }
+
+  :global(html.menu-open) {
+    overflow: hidden;
+  }
 </style>
 
 <script>
@@ -216,6 +283,7 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
     toggle.setAttribute('aria-label', open ? (toggle.dataset.closeLabel ?? 'Close menu') : (toggle.dataset.openLabel ?? 'Open menu'));
     menu.toggleAttribute('data-open', open);
     menu.inert = !open;
+    document.documentElement.classList.toggle('menu-open', open);
     if (main) main.inert = open;
     if (footer) footer.inert = open;
     if (open) {
@@ -251,13 +319,16 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
 
   menu?.querySelectorAll<HTMLAnchorElement>('[data-menu-link]').forEach((link) => {
     link.addEventListener('click', (event) => {
-      const target = document.querySelector<HTMLElement>(link.hash);
+      if (!link.hash) return;
+      const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
       if (!target) return;
       event.preventDefault();
       setOpen(false);
       target.scrollIntoView();
     });
   });
+
+  document.addEventListener('astro:before-swap', () => setOpen(false));
 
   window.matchMedia('(min-width: 1280px)').addEventListener('change', (event) => {
     if (event.matches) setOpen(false);
