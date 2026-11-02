@@ -4,6 +4,7 @@ import Header from './header.astro';
 import Footer from './footer.astro';
 import ConsentBanner from '@/features/consent/consent-banner.astro';
 import ConsentBootstrap from '@/features/consent/consent-bootstrap.astro';
+import { SmartChat } from '@/features/smart-chat/smart-chat';
 import { members } from '@wix/members';
 import { currentLanguage } from '@/shared/i18n';
 import { ClientRouter } from 'astro:transitions';
@@ -58,5 +59,6 @@ const lang = currentLanguage();
     </main>
     <Footer />
     <ConsentBanner />
+    {!noindex && <SmartChat client:idle transition:persist="smart-chat" />}
   </body>
 </html>
