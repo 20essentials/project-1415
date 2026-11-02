@@ -25,6 +25,7 @@
   "dependencies": {
     "@phosphor-icons/core": "2.1.1",
     "@tailwindcss/vite": "4.3.3",
+    "@wix/ai-site-chat": "1.0.66",
     "@wix/astro": "2.75.2",
     "@wix/astro-pages": "2.0.4",
     "@wix/auto_sdk_categories_categories": "1.0.147",
@@ -55,7 +56,8 @@
     "@wix/table-reservations": "1.0.410",
     "astro": "5.8.0",
     "tailwindcss": "4.3.3",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "vlist": "3.3.1"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
