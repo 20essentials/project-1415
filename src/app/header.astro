@@ -309,6 +309,10 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
     const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href]');
     if (!link) return;
     const url = new URL(link.href, window.location.href);
+    // Any link inside the overlay (nav, CTA, languages, account) closes it at
+    // once: the view-transition fetch can take seconds on a slow connection and
+    // the menu would otherwise stay open and frozen, feeling unresponsive.
+    if (menu && link.closest('#menu')) setOpen(false);
     const id = url.hash.slice(1);
     if (!id || !homePaths.has(url.pathname) || !homePaths.has(window.location.pathname)) return;
     if ((window as SwWindow).__swGoTo?.(id)) {
@@ -326,6 +330,34 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
       setOpen(false);
       target.scrollIntoView();
     });
+  });
+
+  // El tap puede quedar muerto o llegar tarde (hasta ~1s) si el gesto de scroll
+  // del overlay terminó sobre el link. Responder en touchend (movimiento < 12px)
+  // despachando un click sintético evita la espera y reutiliza toda la lógica de
+  // los handlers de click reales. preventDefault suprime el click nativo tardío.
+  menu?.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => {
+    let start: { x: number; y: number } | null = null;
+    link.addEventListener(
+      'touchstart',
+      (event) => {
+        const t = event.changedTouches[0];
+        start = t ? { x: t.clientX, y: t.clientY } : null;
+      },
+      { passive: true },
+    );
+    link.addEventListener(
+      'touchend',
+      (event) => {
+        const t = event.changedTouches[0];
+        const moved = start && t ? Math.hypot(t.clientX - start.x, t.clientY - start.y) : 0;
+        start = null;
+        if (moved > 12 || !menu.hasAttribute('data-open')) return;
+        event.preventDefault();
+        link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }));
+      },
+      { passive: false },
+    );
   });
 
   document.addEventListener('astro:before-swap', () => setOpen(false));
