@@ -9,6 +9,7 @@ export interface ChatListItem {
   message: ChatMessage;
   variant: ChatMessageVariant;
   speakerName: string;
+  humanLabel: string | null;
   avatarUrl: string | null;
   showAvatar: boolean;
   locale: string;
@@ -183,6 +184,13 @@ export function createMessageElement(item: ChatListItem): HTMLElement {
     name.className = 'pp-chat-name';
     name.textContent = item.speakerName;
     content.append(name);
+  }
+
+  if (variant === 'human' && item.humanLabel) {
+    const tag = document.createElement('span');
+    tag.className = 'pp-chat-tag';
+    tag.textContent = item.humanLabel;
+    content.append(tag);
   }
 
   const bubble = document.createElement('div');

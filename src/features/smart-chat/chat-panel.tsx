@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import { trackEvent } from '@/shared/analytics';
 import { currentLanguage, useTranslation } from '@/shared/i18n';
 import { MAX_MESSAGE_LENGTH, type ChatMessage, type PublicSmartChatConfig } from './chat';
 import {
   fetchSmartChatHistory,
   mergeChatMessages,
   replaceDraftMessage,
+  SmartChatClientError,
   streamSmartChatMessage,
 } from './chat-client';
 import { ChatContactForm } from './chat-contact-form';
@@ -14,6 +16,8 @@ import { ChatMessages } from './chat-messages';
 interface ChatPanelProps {
   config: PublicSmartChatConfig;
   onClose: () => void;
+  initialQuestion?: string;
+  onInitialQuestionSent?: () => void;
 }
 
 function isAbortError(error: unknown): boolean {
@@ -52,7 +56,7 @@ function brandFallback(config: PublicSmartChatConfig): string {
   return config.name?.trim() || 'Petals & Predators';
 }
 
-export function ChatPanel({ config, onClose }: ChatPanelProps) {
+export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionSent }: ChatPanelProps) {
   const { t } = useTranslation();
   const locale = currentLanguage();
   const activeHandlers = config.activeHandlers;
@@ -117,9 +121,10 @@ export function ChatPanel({ config, onClose }: ChatPanelProps) {
   useEffect(() => {
     if (!humanActive) return;
 
+    const controller = new AbortController();
     const interval = window.setInterval(() => {
       if (document.hidden) return;
-      fetchSmartChatHistory({ limit: 50 })
+      fetchSmartChatHistory({ limit: 50, signal: controller.signal })
         .then((result) => {
           setMessages((current) => mergeChatMessages(current, result.messages));
         })
@@ -128,7 +133,10 @@ export function ChatPanel({ config, onClose }: ChatPanelProps) {
         });
     }, 8000);
 
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearInterval(interval);
+      controller.abort();
+    };
   }, [humanActive]);
 
   useEffect(() => {
@@ -181,6 +189,7 @@ export function ChatPanel({ config, onClose }: ChatPanelProps) {
     setLiveText('');
     liveTextRef.current = '';
     setShowContact(false);
+    trackEvent('CustomEvent', { category: 'SmartChat', action: 'MessageSent' });
 
     const controller = new AbortController();
     abortRef.current = controller;
@@ -203,6 +212,10 @@ export function ChatPanel({ config, onClose }: ChatPanelProps) {
             setLiveText('');
             liveTextRef.current = '';
           },
+          onRetry: () => {
+            liveTextRef.current = '';
+            setLiveText('');
+          },
         },
         controller.signal,
       );
@@ -223,7 +236,11 @@ export function ChatPanel({ config, onClose }: ChatPanelProps) {
       if (!isAbortError(sendError)) {
         setMessages((current) => current.filter((message) => message._id !== draftId));
         setDraft((current) => current || value);
-        setError('send');
+        setError(
+          sendError instanceof SmartChatClientError && sendError.code === 'OUT_OF_QUOTA'
+            ? 'quota'
+            : 'send',
+        );
       }
     } finally {
       if (!controller.signal.aborted) setSending(false);
@@ -232,6 +249,16 @@ export function ChatPanel({ config, onClose }: ChatPanelProps) {
       abortRef.current = null;
     }
   };
+
+  const initialQuestionRef = useRef(false);
+  useEffect(() => {
+    if (!initialQuestion || initialQuestionRef.current) return;
+    initialQuestionRef.current = true;
+    void send(initialQuestion);
+    onInitialQuestionSent?.();
+    // The question arrives with the mounting panel; it fires exactly once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialQuestion, onInitialQuestionSent]);
 
   const submitComposer = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -253,7 +280,7 @@ export function ChatPanel({ config, onClose }: ChatPanelProps) {
 
   const emptyIntro =
     activeHandlers.length === 0
-      ? config.introductions.offline ?? config.offline.introduction
+      ? config.introductions.offline ?? config.offline.introduction ?? t('smart-chat.offline-intro')
       : config.introduction ??
         (humanActive ? config.introductions.wixUser : config.introductions.ai) ??
         config.engage;
@@ -337,6 +364,7 @@ export function ChatPanel({ config, onClose }: ChatPanelProps) {
                 speakerName={speakerName}
                 avatarUrl={config.avatarUrl}
                 humanName={humanName}
+                humanLabel={t('smart-chat.human')}
                 locale={locale}
                 hasEarlier={Boolean(nextCursor)}
                 loadingEarlier={loadingEarlier}
@@ -410,10 +438,18 @@ export function ChatPanel({ config, onClose }: ChatPanelProps) {
 
             {error && (
               <div className="pp-chat-error" role="alert">
-                <span>{t('smart-chat.error')}</span>
+                <span>{error === 'quota' ? t('smart-chat.quota') : t('smart-chat.error')}</span>
                 {error === 'history' && (
                   <button type="button" onClick={() => setHistoryNonce((value) => value + 1)}>
                     {t('smart-chat.retry')}
+                  </button>
+                )}
+                {error === 'quota' && config.contact?.enabled && (
+                  <button
+                    type="button"
+                    onClick={() => setShowContact((current) => !current)}
+                  >
+                    {t('smart-chat.contact-cta')}
                   </button>
                 )}
               </div>
@@ -453,6 +489,12 @@ export function ChatPanel({ config, onClose }: ChatPanelProps) {
             </svg>
           </button>
         </form>
+
+        {canChat && MAX_MESSAGE_LENGTH - draft.length <= 100 && (
+          <p className="pp-chat-limit" aria-live="polite">
+            {MAX_MESSAGE_LENGTH - draft.length}
+          </p>
+        )}
 
         <p className="pp-chat-disclaimer">
           {config.legalDisclaimer || t('smart-chat.disclaimer')}

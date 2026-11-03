@@ -28,6 +28,29 @@ export class SmartChatClientError extends Error {
   }
 }
 
+const STREAM_BACKOFF_MS = [1000, 2000];
+
+export function isRetryableStreamFailure(error: unknown): boolean {
+  if (!(error instanceof SmartChatClientError)) return false;
+  if (error.status >= 500) return true;
+  return ['SMART_CHAT_STREAM_BROKEN', 'SMART_CHAT_STREAM_EMPTY'].includes(error.code);
+}
+
+function waitBackoff(attempt: number, signal?: AbortSignal): Promise<void> {
+  const delay = STREAM_BACKOFF_MS[Math.min(attempt, STREAM_BACKOFF_MS.length - 1)];
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(resolve, delay);
+    signal?.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(timeout);
+        reject(signal.reason);
+      },
+      { once: true },
+    );
+  });
+}
+
 function readCache(): PublicSmartChatConfig | null {
   try {
     const raw = window.sessionStorage.getItem(CONFIG_CACHE_KEY);
@@ -115,6 +138,7 @@ export interface SmartChatStreamHandlers {
   onChunk: (chunk: string) => void;
   onInput: (message: ChatMessage) => void;
   onAnswer: (message: ChatMessage) => void;
+  onRetry?: (attempt: number) => void;
 }
 
 function frameHandler(handlers: SmartChatStreamHandlers) {
@@ -127,10 +151,10 @@ function frameHandler(handlers: SmartChatStreamHandlers) {
   };
 }
 
-export async function streamSmartChatMessage(
+async function streamAttempt(
   text: string,
   handlers: SmartChatStreamHandlers,
-  signal?: AbortSignal,
+  signal: AbortSignal | undefined,
 ): Promise<void> {
   const response = await fetch('/api/smart-chat/messages', {
     method: 'POST',
@@ -166,6 +190,26 @@ export async function streamSmartChatMessage(
     for (const frame of parser.flush()) handleFrame(frame);
   } finally {
     reader.releaseLock();
+  }
+}
+
+// Network retries are limited to a broken stream after delivery started; the
+// message is already in the server, so re-sending silently is safe.
+export async function streamSmartChatMessage(
+  text: string,
+  handlers: SmartChatStreamHandlers,
+  signal?: AbortSignal,
+): Promise<void> {
+  for (let attempt = 0; attempt <= STREAM_BACKOFF_MS.length; attempt += 1) {
+    try {
+      await streamAttempt(text, handlers, signal);
+      return;
+    } catch (error) {
+      if (signal?.aborted) throw error;
+      if (attempt === STREAM_BACKOFF_MS.length || !isRetryableStreamFailure(error)) throw error;
+      handlers.onRetry?.(attempt + 1);
+      await waitBackoff(attempt, signal);
+    }
   }
 }
 

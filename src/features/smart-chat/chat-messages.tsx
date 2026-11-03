@@ -14,6 +14,7 @@ interface ChatMessagesProps {
   speakerName: string;
   avatarUrl: string | null;
   humanName: string | null;
+  humanLabel: string;
   locale: string;
   hasEarlier: boolean;
   loadingEarlier: boolean;
@@ -58,6 +59,7 @@ function buildItems(
   speakerName: string,
   avatarUrl: string | null,
   humanName: string | null,
+  humanLabel: string,
   locale: string,
 ): ChatListItem[] {
   const chronological = messages.map((message, index) => {
@@ -69,6 +71,7 @@ function buildItems(
       message,
       variant,
       speakerName: isHuman ? humanName ?? speakerName ?? EMPTY_SPEAKER : speakerName || EMPTY_SPEAKER,
+      humanLabel: isHuman ? humanLabel : null,
       avatarUrl: isHuman ? null : avatarUrl,
       showAvatar: variant !== 'user' && variant !== 'system' && variant !== previous,
       locale,
@@ -83,14 +86,15 @@ export function ChatMessages({
   speakerName,
   avatarUrl,
   humanName,
+  humanLabel,
   locale,
   hasEarlier,
   loadingEarlier,
   onLoadEarlier,
 }: ChatMessagesProps) {
   const items = useMemo(
-    () => buildItems(messages, speakerName, avatarUrl, humanName, locale),
-    [messages, speakerName, avatarUrl, humanName, locale],
+    () => buildItems(messages, speakerName, avatarUrl, humanName, humanLabel, locale),
+    [messages, speakerName, avatarUrl, humanName, humanLabel, locale],
   );
   const total = items.length;
   const newestId = items[total - 1]?.id ?? null;

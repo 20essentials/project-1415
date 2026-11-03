@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { trackEvent } from '@/shared/analytics';
 import { getConsentState } from '@/shared/consent';
 import { localize, stripLocalePrefix, useTranslation } from '@/shared/i18n';
@@ -30,21 +30,27 @@ export function SmartChat() {
   const [config, setConfig] = useState<PublicSmartChatConfig | null>(null);
   const [pathname, setPathname] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
+  const launcherRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    const load = async () => {
+    const load = async (): Promise<PublicSmartChatConfig | null> => {
       const next = await fetchSmartChatConfig();
-      if (cancelled) return;
+      if (cancelled) return null;
       setConfig(next);
       setPathname(window.location.pathname);
-      if (!next?.enabled) setOpen(false);
+      return next;
     };
 
-    const onPageLoad = () => {
-      setOpen(false);
-      void load();
+    const onPageLoad = async () => {
+      const next = await load();
+      if (cancelled) return;
+      // The panel only closes here when the new route no longer offers chat.
+      if (!next?.enabled || !pathAllowsChat(next, window.location.pathname)) {
+        setOpen(false);
+      }
     };
 
     void load();
@@ -85,18 +91,51 @@ export function SmartChat() {
     trackEvent('CustomEvent', { category: 'SmartChat', action: 'Open' });
   };
 
+  const closeChat = () => {
+    setOpen(false);
+    launcherRef.current?.focus();
+  };
+
+  const openWithQuestion = (question: string) => {
+    setPendingQuestion(question);
+    openChat();
+  };
+
   return (
     <div className="pp-chat-root" data-appearance={config?.appearance ?? 'DESKTOP_AND_MOBILE'} data-open={open ? '' : undefined}>
-      {open && config && <ChatPanel config={config} onClose={() => setOpen(false)} />}
+      {open && config && (
+        <ChatPanel
+          config={config}
+          onClose={closeChat}
+          initialQuestion={pendingQuestion ?? undefined}
+          onInitialQuestionSent={() => setPendingQuestion(null)}
+        />
+      )}
+
+      {!open && config?.suggestions?.displayWhenMinimized && (
+        <div className="pp-chat-tips">
+          {config.suggestions.questions.slice(0, 2).map((question) => (
+            <button
+              key={question}
+              type="button"
+              className="pp-chat-chip"
+              onClick={() => openWithQuestion(question)}
+            >
+              {question}
+            </button>
+          ))}
+        </div>
+      )}
 
       <a
+        ref={launcherRef}
         className="pp-chat-launcher"
         href={localize('/contact')}
         aria-label={t('smart-chat.open')}
         aria-expanded={open}
         onClick={(event) => {
           event.preventDefault();
-          if (open) setOpen(false);
+          if (open) closeChat();
           else openChat();
         }}
       >

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  isRetryableStreamFailure,
   mergeChatMessages,
   replaceDraftMessage,
   streamSmartChatMessage,
@@ -87,5 +88,60 @@ describe('streamSmartChatMessage', () => {
       code: 'MESSAGE_REQUIRED',
       status: 400,
     }));
+  });
+
+  it('retries a retryable failure and reports the attempt', async () => {
+    vi.useFakeTimers();
+    const encoder = new TextEncoder();
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(encoder.encode('{"answerMessage":{"id":"a1","sender":"ASSISTANT","messageType":"ANSWER","body":{"mainText":"Hello"}}}\n'));
+        controller.close();
+      },
+    });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ error: 'SMART_CHAT_UNAVAILABLE' }), { status: 502 }))
+      .mockResolvedValueOnce(new Response(body, { status: 200, headers: { 'Content-Type': 'application/x-ndjson' } }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const answer = vi.fn();
+    const onRetry = vi.fn();
+    const pending = streamSmartChatMessage('Hi', {
+      onInput: vi.fn(),
+      onChunk: vi.fn(),
+      onAnswer: answer,
+      onRetry,
+    });
+
+    await vi.runAllTimersAsync();
+    await pending;
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(onRetry).toHaveBeenCalledWith(1);
+    expect(answer).toHaveBeenCalledOnce();
+    vi.useRealTimers();
+  });
+
+  it('does not retry client failures', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({ error: 'RATE_LIMITED' }), { status: 429 })),
+    );
+
+    const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>;
+    await expect(
+      streamSmartChatMessage('Hi', { onInput: vi.fn(), onChunk: vi.fn(), onAnswer: vi.fn() }),
+    ).rejects.toMatchObject({ code: 'RATE_LIMITED', status: 429 });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('classifies retryable failures', async () => {
+    expect(isRetryableStreamFailure(new SmartChatClientError('SMART_CHAT_UNAVAILABLE', 502))).toBe(true);
+    expect(isRetryableStreamFailure(new SmartChatClientError('SMART_CHAT_STREAM_EMPTY', 502))).toBe(true);
+    expect(isRetryableStreamFailure(new SmartChatClientError('OUT_OF_QUOTA', 400))).toBe(false);
+    expect(isRetryableStreamFailure(new SmartChatClientError('RATE_LIMITED', 429))).toBe(false);
+    expect(isRetryableStreamFailure(new Error('other'))).toBe(false);
+    expect(isRetryableStreamFailure(null)).toBe(false);
   });
 });

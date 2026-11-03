@@ -19,6 +19,15 @@ vi.mock('@/features/smart-chat/chat-client', () => ({
     ...current.filter((message) => message._id !== draftId),
     incoming,
   ],
+  SmartChatClientError: class extends Error {
+    readonly code: string;
+    readonly status: number;
+    constructor(code: string, status: number) {
+      super(code);
+      this.code = code;
+      this.status = status;
+    }
+  },
 }));
 
 vi.mock('vlist/react', () => ({
@@ -31,6 +40,7 @@ vi.mock('vlist/react', () => ({
 }));
 
 import { SmartChat } from '@/features/smart-chat/smart-chat';
+import { SmartChatClientError } from '@/features/smart-chat/chat-client';
 import type { PublicSmartChatConfig } from '@/features/smart-chat/chat';
 
 const config: PublicSmartChatConfig = {
@@ -110,5 +120,26 @@ describe('SmartChat', () => {
 
     expect(await screen.findByText('Try the', { exact: false })).toBeInTheDocument();
     expect(screen.getByText('Cape Sundew')).toBeInTheDocument();
+  });
+
+  it('offers the contact form when the quota card appears', async () => {
+    mocks.stream.mockRejectedValue(new SmartChatClientError('OUT_OF_QUOTA', 400));
+    mocks.fetchConfig.mockResolvedValue({
+      ...config,
+      contact: { enabled: true, introMessage: null, successMessage: null, fields: { name: true, email: true, phone: true, message: true, requiredName: false, requiredEmail: true, requiredPhone: false, requiredMessage: false } },
+    });
+
+    render(<SmartChat />);
+
+    const launcher = await screen.findByLabelText('smart-chat.open');
+    fireEvent.click(launcher);
+
+    fireEvent.click(await screen.findByText('Which plant is easiest?'));
+
+    expect(await screen.findByText('smart-chat.quota')).toBeInTheDocument();
+    const errorCard = screen.getByText('smart-chat.quota').closest('.pp-chat-error');
+    fireEvent.click(errorCard?.querySelector('button') as HTMLButtonElement);
+
+    expect(screen.getByLabelText('smart-chat.contact-email')).toBeInTheDocument();
   });
 });
