@@ -274,3 +274,94 @@ Con `npx astro dev`:
 1. `## Resultado` con screenshots, comandos, resultado del stream, limitaciones.
 2. Marcar step 47 `✅ done` en `ROADMAP.md`.
 3. Crear/ejecutar `step-48-smart-chat-hardening.md`.
+
+## Resultado
+
+**Hecho y verificado.** El widget flotante consume las tres rutas de step 46 y
+pasa la batería completa. Gran parte del código base vino del commit `df9a929`
+(sesión anterior); esta sesión cerró los gaps restantes del spec y verificó el
+flujo de punta a punta.
+
+**Verificación ejecutada (2026-11-03):**
+
+- `npm run check`: 0 errores (213 archivos; hints preexistentes ajenos).
+- `npm test`: 46 archivos, **314 tests pasan** (incluye los nuevos
+  `mapSmartChatContactToTargets`).
+- `npx astro build`: completo.
+- `npm run test:e2e`: **45/45** (5 del spec `smart-chat.spec.ts`).
+- Flujo real con `npx astro dev` + Playwright (`.tmp/smart-chat-final-check.mjs`):
+  1. Launcher 56px visible con `href=/contact`; click abre panel y el foco cae
+     en el composer; tras `Escape` el foco vuelve al launcher.
+  2. Sending "Which plant is easiest?" → NDJSON real: `inputMessage` +
+     `answerChunk`s + `answerMessage`; respuesta con producto real
+     ("Cape Sundew...") streameada char-length por char-length en la burbuja
+     viva (fuera de vlist), luego consolidada en vlist. 2 burbujas al final.
+  3. Historial persiste en la misma sesión: tras cerrar/reabrir el panel el
+     `GET /api/smart-chat/messages` trae user+assistant y vlist los renderiza
+     (probado además con el probe crudo: 2 messages).
+  4. ClientRouter: /cart (noindex) → launcher `count=0`; volver al home →
+     reaparece.
+  5. Offline (simulado con `activeHandlers: []`): status "Offline", composer
+     disabled, formulario de contacto visible.
+  6. Contacto real: `POST /api/smart-chat/contact` → `{"ok":true}` (registro de
+     prueba en el Contact Form).
+  7. Viewports: desktop 1440x900 y móvil 390x844 (panel `362x749`, dentro del
+     viewport); cero page errors.
+
+**Screenshots (revisar por el usuario):**
+
+- `.tmp/smart-chat-desktop.png` — panel abierto vacío (desktop)
+- `.tmp/smart-chat-desktop-answer.png` — conversación con respuesta streameada
+- `.tmp/smart-chat-mobile.png` — panel móvil 390x844
+- `.tmp/smart-chat-offline.png` — estado offline con contacto
+
+**Gaps cerrados esta sesión sobre `df9a929`:**
+
+- `MessageSent` analytics al enviar; `ContactSubmit` ya estaba.
+- Escape devuelve el foco al launcher; `astro:page-load` solo cierra el panel
+  cuando la ruta nueva no admite chat (antes cerraba siempre).
+- Chips `displayWhenMinimized` junto al launcher (desktop only, 2 chips, abre
+  y envía la pregunta).
+- Pase de campo etiqueta humana `smart-chat.human`, estado de cuota
+  (`OUT_OF_QUOTA` → `smart-chat.quota`), intro offline con
+  `smart-chat.offline-intro`, contador cerca del límite, ring de focus del
+  launcher, key `smart-chat.contact-title` en el formulario.
+- **Fix real del contacto:** el site Contact Form solo acepta
+  `first_name` / `email` / `message` (sin `phone` ni `name`). El servidor ahora
+  lee los targets de `forms.getForm` → `inputOptions.target`
+  (`getFormFieldTargets` en `shared/wix-forms`) y remapea
+  `name → first_name`, descartando claves no soportadas. Antes: 400
+  `additionalProperty name`; después: `{"ok":true}`.
+
+**Hallazgos / desviaciones conscientes:**
+
+- El historial (`GET /api/smart-chat/messages`) devuelve los mensajes en orden
+  no-estable; `mergeChatMessages` ordena por `_createdDate` asc y vlist con
+  `reverse: true` renderiza correctamente (cubierto por el e2e de orden y el
+  probe `.tmp/smart-chat-history-order.mjs`).
+- El historial tarde ~1s en ser visible después del `answerMessage`
+  (consistencia eventual de Wix); el envío real tarda 15-30s de stream.
+- `vlist@3.3.1` se usa con el plugin `autosize()` además de
+  `estimatedHeight: 76` (desviación del texto del step: sin autosize el
+  reflow del streaming penalizaba el scroll; se debuggeó con
+  `.tmp/smart-chat-vlist-debug.mjs` y quedó con verify efectivo e2e).
+- `config.name/avatar/suggestions/legalDisclaimer` siguen `null` en el backend:
+  los fallbacks de marca se ejercitaron en la sesión real, los chips y avatars
+  personalizados solo se vieron con configs mockeadas.
+- Las claves de i18n `es`/`it` viven en el dashboard Wix Multilingual;
+  `offline-intro` y `contact-title` quedaron en `en` en el repo hasta
+  `wix translation pull`/push del dashboard.
+
+**Limitaciones (pasan a step-48):**
+
+- Handoff humano: no hay persona/WIX_USER asignada a las conversaciones, así
+  que la etiqueta `smart-chat.human` y el borde accent solo se probaron con
+  datos sembrados, nunca contra un owner real contestando.
+- La persona (`config.name`, `avatar`, `suggestions`) sigue `null` en el
+  backend: configurarla en el dashboard es tarea del dueño, no del código.
+- Las claves i18n nuevas (`offline-intro`, `contact-title`) existen solo en
+  `en` en el repo; es/it viven en el dashboard Wix Multilingual y requieren
+  `wix translation pull`/push interactivo.
+
+**Nota de app:** instancia Wix Forms `0a4cbd2c-5061-4c1e-b7a3-40b981176381`
+(`activeHandlers: ["AI"]`), documentada junto a las apps instaladas.

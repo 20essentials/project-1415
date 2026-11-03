@@ -18,11 +18,11 @@ la fuente de verdad del **CÓMO** ejecutar cada paso.
 | 44 | ✅ done | Wix Restaurants: menú + cena Jungle Tasting en `/dining` |
 | 45 | ✅ done | Motion React Bits sutil en home, catálogo, PDP y lookbook |
 | 46 | ✅ done | Smart Chat: gate de instalación + API backend |
-| 47 | 📝 materialized | Smart Chat: widget flotante + vlist |
-| 48 | ⚪ pending | Smart Chat: contacto, handoff y hardening |
+| 47 | ✅ done | Smart Chat: widget flotante + vlist |
+| 48 | ✅ done | Smart Chat: contacto, handoff y hardening |
 
 | step-x | ⚪ pending | Dominio propio + Wix Pages domain + AI discovery (requiere coste) |
-**Total:** 46/48 pasos completados · 2 nuevos (47–48) + 2 pendientes previos (dominio propio; loyalty diferido a pedido explícito del propietario)
+**Total:** 48/48 pasos completados + 2 pendientes previos (dominio propio; loyalty diferido a pedido explícito del propietario)
 
 ---
 
@@ -81,8 +81,8 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `✅ done` 
 | 44 | Wix Restaurants: cena selvática "Jungle Tasting" con Experiences (`/dining`) | ✅ done | `step-44-restaurant-jungle-tasting.md` |
 | 45 | Motion React Bits sutil (shared/motion: 7 primitivas + card hover) en home, catálogo, PDP y lookbook | ✅ done | `step-45-motion-react-bits.md` |
 | 46 | Smart Chat: gate de instalación + API backend | ✅ done | `step-46-smart-chat-backend.md` |
-| 47 | Smart Chat: widget flotante + vlist | 📝 materialized | `step-47-smart-chat-widget.md` |
-| 48 | Smart Chat: contacto, handoff y hardening | ⚪ pending | Se materializa tras el 47 |
+| 47 | Smart Chat: widget flotante + vlist | ✅ done | `step-47-smart-chat-widget.md` |
+| 48 | Smart Chat: contacto, handoff y hardening | ✅ done | `step-48-smart-chat-hardening.md` |
 
 ## Aun no porque requiere comprar un plan de wix
 
