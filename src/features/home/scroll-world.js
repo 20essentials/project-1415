@@ -8,8 +8,10 @@
          cropped to portrait.
      (b) per-section `titleTag` (`'h1'` on the landing stop only) so the page
          keeps a single <h1>.
-   Everything else (blob seek, crossfade, reduced-motion, phone handling) is
-   unchanged. The engine owns its own passive scroll rAF — do not add another.
+     (c) phones swap the scrubbed clips for a scroll-driven still reveal
+         (clip-path wipe + parallax), so no video is fetched or decoded on touch.
+   Everything else (blob seek, crossfade, reduced-motion) is unchanged. The
+   engine owns its own passive scroll rAF — do not add another.
    ========================================================================== */
 
 export function mountScrollWorld(container, config) {
@@ -42,7 +44,7 @@ export function mountScrollWorld(container, config) {
     if (i < N - 1 && CONNECTORS[i]) {
       SEGMENTS.push({ kind: 'conn', si: i, clip: CONNECTORS[i], clipM: CONNECTORS_M[i],
                       still: SECTIONS[i + 1].still, stillM: SECTIONS[i + 1].stillMobile,
-                      accent: SECTIONS[i + 1].accent, w: CONN_W });
+                      focusX: SECTIONS[i + 1].focusX, accent: SECTIONS[i + 1].accent, w: CONN_W });
     }
   });
   const NSEG = SEGMENTS.length;
@@ -158,11 +160,11 @@ export function mountScrollWorld(container, config) {
   function loadClip(s) {
     // Under prefers-reduced-motion we never load the clips at all — the stills stay up
     // and simply cross-dissolve as you scroll. No scrubbed video motion, no decode cost.
-    if (reduce || s.loading || !s.clip) return;
+    // Phones do the same (see the mobile reveal in read()): the stills carry the
+    // whole narrative, so clips are never fetched or decoded on touch devices.
+    if (reduce || isMobile() || s.loading || !s.clip) return;
     s.loading = true;
-    // Serve the lighter mobile encode on phones when one was provided.
-    const url = (isMobile() && s.clipM) ? s.clipM : s.clip;
-    fetch(url).then(r => r.ok ? r.blob() : Promise.reject(new Error('404')))
+    fetch(s.clip).then(r => r.ok ? r.blob() : Promise.reject(new Error('404')))
       .then(blob => {
         const v = document.createElement('video');
         v.className = 'sw-scene__video';
@@ -185,19 +187,58 @@ export function mountScrollWorld(container, config) {
     let ci = 0;
     for (let i = 0; i < NSEG; i++) if (y >= SEGMENTS[i].start) ci = i;
 
-    for (let i = 0; i < NSEG; i++) {
-      const s = SEGMENTS[i];
-      if (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh) loadClip(s);
-      const local = clamp((y - s.start) / (s.end - s.start), 0, 1);
-      s.target = s.linger ? lingerEase(local, s.linger) : local;
-      let outside = 0;
-      if (y < s.start) outside = s.start - y; else if (y > s.end) outside = y - s.end;
-      const op = smooth(1 - outside / fade);
-      s.el.style.opacity = op; s.visible = op > 0.001;
-      s.el.style.zIndex = (i === ci) ? '120' : String(100 + Math.round(op * 10));
-      if (!s.hasClip || !s.ready) {
-        const sc = reduce ? 1 : 1.03 + local * 0.14;
-        s.img.style.transform = `translateX(${stageX - 2}vw) scale(${sc.toFixed(3)})`;
+    if (isMobile() && !reduce) {
+      // Phones don't scrub clips. Each section dive becomes a still reveal:
+      // the incoming still wipes up over the previous one (clip-path) while
+      // the outgoing still drifts for depth. Connectors share the next
+      // section's still, so they stay hidden — otherwise the same photo would
+      // wipe over itself with mismatched parallax and leave a visible seam.
+      const T = 0.4 * vh;
+      const reveal = (s) => {
+        if (s.si === 0) return 1;
+        const t = Math.min(T, (s.end - s.start) * 0.5);
+        return smooth(clamp((y - (s.start - t)) / (2 * t)));
+      };
+      // Parallax of a dive is driven by the *next* dive's reveal (skipping
+      // the connector between them).
+      const nextDiveReveal = new Array(NSEG).fill(0);
+      let upcoming = 0;
+      for (let i = NSEG - 1; i >= 0; i--) {
+        nextDiveReveal[i] = upcoming;
+        if (SEGMENTS[i].kind === 'dive') upcoming = reveal(SEGMENTS[i]);
+      }
+      for (let i = 0; i < NSEG; i++) {
+        const s = SEGMENTS[i];
+        if (s.kind !== 'dive') { s.el.style.display = 'none'; continue; }
+        s.el.style.display = '';
+        const r = reveal(s);
+        s.el.style.opacity = 1;
+        s.el.style.zIndex = String(i + 1);
+        s.el.style.clipPath = r >= 0.999 ? 'none' : `inset(${((1 - r) * 100).toFixed(2)}% 0 0 0)`;
+        s.visible = r > 0.001;
+        const local = clamp((y - s.start) / (s.end - s.start), 0, 1);
+        const sc = 1.12 + local * 0.05;
+        const drift = nextDiveReveal[i] * 5;
+        s.img.style.transform = `translateY(${drift.toFixed(2)}%) scale(${sc.toFixed(3)})`;
+      }
+    } else {
+      for (let i = 0; i < NSEG; i++) {
+        const s = SEGMENTS[i];
+        s.el.style.display = '';
+        if (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh) loadClip(s);
+        const local = clamp((y - s.start) / (s.end - s.start), 0, 1);
+        s.target = s.linger ? lingerEase(local, s.linger) : local;
+        let outside = 0;
+        if (y < s.start) outside = s.start - y; else if (y > s.end) outside = y - s.end;
+        const op = smooth(1 - outside / fade);
+        s.el.style.opacity = op; s.visible = op > 0.001;
+        s.el.style.zIndex = (i === ci) ? '120' : String(100 + Math.round(op * 10));
+        s.el.style.clipPath = '';
+        if (!s.hasClip || !s.ready) {
+          const sc = reduce ? 1 : 1.03 + local * 0.14;
+          const shift = stageX ? `translateX(${stageX - 2}vw) ` : '';
+          s.img.style.transform = shift + `scale(${sc.toFixed(3)})`;
+        }
       }
     }
 
@@ -341,7 +382,7 @@ function injectCSS() {
   .sw-nav__item:hover{color:var(--sw-ink);} .sw-nav__item.is-active{color:#fff;background:var(--sw-accent);}
   .sw-topcta{text-decoration:none;font-weight:600;font-size:.9rem;color:#fff;background:var(--sw-ink);padding:10px 20px;border-radius:999px;white-space:nowrap;}
   .sw-stage{position:fixed;inset:0;z-index:10;pointer-events:none;}
-  .sw-scene{position:absolute;inset:0;opacity:0;overflow:hidden;will-change:opacity;}
+  .sw-scene{position:absolute;inset:0;opacity:0;overflow:hidden;will-change:opacity,clip-path;}
   .sw-scene__video,.sw-scene__still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--sw-focus-x,50%) 42%;}
   .sw-scene__still{will-change:transform;} .sw-scene.has-clip .sw-scene__still{opacity:0;} .sw-scene__video{z-index:1;}
   .sw-copylayer{position:fixed;inset:0;z-index:20;pointer-events:none;}
