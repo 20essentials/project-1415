@@ -5,9 +5,19 @@ import {
   toChatMessage,
   type SmartChatMessagesResponse,
 } from '@/features/smart-chat/chat';
+import { chatClientKey, InMemoryRateLimiter } from '@/features/smart-chat/rate-limits';
+import { sanitizeChatMessageInput } from '@/features/smart-chat/sanitize';
 import { createSmartChatStream, readStreamError } from '@/features/smart-chat/stream';
 
 const MAX_PAGE_SIZE = 100;
+const chatRateLimiter = new InMemoryRateLimiter(3, 10_000);
+
+function jsonError(error: string, status: number, headers?: Record<string, string>): Response {
+  return new Response(JSON.stringify({ error }), {
+    status,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...headers },
+  });
+}
 
 function parseLimit(value: string | null): number {
   const parsed = Number(value);
@@ -54,50 +64,39 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     payload = await request.json();
   } catch {
-    return new Response(JSON.stringify({ error: 'INVALID_JSON' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonError('INVALID_JSON', 400);
   }
 
-  const message =
-    isRecord(payload) && typeof payload.message === 'string'
-      ? payload.message.trim()
-      : '';
+  const sanitized = sanitizeChatMessageInput(
+    isRecord(payload) && typeof payload.message === 'string' ? payload.message : '',
+  );
 
-  if (!message) {
-    return new Response(JSON.stringify({ error: 'MESSAGE_REQUIRED' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  if (!sanitized) {
+    return jsonError('MESSAGE_REQUIRED', 400);
   }
 
-  if (message.length > MAX_MESSAGE_LENGTH) {
-    return new Response(JSON.stringify({ error: 'MESSAGE_TOO_LONG' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  if (sanitized.length > MAX_MESSAGE_LENGTH) {
+    return jsonError('MESSAGE_TOO_LONG', 400);
+  }
+
+  const decision = chatRateLimiter.take(chatClientKey(request, request.headers.get('x-forwarded-for')));
+  if (!decision.allowed) {
+    return jsonError('RATE_LIMITED', 429, { 'Retry-After': String(Math.ceil(decision.retryAfterMs / 1000)) });
   }
 
   try {
     const { response } = await createSmartChatStream({
-      message,
+      message: sanitized,
       signal: request.signal,
     });
 
     if (!response.ok) {
       const error = await readStreamError(response);
-      return new Response(JSON.stringify({ error }), {
-        status: response.status >= 500 ? 502 : response.status,
-        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-      });
+      return jsonError(error, response.status >= 500 ? 502 : response.status);
     }
 
     if (!response.body) {
-      return new Response(JSON.stringify({ error: 'SMART_CHAT_STREAM_EMPTY' }), {
-        status: 502,
-        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-      });
+      return jsonError('SMART_CHAT_STREAM_EMPTY', 502);
     }
 
     return new Response(response.body, {
