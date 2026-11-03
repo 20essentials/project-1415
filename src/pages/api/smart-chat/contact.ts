@@ -57,6 +57,12 @@ export const POST: APIRoute = async ({ request }) => {
         headers: { 'Content-Type': 'application/json' },
       });
     }
+    if (error instanceof Error && error.message === 'SMART_CHAT_CONTACT_REPORTED_SPAM') {
+      return new Response(JSON.stringify({ error: 'CONTACT_BLOCKED_SPAM' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     return new Response(JSON.stringify({ error: 'CONTACT_SUBMIT_FAILED' }), {
       status: 502,
       headers: { 'Content-Type': 'application/json' },

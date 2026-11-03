@@ -73,6 +73,7 @@ export function ChatContactForm({ contact, onSubmitted }: ChatContactFormProps) 
 
   return (
     <form className="pp-chat-form" onSubmit={submit} noValidate>
+      <h3 className="pp-chat-form__title">{t('smart-chat.contact-title')}</h3>
       {contact.introMessage && <p className="pp-chat-form__intro">{contact.introMessage}</p>}
 
       {contact.fields.name && (
