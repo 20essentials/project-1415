@@ -13,8 +13,8 @@ colors:
   error: "#EA4335"
 typography:
   display:
-    fontFamily: Fraunces, Georgia, serif
-    fontWeight: 400
+    fontFamily: Inter, ui-sans-serif, system-ui, sans-serif
+    fontWeight: 500
     lineHeight: 52px
     letterSpacing: -2px
   body:
