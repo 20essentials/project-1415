@@ -21,6 +21,10 @@ body:has([data-pp-consent]:not([hidden])) .pp-chat-root {
   visibility: hidden;
 }
 
+html.menu-open .pp-chat-root {
+  visibility: hidden;
+}
+
 .pp-chat-launcher {
   position: fixed;
   right: 1.25rem;
