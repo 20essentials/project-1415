@@ -33,7 +33,7 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
   <div
     class="pointer-events-auto flex w-max items-center gap-6 rounded-full bg-paper/60 p-2 pl-6 ring-1 ring-rule backdrop-blur-xl lg:gap-5"
   >
-    <a href="/" class="flex h-9 items-center rounded-full text-ink" aria-label={t('header.logo')}>
+    <a href={localize('/')} class="flex h-9 items-center rounded-full text-ink" aria-label={t('header.logo')}>
       <Logo class="text-sm" />
     </a>
 
@@ -272,10 +272,15 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
 <script>
   type SwWindow = Window & { __swGoTo?: (id: string) => boolean };
 
-  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
-  const menu = document.getElementById('menu');
-  const main = document.getElementById('contenido');
-  const footer = document.querySelector('footer');
+  const homePaths = new Set(['/', '/es', '/es/', '/it', '/it/']);
+
+  // Referencias al header visible: se actualizan en cada carga porque el swap
+  // crea nodos nuevos y los listeners globales del documento deben operar sobre
+  // los actuales, no sobre los del primer render.
+  let toggle: HTMLButtonElement | null = null;
+  let menu: HTMLElement | null = null;
+  let main: HTMLElement | null = null;
+  let footer: HTMLElement | null = null;
 
   const setOpen = (open: boolean) => {
     if (!toggle || !menu) return;
@@ -291,8 +296,8 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
     }
   };
 
-  toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
-
+  // Listeners del documento: se registran una sola vez y resuelven los elementos
+  // vía las variables de arriba, ya con la instancia actual del swap.
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
       setOpen(false);
@@ -304,7 +309,6 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
   // handed to the engine (exposed as window.__swGoTo). Only the home page owns
   // those stops: elsewhere the browser follows the link to /#id and the engine
   // picks up the hash on load.
-  const homePaths = new Set(['/', '/es', '/es/', '/it', '/it/']);
   document.addEventListener('click', (event) => {
     const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href]');
     if (!link) return;
@@ -321,84 +325,102 @@ const accountLabel = t(loggedIn ? 'header.account' : 'header.login');
     }
   });
 
-  menu?.querySelectorAll<HTMLAnchorElement>('[data-menu-link]').forEach((link) => {
-    link.addEventListener('click', (event) => {
-      if (!link.hash) return;
-      const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
-      if (!target) return;
-      event.preventDefault();
-      setOpen(false);
-      target.scrollIntoView();
-    });
-  });
-
-  // El tap puede quedar muerto o llegar tarde (hasta ~1s) si el gesto de scroll
-  // del overlay terminó sobre el link. Responder en touchend (movimiento < 12px)
-  // despachando un click sintético evita la espera y reutiliza toda la lógica de
-  // los handlers de click reales. preventDefault suprime el click nativo tardío.
-  menu?.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => {
-    let start: { x: number; y: number } | null = null;
-    link.addEventListener(
-      'touchstart',
-      (event) => {
-        const t = event.changedTouches[0];
-        start = t ? { x: t.clientX, y: t.clientY } : null;
-      },
-      { passive: true },
-    );
-    link.addEventListener(
-      'touchend',
-      (event) => {
-        const t = event.changedTouches[0];
-        const moved = start && t ? Math.hypot(t.clientX - start.x, t.clientY - start.y) : 0;
-        start = null;
-        if (moved > 12 || !menu.hasAttribute('data-open')) return;
-        event.preventDefault();
-        link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }));
-      },
-      { passive: false },
-    );
-  });
-
   document.addEventListener('astro:before-swap', () => setOpen(false));
 
   window.matchMedia('(min-width: 1280px)').addEventListener('change', (event) => {
     if (event.matches) setOpen(false);
   });
 
-  // Indica en la navegación la sección que se está viendo.
-  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
-  const indicator = document.querySelector<HTMLElement>('.nav-indicator');
+  const initHeader = () => {
+    toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+    menu = document.getElementById('menu');
+    main = document.getElementById('contenido');
+    footer = document.querySelector('footer');
+    if (!toggle || !menu) return;
+    // Cada navegación con el ClientRouter reemplaza el DOM y este módulo solo
+    // corre una vez por sesión: re-vincular en astro:page-load en los nodos
+    // nuevos, y no duplicar si el nodo ya quedó wired (doble init en la 1ª carga).
+    if (toggle.dataset.wiredHeader === '1') return;
+    toggle.dataset.wiredHeader = '1';
 
-  const moveIndicator = () => {
-    if (!indicator) return;
-    const active = links.find((link) => link.getAttribute('aria-current') === 'true');
-    if (!active) {
-      indicator.removeAttribute('data-visible');
-      return;
-    }
-    // Si estaba oculta, aparece en su sitio en vez de deslizarse desde el anterior.
-    indicator.toggleAttribute('data-instant', !indicator.hasAttribute('data-visible'));
-    indicator.style.setProperty('--x', `${active.offsetLeft}px`);
-    indicator.style.setProperty('--w', `${active.offsetWidth}px`);
-    void indicator.offsetWidth;
-    indicator.removeAttribute('data-instant');
-    indicator.setAttribute('data-visible', '');
+    toggle.addEventListener('click', () => setOpen(toggle?.getAttribute('aria-expanded') !== 'true'));
+
+    menu.querySelectorAll<HTMLAnchorElement>('[data-menu-link]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        if (!link.hash) return;
+        const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+        if (!target) return;
+        event.preventDefault();
+        setOpen(false);
+        target.scrollIntoView();
+      });
+    });
+
+    // El tap puede quedar muerto o llegar tarde (hasta ~1s) si el gesto de scroll
+    // del overlay terminó sobre el link. Responder en touchend (movimiento < 12px)
+    // despachando un click sintético evita la espera y reutiliza toda la lógica de
+    // los handlers de click reales. preventDefault suprime el click nativo tardío.
+    menu.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => {
+      let start: { x: number; y: number } | null = null;
+      link.addEventListener(
+        'touchstart',
+        (event) => {
+          const t = event.changedTouches[0];
+          start = t ? { x: t.clientX, y: t.clientY } : null;
+        },
+        { passive: true },
+      );
+      link.addEventListener(
+        'touchend',
+        (event) => {
+          const t = event.changedTouches[0];
+          const moved = start && t ? Math.hypot(t.clientX - start.x, t.clientY - start.y) : 0;
+          start = null;
+          if (moved > 12 || !menu?.hasAttribute('data-open')) return;
+          event.preventDefault();
+          link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }));
+        },
+        { passive: false },
+      );
+    });
+
+    // Indica en la navegación la sección que se está viendo.
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
+    const indicator = menu.querySelector<HTMLElement>('.nav-indicator');
+
+    const moveIndicator = () => {
+      if (!indicator) return;
+      const active = links.find((link) => link.getAttribute('aria-current') === 'true');
+      if (!active) {
+        indicator.removeAttribute('data-visible');
+        return;
+      }
+      // Si estaba oculta, aparece en su sitio en vez de deslizarse desde el anterior.
+      indicator.toggleAttribute('data-instant', !indicator.hasAttribute('data-visible'));
+      indicator.style.setProperty('--x', `${active.offsetLeft}px`);
+      indicator.style.setProperty('--w', `${active.offsetWidth}px`);
+      void indicator.offsetWidth;
+      indicator.removeAttribute('data-instant');
+      indicator.setAttribute('data-visible', '');
+    };
+
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const href = (entry.target as HTMLElement).dataset.spy;
+          links.forEach((link) => link.setAttribute('aria-current', String(link.getAttribute('href') === href)));
+          moveIndicator();
+        }
+      },
+      { rootMargin: '-50% 0px -50% 0px' },
+    );
+    document.querySelectorAll('[data-spy]').forEach((el) => spy.observe(el));
+
+    const list = links[0]?.closest('ul');
+    if (list) new ResizeObserver(moveIndicator).observe(list);
   };
 
-  const spy = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        const href = (entry.target as HTMLElement).dataset.spy;
-        links.forEach((link) => link.setAttribute('aria-current', String(link.getAttribute('href') === href)));
-        moveIndicator();
-      }
-    },
-    { rootMargin: '-50% 0px -50% 0px' },
-  );
-  document.querySelectorAll('[data-spy]').forEach((el) => spy.observe(el));
-
-  const list = links[0]?.closest('ul');
-  if (list) new ResizeObserver(moveIndicator).observe(list);
+  document.addEventListener('astro:page-load', initHeader);
+  initHeader();
 </script>

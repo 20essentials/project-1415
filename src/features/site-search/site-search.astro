@@ -176,8 +176,14 @@ const { t } = useTranslation();
   const DEBOUNCE_MS = 200;
   const LIMIT = 6;
 
-  const dialog = document.getElementById('site-search') as HTMLDialogElement | null;
-  if (dialog) {
+  // El ClientRouter reemplaza el DOM en cada navegación y este módulo solo corre
+  // una vez por sesión: re-vincular los listeners sobre los nodos nuevos en cada
+  // astro:page-load, y no duplicarlos si el diálogo ya quedó wired.
+  const initSearch = () => {
+    const dialog = document.getElementById('site-search') as HTMLDialogElement | null;
+    if (!dialog || dialog.dataset.wiredSearch === '1') return;
+    dialog.dataset.wiredSearch = '1';
+
     const trigger = document.querySelector<HTMLButtonElement>('[data-search-open]');
     const form = dialog.querySelector<HTMLFormElement>('[data-search-form]');
     const input = dialog.querySelector<HTMLInputElement>('[data-search-input]');
@@ -336,5 +342,8 @@ const { t } = useTranslation();
     // El <dialog> se promueve a la capa superior, pero lo sacamos del header
     // (con backdrop-filter) para que ningún contenedor lo recorte.
     if (dialog.parentElement !== document.body) document.body.append(dialog);
-  }
+  };
+
+  document.addEventListener('astro:page-load', initSearch);
+  initSearch();
 </script>
