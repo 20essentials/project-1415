@@ -119,7 +119,7 @@ describe('SmartChat', () => {
     });
 
     expect(await screen.findByText('Try the', { exact: false })).toBeInTheDocument();
-    expect(screen.getByText('Cape Sundew')).toBeInTheDocument();
+    expect(await screen.findByText('Cape Sundew')).toBeInTheDocument();
   });
 
   it('offers the contact form when the quota card appears', async () => {
@@ -141,5 +141,9 @@ describe('SmartChat', () => {
     fireEvent.click(errorCard?.querySelector('button') as HTMLButtonElement);
 
     expect(screen.getByLabelText('smart-chat.contact-email')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('smart-chat.close-form'));
+
+    expect(await screen.findByText('smart-chat.quota')).toBeInTheDocument();
   });
 });

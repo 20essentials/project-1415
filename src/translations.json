@@ -628,6 +628,7 @@
   "shop.sort.price-asc": "Price: low to high",
   "shop.sort.price-desc": "Price: high to low",
   "smart-chat.close": "Close chat",
+  "smart-chat.close-form": "Close form",
   "smart-chat.contact-cta": "Contact",
   "smart-chat.contact-email": "Email",
   "smart-chat.contact-error": "We couldn't send your message. Please try again.",

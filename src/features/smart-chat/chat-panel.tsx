@@ -12,6 +12,7 @@ import {
 import { ChatContactForm } from './chat-contact-form';
 import { parseChatText } from './chat-markdown';
 import { ChatMessages } from './chat-messages';
+import { StreamSmoother } from './stream-smoother';
 
 interface ChatPanelProps {
   config: PublicSmartChatConfig;
@@ -78,7 +79,15 @@ export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionS
 
   const composerRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
-  const liveTextRef = useRef('');
+  const smootherRef = useRef<StreamSmoother | null>(null);
+  const pendingAnswerRef = useRef<ChatMessage | null>(null);
+
+  const ensureSmoother = () => {
+    if (!smootherRef.current) {
+      smootherRef.current = new StreamSmoother((text) => setLiveText(text));
+    }
+    return smootherRef.current;
+  };
 
   useEffect(() => {
     composerRef.current?.focus();
@@ -140,7 +149,10 @@ export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionS
   }, [humanActive]);
 
   useEffect(() => {
-    return () => abortRef.current?.abort();
+    return () => {
+      abortRef.current?.abort();
+      smootherRef.current?.dispose();
+    };
   }, []);
 
   useEffect(() => {
@@ -187,13 +199,14 @@ export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionS
     setError(null);
     setSending(true);
     setLiveText('');
-    liveTextRef.current = '';
     setShowContact(false);
     trackEvent('CustomEvent', { category: 'SmartChat', action: 'MessageSent' });
 
     const controller = new AbortController();
     abortRef.current = controller;
-    let answered = false;
+    const smoother = ensureSmoother();
+    smoother.reset();
+    pendingAnswerRef.current = null;
 
     try {
       await streamSmartChatMessage(
@@ -203,37 +216,43 @@ export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionS
             setMessages((current) => replaceDraftMessage(current, draftId, message));
           },
           onChunk: (chunk) => {
-            liveTextRef.current += chunk;
-            setLiveText(liveTextRef.current);
+            smoother.append(chunk);
           },
           onAnswer: (message) => {
-            answered = true;
-            setMessages((current) => mergeChatMessages(current, [message]));
-            setLiveText('');
-            liveTextRef.current = '';
+            // Shown only after the smoother has drained the streamed text.
+            pendingAnswerRef.current = message;
           },
           onRetry: () => {
-            liveTextRef.current = '';
-            setLiveText('');
+            smoother.reset();
           },
         },
         controller.signal,
       );
 
-      if (!answered && liveTextRef.current.trim()) {
-        const fallback: ChatMessage = {
-          ...optimistic,
-          _id: `draft-answer-${Date.now()}`,
-          sender: 'ASSISTANT',
-          messageType: 'ANSWER',
-          body: { mainText: liveTextRef.current, footerText: null, additionalData: null },
-        };
-        setMessages((current) => mergeChatMessages(current, [fallback]));
-        setLiveText('');
-        liveTextRef.current = '';
+      const pendingFinal =
+        pendingAnswerRef.current ??
+        (smoother.fullText.trim()
+          ? {
+              ...optimistic,
+              _id: `draft-answer-${Date.now()}`,
+              sender: 'ASSISTANT',
+              messageType: 'ANSWER',
+              body: {
+                mainText: smoother.fullText,
+                footerText: null,
+                additionalData: null,
+              },
+            }
+          : null);
+
+      await smoother.drain();
+      smoother.reset();
+      if (pendingFinal) {
+        setMessages((current) => mergeChatMessages(current, [pendingFinal]));
       }
     } catch (sendError: unknown) {
       if (!isAbortError(sendError)) {
+        smoother.reset();
         setMessages((current) => current.filter((message) => message._id !== draftId));
         setDraft((current) => current || value);
         setError(
@@ -243,9 +262,9 @@ export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionS
         );
       }
     } finally {
+      smoother.reset();
+      pendingAnswerRef.current = null;
       if (!controller.signal.aborted) setSending(false);
-      setLiveText('');
-      liveTextRef.current = '';
       abortRef.current = null;
     }
   };
@@ -298,8 +317,14 @@ export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionS
       }`
     : null;
 
+  const formOpen = showContact && Boolean(config.contact) && !loading;
+
   return (
-    <section className="pp-chat-panel" aria-label={t('smart-chat.title')}>
+    <section
+      className="pp-chat-panel"
+      data-mode={formOpen ? 'form' : 'chat'}
+      aria-label={t('smart-chat.title')}
+    >
       <header className="pp-chat-header">
         <span className="pp-chat-header__avatar" aria-hidden="true">
           {config.avatarUrl ? (
@@ -344,6 +369,10 @@ export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionS
             <span className="pp-chat-skeleton" />
             <span className="pp-chat-skeleton pp-chat-skeleton--short" />
             <span className="pp-chat-skeleton" />
+          </div>
+        ) : formOpen && config.contact ? (
+          <div className="pp-chat-form-view">
+            <ChatContactForm contact={config.contact} onClose={() => setShowContact(false)} />
           </div>
         ) : (
           <>
@@ -452,12 +481,6 @@ export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionS
                     {t('smart-chat.contact-cta')}
                   </button>
                 )}
-              </div>
-            )}
-
-            {showContact && config.contact && (
-              <div className="pp-chat-contact">
-                <ChatContactForm contact={config.contact} />
               </div>
             )}
           </>

@@ -228,14 +228,30 @@ test.describe('smart chat mobile', () => {
     expect(layout.assistantBottom).toBeLessThanOrEqual(layout.composerTop + 1);
   });
 
-  test('offline shows the contact form and disables the composer', async ({ page }) => {
+  test('offline shows the contact form in form mode', async ({ page }) => {
     await mockChat(page, { activeHandlers: [] });
     await page.goto('/');
     await openChat(page);
 
     await expect(page.locator('.pp-chat-header__status')).toHaveText('Offline');
-    await expect(page.locator('.pp-chat-textarea')).toBeDisabled();
     await expect(page.locator('.pp-chat-form')).toBeVisible();
     await expect(page.locator('.pp-chat-form__submit')).toBeVisible();
+    await expect(page.locator('.pp-chat-panel')).toHaveAttribute('data-mode', 'form');
+    await expect(page.locator('.pp-chat-composer')).toBeHidden();
+  });
+
+  test('the contact form has a clear exit back to the conversation', async ({ page }) => {
+    await mockChat(page);
+    await page.goto('/');
+    await openChat(page);
+
+    const contactToggle = page.locator('.pp-chat-header').getByRole('button', { name: 'Contact' });
+    await contactToggle.click();
+    await expect(page.locator('.pp-chat-panel')).toHaveAttribute('data-mode', 'form');
+    await expect(page.locator('.pp-chat-composer')).toBeHidden();
+
+    await page.getByRole('button', { name: 'Close form' }).click();
+    await expect(page.locator('.pp-chat-panel')).toHaveAttribute('data-mode', 'chat');
+    await expect(page.locator('.pp-chat-textarea')).toBeVisible();
   });
 });

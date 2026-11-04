@@ -6,16 +6,33 @@ import { submitSmartChatContact } from './chat-client';
 
 interface ChatContactFormProps {
   contact: PublicChatContact;
+  onClose?: () => void;
   onSubmitted?: () => void;
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function ChatContactForm({ contact, onSubmitted }: ChatContactFormProps) {
+export function ChatContactForm({ contact, onClose, onSubmitted }: ChatContactFormProps) {
   const { t } = useTranslation();
   const [values, setValues] = useState({ name: '', email: '', phone: '', message: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+
+  const head = onClose ? (
+    <div className="pp-chat-form__head">
+      <h3 className="pp-chat-form__title">{t('smart-chat.contact-title')}</h3>
+      <button
+        type="button"
+        className="pp-chat-icon-button pp-chat-icon-button--close"
+        onClick={onClose}
+        aria-label={t('smart-chat.close-form')}
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      </button>
+    </div>
+  ) : null;
 
   const update = (field: keyof typeof values, value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
@@ -65,6 +82,7 @@ export function ChatContactForm({ contact, onSubmitted }: ChatContactFormProps) 
   if (status === 'success') {
     return (
       <div className="pp-chat-form-success" role="status">
+        {head}
         <p className="pp-chat-form-success__title">{t('smart-chat.contact-success')}</p>
         {contact.successMessage && <p className="pp-chat-form-success__body">{contact.successMessage}</p>}
       </div>
@@ -73,7 +91,7 @@ export function ChatContactForm({ contact, onSubmitted }: ChatContactFormProps) 
 
   return (
     <form className="pp-chat-form" onSubmit={submit} noValidate>
-      <h3 className="pp-chat-form__title">{t('smart-chat.contact-title')}</h3>
+      {head ?? <h3 className="pp-chat-form__title">{t('smart-chat.contact-title')}</h3>}
       {contact.introMessage && <p className="pp-chat-form__intro">{contact.introMessage}</p>}
 
       {contact.fields.name && (
