@@ -7,11 +7,21 @@ export type Locale = (typeof LOCALES)[number];
 export const PRIMARY_LOCALE: Locale = 'en';
 
 export function useTranslation(): { t: TFunction } {
-  return { t: i18n.getTranslationFunction() };
+  const base = i18n.getTranslationFunction();
+  // In the browser, persisted islands (transition:persist) outlive client-side
+  // locale switches, and the host language they hydrated with does not update.
+  // Re-anchor the live translation to the wixLanguage cookie on every call;
+  // i18next resolves that language from the resources bundled for the page.
+  if (typeof document === 'undefined') return { t: base };
+  const language = readSiteLanguage();
+  const t = ((key: string, options?: Record<string, unknown>) =>
+    base(key, { ...options, lng: language })) as unknown as TFunction;
+  return { t };
 }
 
 export function currentLanguage(): string {
-  return i18n.getLanguage();
+  if (typeof document === 'undefined') return i18n.getLanguage();
+  return readSiteLanguage();
 }
 
 export function localize(path: string): string {
