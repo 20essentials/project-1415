@@ -78,6 +78,7 @@ export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionS
   const [historyNonce, setHistoryNonce] = useState(0);
 
   const composerRef = useRef<HTMLTextAreaElement>(null);
+  const liveBubbleRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const smootherRef = useRef<StreamSmoother | null>(null);
   const pendingAnswerRef = useRef<ChatMessage | null>(null);
@@ -160,6 +161,13 @@ export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionS
     composerRef.current.style.height = 'auto';
     composerRef.current.style.height = `${Math.min(composerRef.current.scrollHeight, 112)}px`;
   }, [draft]);
+
+  // The live bubble is capped and scrollable; keep the newest streamed text
+  // visible as chunks arrive, mobile included.
+  useEffect(() => {
+    const bubble = liveBubbleRef.current;
+    if (bubble) bubble.scrollTop = bubble.scrollHeight;
+  }, [liveText]);
 
   const loadEarlier = async () => {
     if (!nextCursor || loadingEarlier) return;
@@ -448,7 +456,7 @@ export function ChatPanel({ config, onClose, initialQuestion, onInitialQuestionS
                 <span className="pp-chat-avatar" aria-hidden="true">
                   {config.avatarUrl ? <img src={config.avatarUrl} alt="" width={28} height={28} /> : speakerName.charAt(0)}
                 </span>
-                <div className="pp-chat-bubble pp-chat-bubble--assistant">
+                <div ref={liveBubbleRef} className="pp-chat-bubble pp-chat-bubble--assistant">
                   <MessageText text={liveText} />
                 </div>
               </div>

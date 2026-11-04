@@ -474,6 +474,12 @@ html.menu-open .pp-chat-root {
 
 .pp-chat-live .pp-chat-bubble {
   max-width: 85%;
+  /* The streaming reply grows here, outside the message list; cap it and let
+     it scroll so it follows the newest text instead of pinning the panel. */
+  overflow-y: auto;
+  max-height: min(14rem, 40svh);
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
 }
 
 .pp-chat-live--typing {
