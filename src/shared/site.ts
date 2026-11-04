@@ -50,6 +50,7 @@ export const site = {
         claims: ['paseo.inicio.claim-1', 'paseo.inicio.claim-2', 'paseo.inicio.claim-3'],
         cta: { href: '/products', label: 'paseo.inicio.cta' },
         scroll: 1.5,
+        scrollMobile: 1.0,
         linger: 0.35,
       },
       {
@@ -112,6 +113,7 @@ export const site = {
         focus: 50,
         cta: { href: '/products', label: 'paseo.your-space.cta' },
         scroll: 1.4,
+        scrollMobile: 1.0,
         linger: 0.3,
       },
     ],

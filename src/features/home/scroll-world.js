@@ -8,10 +8,13 @@
          cropped to portrait.
      (b) per-section `titleTag` (`'h1'` on the landing stop only) so the page
          keeps a single <h1>.
-     (c) phones swap the scrubbed clips for a scroll-driven still reveal
-         (clip-path wipe + parallax), so no video is fetched or decoded on touch.
-   Everything else (blob seek, crossfade, reduced-motion) is unchanged. The
-   engine owns its own passive scroll rAF — do not add another.
+      (c) phones swap the scrubbed clips for a scroll-driven still reveal
+          (clip-path wipe + parallax), so no video is fetched or decoded on touch.
+      (d) phones get compressed segment widths (diveScrollMobile /
+          connScrollMobile): the connector is invisible there, so its width is
+          near zero instead of pure dead scroll.
+    Everything else (blob seek, crossfade, reduced-motion) is unchanged. The
+    engine owns its own passive scroll rAF — do not add another.
    ========================================================================== */
 
 export function mountScrollWorld(container, config) {
@@ -24,6 +27,11 @@ export function mountScrollWorld(container, config) {
   const CONNECTORS_M = config.connectorsMobile || [];
   const DIVE_W = config.diveScroll || 1.3;
   const CONN_W = config.connScroll || 0.9;
+  // Phones never scrub clips, so their segments get their own compressed widths:
+  // connectors are display:none there (they share the next still) and would be
+  // pure dead scroll, and dives only need room for the wipe + copy dwell.
+  const DIVE_W_M = config.diveScrollMobile || 0.6;
+  const CONN_W_M = config.connScrollMobile || 0.25;
   const CROSSFADE = (config.crossfade != null) ? config.crossfade : 0.12;  // seam dissolve width (vh)
   const N = SECTIONS.length;
   if (!N) return;
@@ -35,7 +43,8 @@ export function mountScrollWorld(container, config) {
   const SEGMENTS = [];
   SECTIONS.forEach((s, i) => {
     const dive = { kind: 'dive', si: i, clip: s.clip, clipM: s.clipMobile, still: s.still, stillM: s.stillMobile,
-                   accent: s.accent, focusX: s.focusX, w: s.scroll || DIVE_W, linger: s.linger || 0 };
+                   accent: s.accent, focusX: s.focusX, scroll: s.scroll, scrollMobile: s.scrollMobile,
+                   linger: s.linger || 0 };
     SEGMENTS.push(dive);
     s._seg = dive;
     // A connector is optional: if connectors[i] is falsy, the two dives simply
@@ -44,7 +53,7 @@ export function mountScrollWorld(container, config) {
     if (i < N - 1 && CONNECTORS[i]) {
       SEGMENTS.push({ kind: 'conn', si: i, clip: CONNECTORS[i], clipM: CONNECTORS_M[i],
                       still: SECTIONS[i + 1].still, stillM: SECTIONS[i + 1].stillMobile,
-                      focusX: SECTIONS[i + 1].focusX, accent: SECTIONS[i + 1].accent, w: CONN_W });
+                      focusX: SECTIONS[i + 1].focusX, accent: SECTIONS[i + 1].accent });
     }
   });
   const NSEG = SEGMENTS.length;
@@ -140,12 +149,17 @@ export function mountScrollWorld(container, config) {
   let vh = window.innerHeight, stageX = 0, totalW = 0, activeIndex = -1, ticking = false;
   let laidOutW = window.innerWidth;   // width the current layout was computed at (see onResize)
 
+  const segWidth = (s) => {
+    if (s.kind !== 'dive') return isMobile() ? CONN_W_M : CONN_W;
+    return isMobile() ? (s.scrollMobile || DIVE_W_M) : (s.scroll || DIVE_W);
+  };
+
   function layout() {
     vh = window.innerHeight;
     laidOutW = window.innerWidth;
     stageX = window.innerWidth > 860 ? 4 : 0;
     let off = 0;
-    SEGMENTS.forEach(s => { s.start = off * vh; off += s.w; s.end = off * vh; });
+    SEGMENTS.forEach(s => { s.w = segWidth(s); s.start = off * vh; off += s.w; s.end = off * vh; });
     totalW = off;
     track.style.height = (totalW * vh + vh) + 'px';   // +1vh so the last flight completes
     container.style.minHeight = track.style.height;   // matches the pre-paint reserve in scroll-world.astro
