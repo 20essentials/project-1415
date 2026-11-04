@@ -39,6 +39,37 @@ Tests espejan la estructura: `tests/features/<feature>/*.test.ts(x)` y `tests/sh
 ## Typescript
 - No debes usar any, a menos que no tengas de otra. Trata de crear los tipos usando las docs de Wix:  https://dev.wix.com/docs/api-reference y https://dev.wix.com/docs/sdk y
 
+## Astro: APIs deprecadas que NO se usan (v6/v7)
+
+El proyecto usa Astro 5.8, pero escribimos código futuro-proof. Investigado contra las guías oficiales de upgrade (https://docs.astro.build/en/guides/upgrade-to/v6/ y /v7/). Nada de esto debe usarse, ni siquiera deprecaciones ya existentes en Astro 5:
+
+**Usar siempre (ya es así en el repo):**
+- `<ClientRouter />` desde `astro:transitions`, nunca `<ViewTransitions />` (eliminado en v6).
+- Eventos del router por su nombre string (`'astro:page-load'`, `'astro:before-swap'`, …) nunca con las constantes `TRANSITION_*` ni `isTransitionBeforePreparationEvent()` / `isTransitionBeforeSwapEvent()` / `createAnimationScope()` de `astro:transitions [client]` (deprecadas en v6 y eliminadas en v7).
+- Módulos de script re-vinculados en `astro:page-load` cuando tocan DOM del header/LP (el ClientRouter reemplaza el DOM y los módulos corren una vez por sesión).
+
+**Evitar (deprecado/eliminado en v6):**
+- `Astro.glob()` (eliminado en v6) → `import.meta.glob()` (con `eager: true` si hace falta en SSR).
+- Legacy content collections (`src/content/config.ts`, `type: 'content'` sin loader) → Content Layer API (`defineCollection` con `glob()` loader).
+- `z` importado de `astro:content` ni `astro:schema` → `import { z } from 'astro/zod'`.
+- `import.meta.env.ASSETS_PREFIX` → `build.assetsPrefix` de `astro:config/server`.
+- El objeto `Astro` dentro de `getStaticPaths()` → `import.meta.env.SITE` para el `Astro.site` que se necesite.
+- Zod v3: formatos string deprecados (`z.string().email()`, `.url()`) → top-level (`z.email()`, `z.url()`); `.default()` tras transform debe matchear el tipo de salida.
+- Sesiones con driver string (`session.driver: 'redis'` + `options`) → `sessionDrivers.redis({...})` (deprecado en v6).
+- `handleForms` prop en `<ClientRouter />` ni `prefetch()` con argumento (eliminados en v6).
+
+**Evitar (deprecado/eliminado en v7):**
+- `@astrojs/db` (eliminado en v7) → `node:sqlite`, Drizzle directo o la DB del deploy target.
+- `getContainerRenderer()` desde la raíz del paquete de la integración → entrypoint dedicado (`@astrojs/react/container-renderer`).
+- **`src/fetch.ts` es un nombre reservado en v7** (advanced routing). No crear archivos con ese nombre para otros propósitos.
+
+**Cambios de default en v6/v7 que conviene asumir ya:**
+- v6: `<script>`/`<style>` se renderizan en el orden en que están definidos (antes se reordenaban); no depender del orden implícito de bundling.
+- v6: valores de `import.meta.env` SIEMPRE inlinados — el env de cliente debe ser estáticamente resoluble en build.
+- v7: whitespace `compressHTML: 'jsx'` — los espacios en blanco entre elementos inline se recortan; si un espacio importa entre dos inline elements, escribirlo explícito con `{" "}`.
+- v7: el compilador Rust es estricto con HTML inválido (tags sin cerrar dan error; `<div>` dentro de `<p>` ya no se corrige silenciosamente). Escribir markup siempre bien anidado y cerrado.
+- v6 requiere Node ≥ 22.12.0 (ya cumplimos: v22.14). No fijar engines a versiones menores.
+
 ## Gestor de paquetes (solo npm)
 
 - **Solo npm.** No usar pnpm: no hay `pnpm-lock.yaml` ni `pnpm-workspace.yaml`; el único lockfile es `package-lock.json` y `node_modules` se instala flat (sin store `.pnpm`).
