@@ -5,17 +5,19 @@ import { useTranslation, localize } from '@/shared/i18n';
 const { t } = useTranslation();
 
 const stops = site.paseo.stops.map((stop) => {
-  const claims = 'claims' in stop ? stop.claims.map((claim) => t(claim)) : undefined;
   const steps = 'steps' in stop ? stop.steps.map((step) => t(step)) : undefined;
   const cta = 'cta' in stop ? { href: localize(stop.cta.href), label: t(stop.cta.label) } : undefined;
+  const body = stop.subtitle
+    ? t(stop.subtitle)
+    : steps
+      ? steps.join(' → ')
+      : '';
   return {
     ...stop,
     label: t(stop.label),
     eyebrow: t(stop.eyebrow),
     title: t(stop.title),
-    subtitle: stop.subtitle ? t(stop.subtitle) : '',
-    claims,
-    steps,
+    body,
     cta,
   };
 });
@@ -53,8 +55,7 @@ const world = {
     titleTag: i === 0 ? 'h1' : 'h2',
     eyebrow: stop.eyebrow,
     title: stop.title,
-    body: stop.subtitle,
-    tags: stop.steps ?? stop.claims ?? [],
+    body: stop.body,
     cta: stop.cta ? { primary: stop.cta } : undefined,
     scroll: 'scroll' in stop ? stop.scroll : undefined,
     scrollMobile: 'scrollMobile' in stop ? stop.scrollMobile : undefined,
