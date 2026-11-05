@@ -20,9 +20,9 @@ la fuente de verdad del **CÓMO** ejecutar cada paso.
 | 46 | ✅ done | Smart Chat: gate de instalación + API backend |
 | 47 | ✅ done | Smart Chat: widget flotante + vlist |
 | 48 | ✅ done | Smart Chat: contacto, handoff y hardening |
-| 49 – 51 | 🟠 materialized | FAQ app + Blog comments + Waitlist de talleres |
+| 49 – 51 | ✅ done | FAQ app + Blog comments + Waitlist de talleres (CMS fallback) |
 
-**Total:** 48/48 steps completados · 3 steps materializados y listos para ejecutar (49–51).
+**Total:** 51/51 steps materializados completados.
 Los items ⚪ parket viven en su sección aparte: no se materializan ni ejecutan por iniciativa del agente — solo cuando el propietario lo pida explícitamente.
 
 ---
@@ -85,8 +85,8 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `✅ done` 
 | 47 | Smart Chat: widget flotante + vlist | ✅ done | `step-47-smart-chat-widget.md` |
 | 48 | Smart Chat: contacto, handoff y hardening | ✅ done | `step-48-smart-chat-hardening.md` |
 | 49 | FAQ app: `/faq` con categorías + búsqueda de cuidado | ✅ done | `step-49-faq-app.md` |
-| 50 | Blog comments: leer + postear en el Journal | 🟠 materialized | `step-50-blog-comments.md` |
-| 51 | Talleres: lista de espera (Bookings Waitlist API) | 🟠 materialized | `step-51-workshops-waitlist.md` |
+| 50 | Blog comments: leer + postear en el Journal | ✅ done | `step-50-blog-comments.md` |
+| 51 | Talleres: lista de espera CMS (la API nativa es solo para sesiones EVENT) | ✅ done | `step-51-workshops-waitlist.md` |
 
 ## Premium / parket (solo cuando el propietario pida)
 

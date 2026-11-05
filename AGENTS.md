@@ -1,6 +1,7 @@
 - No usamos python, solo nodejs.
 - Nos inspiraremos en la web de: https://www.mintlify.com/
 - Un punto de referencia es la documentation de Wix Managed Headless: https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/about-the-astro-integration
+- No crees files "nul"
 
 # GENERAL
 - Todo file adentro de src/* debe estar escrito en kebab-case.
@@ -123,6 +124,12 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 - Levantar `npx astro dev` y sacar PNGs con Playwright en los viewports relevantes (móvil 390x844 y 360x640; tablet/desktop si aplica), guardándolos en `./.tmp/`.
 - Los screenshots son para el usuario: **recomendarle explícitamente que los abra y los revise** al final del reporte, con sus rutas.
 - Si el modelo no puede ver imágenes, decirlo y complementar con verificación programática (bounding boxes, overflow, colores muestreados, `elementFromPoint`).
+
+### Modelos de opencode: verificar contra el catálogo local
+
+- Los modelos gratis de opencode cambian sin aviso (rotan "for a limited time"); los IDs de docs/web pueden estar desactualizados.
+- Antes de fijar un modelo en un frontmatter de comando/prompt (p. ej. `model: opencode/...`), correr `opencode models | grep -i <nombre>` y usar exactamente un ID existente.
+- Si un comando falla con "model not found", la causa es un modelo retirado del catálogo: correr `opencode models` y actualizar el frontmatter, no adivinar.
 
 ### Tailwind: usar siempre la sintaxis canónica
 
