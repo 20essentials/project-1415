@@ -9,6 +9,9 @@ import { test, expect } from '@playwright/test';
 // 'duplicate' when the entry already exists); insert-vs-duplicate semantics
 // are pinned by tests/features/workshops/waitlist.test.ts.
 const EMPTY_DAY_BUTTON = '29'; // 2026-11-29, a Sunday with no sessions
+// exact:true: the dev-only props <code> also contains this sentence and would
+// otherwise trip Playwright strict mode (two matches for the substring).
+const NO_TIMES_TEXT = 'No times available on this day — try another date.';
 const JOIN_FIRST_NAME = 'Ada';
 const JOIN_EMAIL = 'waitlist-e2e@example.com';
 
@@ -18,9 +21,7 @@ async function openEmptyDay(page: import('@playwright/test').Page) {
   await expect(pickDate).toBeVisible({ timeout: 30_000 });
   // The island auto-loads today's slots on mount; the note only appears after
   // hydration, so waiting on it keeps the day click from racing the island.
-  await expect(page.getByText('No times available on this day', { exact: false })).toBeVisible(
-    { timeout: 30_000 },
-  );
+  await expect(page.getByText(NO_TIMES_TEXT, { exact: true })).toBeVisible({ timeout: 30_000 });
   await pickDate.getByRole('button', { name: EMPTY_DAY_BUTTON, exact: true }).click();
 }
 
@@ -59,9 +60,7 @@ test.describe('workshop waitlist', () => {
     const pickDate = page.getByRole('group', { name: 'Pick a date' });
     await expect(pickDate).toBeVisible({ timeout: 30_000 });
     // The island auto-loads today's slots on mount; same-day policy blocks them.
-    await expect(page.getByText('No times available on this day', { exact: false })).toBeVisible(
-      { timeout: 30_000 },
-    );
+    await expect(page.getByText(NO_TIMES_TEXT, { exact: true })).toBeVisible({ timeout: 30_000 });
     await expect(page.getByTestId('waitlist-join')).toHaveCount(0);
   });
 });
