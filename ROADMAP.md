@@ -20,9 +20,10 @@ la fuente de verdad del **CÓMO** ejecutar cada paso.
 | 46 | ✅ done | Smart Chat: gate de instalación + API backend |
 | 47 | ✅ done | Smart Chat: widget flotante + vlist |
 | 48 | ✅ done | Smart Chat: contacto, handoff y hardening |
+| 49 – 51 | 🟠 materialized | FAQ app + Blog comments + Waitlist de talleres |
 
-| step-x | ⚪ pending | Dominio propio + Wix Pages domain + AI discovery (requiere coste) |
-**Total:** 48/48 pasos completados + 2 pendientes previos (dominio propio; loyalty diferido a pedido explícito del propietario)
+**Total:** 48/48 steps completados · 3 steps materializados y listos para ejecutar (49–51).
+Los items ⚪ parket viven en su sección aparte: no se materializan ni ejecutan por iniciativa del agente — solo cuando el propietario lo pida explícitamente.
 
 ---
 
@@ -83,28 +84,35 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `✅ done` 
 | 46 | Smart Chat: gate de instalación + API backend | ✅ done | `step-46-smart-chat-backend.md` |
 | 47 | Smart Chat: widget flotante + vlist | ✅ done | `step-47-smart-chat-widget.md` |
 | 48 | Smart Chat: contacto, handoff y hardening | ✅ done | `step-48-smart-chat-hardening.md` |
+| 49 | FAQ app: `/faq` con categorías + búsqueda de cuidado | ✅ done | `step-49-faq-app.md` |
+| 50 | Blog comments: leer + postear en el Journal | 🟠 materialized | `step-50-blog-comments.md` |
+| 51 | Talleres: lista de espera (Bookings Waitlist API) | 🟠 materialized | `step-51-workshops-waitlist.md` |
 
-## Aun no porque requiere comprar un plan de wix
+## Premium / parket (solo cuando el propietario pida)
 
-| Paso | Status | Notas |
-| :--- | :------ | :------ |
-| Loyalty: puntos y recompensas | ⚪ pending | **Diferido:** solo a pedido explícito del propietario; no materializar por iniciativa propia |
-
-Detalle para el step cuando se materialice: instalar **Wix Loyalty Program**, activar el programa por API (reglas de earned en el dashboard si la API no las cubre); `/rewards` member-only con balance/tier, catálogo de recompensas y canje a cupón aplicable en el carrito; link en `/account`.
-
-**Docs:** [Loyalty Program API](https://dev.wix.com/docs/api-reference/crm/loyalty-program)
-
-## Future
+Nada de esta sección se materializa o ejecuta por iniciativa propia — `parket` no
+es `pending` y `/generate-next-steps` los ignora. Cada uno se implementa solo con
+go-ahead explícito del propietario (ahí se materializa su step con `/generate-next-steps`,
+haciendo el status `pending` primero si hace falta).
 
 | Paso | Status | Notas |
 | :--- | :------ | :------ |
-| Dominio propio + Wix Pages domain + AI discovery | ⚪ pending | Requiere coste: dominio + plan premium |
+| Dominio propio + Wix Pages domain + AI discovery | ⚪ parket | Requiere coste: dominio + plan premium |
+| Loyalty: puntos y recompensas | ⚪ parket | Instalar Wix Loyalty Program + `/rewards` member-only |
+| Forum app ("growers' community") | ⚪ parket | Verificar factibilidad headless antes de materializar (members ya activo) |
+| Dashboard pages adicionales (app extensions) | ⚪ parket | El propietario decidió no crear más dashboard pages |
+| Marketing email (Automations: bienvenida / abandono de carrito) | ⚪ parket | Config de email flows en dashboard, no es UI headless |
 
-Detalle para el step cuando se materialice:
+**Dominio propio** (detalle para su step): conectar dominio comprado (DNS/HTTPS,
+dominio primario, redirect desde wix-site-host.com) y añadirlo como allowed redirect
+domain; conectar el Wix Pages domain para checkout/bookings hosted con marca. Verificar
+`/_wix/pages.json`, `/sitemap.xml`, `/llms.txt` autogenerado y `/_api/mcp`. Prerrequisito
+para `trackEvent()` en producción. **Docs:** [About Wix Hosted Pages](https://dev.wix.com/docs/go-headless/business-solutions/wix-hosted-pages/about-wix-hosted-pages#about-wix-hosted-pages) · [Redirects API](https://dev.wix.com/docs/api-reference/business-management/headless/redirects)
 
-**Costo:** compra/renovación de dominio + plan premium. Conectar dominio propio (DNS/HTTPS, dominio primario, redirect desde wix-site-host.com) y añadirlo como allowed redirect domain; conectar/verificar el Wix Pages domain para que checkout y bookings hosted mantengan la marca. Verificar `/_wix/pages.json` y `/sitemap.xml`; comprobar `/llms.txt` autogenerado y `/_api/mcp` (requieren dominio propio e indexación). **Prerrequisito del step 35:** `trackEvent()` solo entrega eventos en sitio publicado con dominio propio.
-
-**Docs:** [About Wix Hosted Pages](https://dev.wix.com/docs/go-headless/business-solutions/wix-hosted-pages/about-wix-hosted-pages#about-wix-hosted-pages) · [Redirects API](https://dev.wix.com/docs/api-reference/business-management/headless/redirects) · [Track analytics events](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/feature-guides/track-analytics-events#track-analytics-events) · [About SEO support](https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/feature-guides/seo/about-seo-support#about-seo-support)
+**Loyalty** (detalle para su step): instalar **Wix Loyalty Program** via Apps Installer,
+activar el programa por API (rules de earned en dashboard si la API no las cubre);
+`/rewards` member-only con balance/tier, catálogo de recompensas y canje a cupón
+aplicable en el carrito; link en `/account`. **Docs:** [Loyalty Program API](https://dev.wix.com/docs/api-reference/crm/loyalty-program)
 
 ---
 
