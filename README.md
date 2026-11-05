@@ -2,6 +2,12 @@
 <a href="https://petals-d960960gm-0609.wix-site-host.com/" target="_blank" rel="noopener noreferrer">
   <img src="preview/project-1415.avif" alt="Petals & Predators" />
 </a>
+<a href="https://petals-d960960gm-0609.wix-site-host.com/" target="_blank" rel="noopener noreferrer">
+  <img src="preview/products.avif" alt="Petals & Predators" />
+</a>
+<a href="https://petals-d960960gm-0609.wix-site-host.com/" target="_blank" rel="noopener noreferrer">
+  <img src="preview/services.avif" alt="Petals & Predators" />
+</a>
 
 # Petals & Predators
 
