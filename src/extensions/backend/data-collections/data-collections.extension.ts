@@ -8,6 +8,8 @@ import wishlistCollection from './wishlist';
 
 import restockAlertsCollection from './restock-alerts';
 
+import workshopWaitlistCollection from './workshop-waitlist';
+
 export default extensions.dataCollections({
   id: '9e51c9e9-0726-4bc7-9f9b-4dd93e03edd9',
   name: 'Data Collections',
@@ -15,6 +17,7 @@ export default extensions.dataCollections({
     careGuidesCollection,
     lookbookCollection,
     wishlistCollection,
-    restockAlertsCollection
+    restockAlertsCollection,
+    workshopWaitlistCollection
   ],
 });
