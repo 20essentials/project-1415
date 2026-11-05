@@ -29,6 +29,13 @@ export interface BlogCategory {
   postCount: number;
 }
 
+interface PostMediaImage {
+  id?: string | null;
+  url?: string;
+  width?: number;
+  height?: number;
+}
+
 interface PostRecord {
   _id?: string;
   title?: string;
@@ -40,7 +47,7 @@ interface PostRecord {
   pinned?: boolean;
   categoryIds?: string[];
   language?: string | null;
-  media?: { wixMedia?: { image?: string }; displayed?: boolean; altText?: string | null } | null;
+  media?: { wixMedia?: { image?: string | PostMediaImage }; displayed?: boolean; altText?: string | null } | null;
   richContent?: unknown;
   metrics?: { comments?: number | null } | null;
 }
@@ -75,7 +82,46 @@ const queryCategoriesElevated = auth.elevate(categories.queryCategories) as (
 ) => CategoriesQuery;
 
 const HERO_WIDTH = 1200;
-const HERO_HEIGHT = 675;
+
+// Fill-only scale, never crop: matching the fill URL's height to the natural
+// ratio (the transform returns "missing h" when height is absent).
+function resolveHero(image: string | PostMediaImage | null | undefined): BlogPost['hero'] {
+  if (image == null) return null;
+  const natural = naturalDimensions(image);
+  if (!natural) return null;
+
+  const raw = typeof image === 'object' ? image.url : image;
+  if (typeof raw !== 'string') return null;
+
+  if (natural.width <= HERO_WIDTH) {
+    const url = resolveWixImageUrl(raw);
+    return url ? { url, width: natural.width, height: natural.height } : null;
+  }
+  const height = Math.round((natural.height * HERO_WIDTH) / natural.width);
+  const url = resolveWixImageUrl(raw, HERO_WIDTH, height);
+  return url ? { url, width: HERO_WIDTH, height } : null;
+}
+
+function naturalDimensions(image: string | PostMediaImage | null | undefined): { width: number; height: number } | null {
+  if (!image) return null;
+  if (typeof image === 'object') {
+    const { width, height } = image;
+    if (typeof width === 'number' && width > 0 && typeof height === 'number' && height > 0) {
+      return { width, height };
+    }
+    if (typeof image.url === 'string') return naturalDimensions(image.url);
+    return null;
+  }
+  const hash = image.indexOf('#');
+  if (hash === -1) return null;
+  const hasProbe = new URLSearchParams(image.slice(hash + 1));
+  const width = Number(hasProbe.get('originWidth'));
+  const height = Number(hasProbe.get('originHeight'));
+  if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
+    return { width, height };
+  }
+  return null;
+}
 
 function toDate(value: Date | string | null | undefined): Date | null {
   if (!value) return null;
@@ -84,19 +130,12 @@ function toDate(value: Date | string | null | undefined): Date | null {
 }
 
 function toPost(record: PostRecord, labelsById: Map<string, string>): BlogPost {
-  const heroImage = record.media?.wixMedia?.image ?? null;
   return {
     id: record._id ?? '',
     title: record.title ?? '',
     slug: record.slug ?? '',
     excerpt: record.excerpt ?? '',
-    hero: heroImage
-      ? {
-          url: resolveWixImageUrl(heroImage, HERO_WIDTH, HERO_HEIGHT) ?? '',
-          width: HERO_WIDTH,
-          height: HERO_HEIGHT,
-        }
-      : null,
+    hero: resolveHero(record.media?.wixMedia?.image ?? null),
     firstPublishedDate: toDate(record.firstPublishedDate),
     minutesToRead: typeof record.minutesToRead === 'number' ? record.minutesToRead : null,
     featured: record.featured === true,

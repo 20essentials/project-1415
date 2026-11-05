@@ -5,6 +5,7 @@ import { listPostComments, countPostComments } from '@/features/comments/comment
 import { CommentList } from '@/features/comments/comment-list';
 import { CommentForm, type CommentFormLabels } from '@/features/comments/comment-form';
 import { renderRicos } from '@/shared/ricos';
+import '@/shared/ricos.css';
 import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
 import AnalyticsView from '@/shared/analytics-view.astro';
 import { WIX_APPS } from '@wix/essentials';
@@ -170,7 +171,7 @@ const articleJsonLd = post
 
           {post.hero && (
             <div
-              class="mx-auto mt-10 max-w-4xl overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule"
+              class="mx-auto mt-12 max-w-3xl overflow-hidden rounded-lg bg-paper-warm ring-1 ring-rule"
               transition:name={post.slug ? `blog-${post.slug}` : undefined}
             >
               <img
@@ -180,7 +181,7 @@ const articleJsonLd = post
                 height={post.hero.height}
                 fetchpriority="high"
                 decoding="async"
-                class="aspect-video w-full object-cover"
+                class="h-auto w-full"
               />
             </div>
           )}

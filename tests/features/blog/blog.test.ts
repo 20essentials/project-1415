@@ -103,20 +103,20 @@ describe('blog data access', () => {
   it('maps a raw post to the BlogPost DTO, resolving wix:image covers and category labels', async () => {
     queryPosts.mockReturnValue(chain([wixPost]));
     queryCategories.mockReturnValue(chain([wixCategory]));
-    getScaledToFillImageUrl.mockReturnValue('https://static.wixstatic.com/media/abc/v1/fill/w_1200,h_675/abc.jpg');
+    getScaledToFillImageUrl.mockReturnValue('https://static.wixstatic.com/media/abc/v1/fill/w_1200,h_800/abc.jpg');
 
     const posts = await listBlogPosts(20);
 
     expect(queryPosts).toHaveBeenCalledWith({ fieldsets: ['URL', 'METRICS'] });
-    expect(getScaledToFillImageUrl).toHaveBeenCalledWith(wixPost.media.wixMedia.image, 1200, 675, {});
+    expect(getScaledToFillImageUrl).toHaveBeenCalledWith(wixPost.media.wixMedia.image, 1200, 800, {});
     expect(posts).toHaveLength(1);
     const post = posts[0];
     expect(post.id).toBe('post-1');
     expect(post.slug).toBe('feeding-venus-flytraps');
     expect(post.hero).toEqual({
-      url: 'https://static.wixstatic.com/media/abc/v1/fill/w_1200,h_675/abc.jpg',
+      url: 'https://static.wixstatic.com/media/abc/v1/fill/w_1200,h_800/abc.jpg',
       width: 1200,
-      height: 675,
+      height: 800,
     });
     expect(post.firstPublishedDate).toEqual(new Date('2026-09-30T10:00:00.000Z'));
     expect(post.minutesToRead).toBe(4);
@@ -158,7 +158,7 @@ describe('blog data access', () => {
     const link = chain([wixPost]);
     queryPosts.mockReturnValue(link);
     queryCategories.mockReturnValue(chain([wixCategory]));
-    getScaledToFillImageUrl.mockReturnValue('https://static.wixstatic.com/media/abc/v1/fill/w_1200,h_675/abc.jpg');
+    getScaledToFillImageUrl.mockReturnValue('https://static.wixstatic.com/media/abc/v1/fill/w_1200,h_800/abc.jpg');
 
     const post = await getBlogPostBySlug('feeding-venus-flytraps');
 
