@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { readSiteLanguage } from "@/shared/i18n";
+import { WaitlistJoin, type WaitlistJoinLabels } from "@/features/workshops/waitlist-join";
 
 export interface BookingField {
   target: string;
@@ -29,6 +30,8 @@ export interface WorkshopBookingLabels {
   retryBooking?: string;
   prevMonth?: string;
   nextMonth?: string;
+  waitlist?: WaitlistJoinLabels;
+  fullSlot?: string;
 }
 
 interface WorkshopBookingProps {
@@ -45,6 +48,8 @@ interface SlotDto {
   localStartDate: string;
   localEndDate: string;
   staffName?: string | null;
+  bookable?: boolean;
+  full?: boolean;
 }
 
 interface SlotsResponse {
@@ -407,7 +412,17 @@ export function WorkshopBooking({
           )}
 
           {slotStatus === "ready" && slots.length === 0 && (
-            <p className="mt-3 text-sm text-mute">{labels.noTimes}</p>
+            <div className="mt-3 flex flex-col gap-4">
+              <p className="text-sm text-mute">{labels.noTimes}</p>
+              {selectedDate > today && labels.waitlist && (
+                <WaitlistJoin
+                  key={selectedDate}
+                  workshopId={serviceId}
+                  sessionStart={selectedDate}
+                  labels={labels.waitlist}
+                />
+              )}
+            </div>
           )}
 
           {slots.length > 0 && (
@@ -418,19 +433,24 @@ export function WorkshopBooking({
             >
               {slots.map((slot) => {
                 const isActive = slot.localStartDate === selectedSlot?.localStartDate;
+                const isFull = slot.full === true;
                 return (
                   <button
                     key={slot.localStartDate}
                     type="button"
                     aria-pressed={isActive}
+                    data-slot-full={isFull || undefined}
                     onClick={() => setSelectedSlot(slot)}
                     className={`rounded-sm border px-3 py-2 text-sm font-medium transition-colors duration-500 ease-fluid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
                       isActive
                         ? "border-accent bg-accent text-paper"
-                        : "border-rule bg-paper text-ink hover:border-accent"
+                        : isFull
+                          ? "border-rule bg-paper-warm text-ink-soft hover:border-accent"
+                          : "border-rule bg-paper text-ink hover:border-accent"
                     }`}
                   >
                     {slot.localStartDate.slice(11, 16)}
+                    {isFull && <span className="ml-2 text-xs">{labels.fullSlot ?? "Full"}</span>}
                   </button>
                 );
               })}
@@ -451,7 +471,17 @@ export function WorkshopBooking({
             {formatRange(selectedSlot.localStartDate, selectedSlot.localEndDate, locale, timeZone)}
           </p>
 
-          <form onSubmit={handleSubmit} noValidate className="mt-5 flex flex-col gap-5">
+          {selectedSlot.full === true && labels.waitlist ? (
+            <div className="mt-5">
+              <WaitlistJoin
+                key={selectedSlot.localStartDate}
+                workshopId={serviceId}
+                sessionStart={selectedSlot.localStartDate}
+                labels={labels.waitlist}
+              />
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} noValidate className="mt-5 flex flex-col gap-5">
             {fields.map((field) => {
               const hasError = Boolean(fieldErrors[field.target]);
               const errorId = `${field.target}-booking-error`;
@@ -527,7 +557,8 @@ export function WorkshopBooking({
                 {labels.formError}
               </p>
             )}
-          </form>
+            </form>
+          )}
         </section>
       )}
     </div>

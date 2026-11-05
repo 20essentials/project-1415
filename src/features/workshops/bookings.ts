@@ -27,6 +27,8 @@ export interface WorkshopSlot {
   localStartDate: string;
   localEndDate: string;
   staffName: string | null;
+  bookable: boolean;
+  full: boolean;
 }
 
 export type BookingFieldTarget = 'first_name' | 'last_name' | 'email' | 'phone' | 'add_your_message';
@@ -72,6 +74,8 @@ interface ResolvedSlot {
   localEndDate: string;
   scheduleId: string | null;
   resource: { id: string; name: string | null } | null;
+  bookable: boolean;
+  full: boolean;
   location: { locationType: 'OWNER_BUSINESS' | 'OWNER_CUSTOM'; _id?: string; name?: string } | null;
 }
 
@@ -162,7 +166,6 @@ async function resolveAvailableSlots(workshop: Workshop, date: string): Promise<
     fromLocalDate: `${date}T00:00:00`,
     toLocalDate: `${date}T23:59:59`,
     timeZone: SITE_TIMEZONE,
-    bookable: true,
     includeResourceTypeIds: workshop.primaryResourceType
       ? [workshop.primaryResourceType]
       : undefined,
@@ -170,7 +173,7 @@ async function resolveAvailableSlots(workshop: Workshop, date: string): Promise<
   });
 
   return (response.timeSlots ?? [])
-    .filter((slot) => slot.bookable && slot.localStartDate && slot.localEndDate)
+    .filter((slot) => slot.localStartDate && slot.localEndDate)
     .map((slot) => {
       const resource = slot.availableResources?.flatMap((group) => group.resources ?? [])[0];
       const locationType =
@@ -180,6 +183,8 @@ async function resolveAvailableSlots(workshop: Workshop, date: string): Promise<
         localEndDate: slot.localEndDate ?? '',
         scheduleId: slot.scheduleId ?? null,
         resource: resource?._id ? { id: resource._id, name: resource.name ?? null } : null,
+        bookable: slot.bookable === true,
+        full: slot.remainingCapacity === 0,
         location: {
           locationType,
           ...(slot.location?._id ? { _id: slot.location._id } : {}),
@@ -195,11 +200,17 @@ export async function listWorkshopSlots(
 ): Promise<WorkshopSlot[]> {
   if (!isLocalDate(date)) throw new WorkshopBookingError('INVALID_INPUT', 'Invalid date');
   const slots = await resolveAvailableSlots(workshop, date);
-  return slots.map((slot) => ({
-    localStartDate: slot.localStartDate,
-    localEndDate: slot.localEndDate,
-    staffName: slot.resource?.name ?? null,
-  }));
+  return slots
+    // Keep the open slots plus the sold-out ones (the waitlist card);
+    // drop slots blocked only by booking policies (too late same-day, etc.).
+    .filter((slot) => slot.bookable || slot.full)
+    .map((slot) => ({
+      localStartDate: slot.localStartDate,
+      localEndDate: slot.localEndDate,
+      staffName: slot.resource?.name ?? null,
+      bookable: slot.bookable,
+      full: slot.full,
+    }));
 }
 
 // Wix phone format only accepts E.164; visitors type local numbers, so default to Italy (+39).
