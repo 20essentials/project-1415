@@ -107,7 +107,7 @@ describe('blog data access', () => {
 
     const posts = await listBlogPosts(20);
 
-    expect(queryPosts).toHaveBeenCalledWith({ fieldsets: ['URL'] });
+    expect(queryPosts).toHaveBeenCalledWith({ fieldsets: ['URL', 'METRICS'] });
     expect(getScaledToFillImageUrl).toHaveBeenCalledWith(wixPost.media.wixMedia.image, 1200, 675, {});
     expect(posts).toHaveLength(1);
     const post = posts[0];
@@ -120,6 +120,7 @@ describe('blog data access', () => {
     });
     expect(post.firstPublishedDate).toEqual(new Date('2026-09-30T10:00:00.000Z'));
     expect(post.minutesToRead).toBe(4);
+    expect(post.commentCount).toBeNull();
     expect(post.categories).toEqual(['Care']);
     expect(post.categoryIds).toEqual(['cat-1']);
   });

@@ -1,10 +1,14 @@
 ---
 import Layout from '@/app/layout.astro';
 import { getBlogPostBySlug, relatedPosts, listBlogCategories, type BlogPost, type BlogCategory } from '@/features/blog/blog';
+import { listPostComments, countPostComments } from '@/features/comments/comments';
+import { CommentList } from '@/features/comments/comment-list';
+import { CommentForm, type CommentFormLabels } from '@/features/comments/comment-form';
 import { renderRicos } from '@/shared/ricos';
 import { useTranslation, localize, currentLanguage } from '@/shared/i18n';
 import AnalyticsView from '@/shared/analytics-view.astro';
 import { WIX_APPS } from '@wix/essentials';
+import { members } from '@wix/members';
 import { SEO } from '@wix/seo/components';
 import { loadSEOTagsServiceConfig } from '@wix/seo/services';
 import { seoTags } from '@wix/seo';
@@ -55,6 +59,29 @@ if (post) {
 
 const categories: BlogCategory[] = await listBlogCategories(currentLanguage());
 const postCategories = post ? categories.filter((category) => post.categoryIds.includes(category.id)) : [];
+
+let currentMemberId = '';
+try {
+  const memberRes = await members.getCurrentMember();
+  currentMemberId = memberRes.member?._id ?? '';
+} catch {
+  currentMemberId = '';
+}
+
+const commentSection = post ? await listPostComments(post.id) : { items: [] };
+const commentCount = post ? await countPostComments(post.id) : 0;
+
+const commentFormLabels: CommentFormLabels = {
+  label: t('comments.form.label'),
+  placeholder: t('comments.form.placeholder'),
+  submit: t('comments.form.submit'),
+  submitting: t('comments.form.submitting'),
+  success: t('comments.form.success'),
+  pending: t('comments.form.pending'),
+  error: t('comments.form.error'),
+  signIn: t('comments.form.sign-in'),
+  signInCta: t('comments.form.sign-in-cta'),
+};
 
 const articleJsonLd = post
   ? {
@@ -174,6 +201,29 @@ const articleJsonLd = post
               <span class="text-trim">{t('common.shop-the-collection')}</span>
             </a>
           </div>
+
+          <section id="comments" class="mx-auto mt-16 max-w-prose scroll-mt-24" aria-labelledby="comments-heading">
+            <h2 id="comments-heading" class="font-display text-2xl text-ink">{t('comments.heading')}</h2>
+            <p class="mt-1 text-sm text-mute">
+              {t(commentCount === 1 ? 'comments.count-one' : 'comments.count', { count: commentCount })}
+            </p>
+            <div class="mt-6">
+              <CommentList
+                items={commentSection.items}
+                locale={currentLanguage()}
+                labels={{ empty: t('comments.empty'), anonymous: t('comments.anonymous') }}
+              />
+            </div>
+            <div class="mt-10">
+              <CommentForm
+                client:idle
+                postId={post.id}
+                isMember={currentMemberId.length > 0}
+                signInHref={localize(`/api/auth/login?returnToUrl=${localize(`/blog/${post.slug}`)}`)}
+                labels={commentFormLabels}
+              />
+            </div>
+          </section>
         </article>
 
         {related.length > 0 && (

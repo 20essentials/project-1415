@@ -78,6 +78,12 @@ const formatDate = (date: Date | null): string =>
                     {featured.minutesToRead != null && (
                       <span>{t(featured.minutesToRead === 1 ? 'blog.min-read-one' : 'blog.min-read', { count: featured.minutesToRead })}</span>
                     )}
+                    {featured.commentCount != null && featured.commentCount > 0 && (
+                      <span aria-hidden="true">·</span>
+                    )}
+                    {featured.commentCount != null && featured.commentCount > 0 && (
+                      <span>{t(featured.commentCount === 1 ? 'comments.count-one' : 'comments.count', { count: featured.commentCount })}</span>
+                    )}
                   </p>
                   <span class="mt-5 inline-flex items-center gap-2 text-sm font-medium text-accent">
                     {t('blog.read-post')} <span aria-hidden="true">→</span>
@@ -112,10 +118,13 @@ const formatDate = (date: Date | null): string =>
                       </p>
                       <h3 class="mt-2 font-display text-xl leading-snug text-ink">{post.title}</h3>
                       <p class="mt-2 text-sm leading-6 text-ink-soft">{post.excerpt}</p>
-                      <p class="mt-3 flex flex-wrap items-center gap-3">
+                      <p class="mt-3 flex flex-wrap items-center gap-3 text-xs text-mute">
                         {post.firstPublishedDate && <span class="text-xs text-mute">{formatDate(post.firstPublishedDate)}</span>}
                         {post.minutesToRead != null && (
                           <span class="text-xs text-mute">{t(post.minutesToRead === 1 ? 'blog.min-read-one' : 'blog.min-read', { count: post.minutesToRead })}</span>
+                        )}
+                        {post.commentCount != null && post.commentCount > 0 && (
+                          <span class="text-xs text-mute">{t(post.commentCount === 1 ? 'comments.count-one' : 'comments.count', { count: post.commentCount })}</span>
                         )}
                       </p>
                     </a>

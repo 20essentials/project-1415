@@ -18,6 +18,8 @@ export interface BlogPost {
   categoryIds: string[];
   language: string;
   richContent: RicosDocument | null;
+  /** Published comment count (Wix Blog metrics); null when metrics were not requested. */
+  commentCount: number | null;
 }
 
 export interface BlogCategory {
@@ -40,6 +42,7 @@ interface PostRecord {
   language?: string | null;
   media?: { wixMedia?: { image?: string }; displayed?: boolean; altText?: string | null } | null;
   richContent?: unknown;
+  metrics?: { comments?: number | null } | null;
 }
 
 interface CategoryRecord {
@@ -104,6 +107,7 @@ function toPost(record: PostRecord, labelsById: Map<string, string>): BlogPost {
     categoryIds: record.categoryIds ?? [],
     language: record.language ?? '',
     richContent: (record.richContent as RicosDocument | undefined) ?? null,
+    commentCount: typeof record.metrics?.comments === 'number' ? record.metrics.comments : null,
   };
 }
 
@@ -126,7 +130,10 @@ async function categoryLabelsById(ids: string[], language: string): Promise<Map<
 
 export async function listBlogPosts(limit = 50, language: string = PRIMARY_LOCALE): Promise<BlogPost[]> {
   try {
-    const result = await queryPostsElevated({ fieldsets: ['URL'] }).eq('language', language).limit(limit).find();
+    const result = await queryPostsElevated({ fieldsets: ['URL', 'METRICS'] })
+      .eq('language', language)
+      .limit(limit)
+      .find();
     const records = (result.items ?? []).map((record) => ({ ...record, _id: record._id ?? '' }));
     const labelsById = await categoryLabelsById(records.flatMap((record) => record.categoryIds ?? []), language);
     return records.map((record) => toPost(record, labelsById)).filter((post) => post.slug.length > 0);
