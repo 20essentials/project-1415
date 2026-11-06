@@ -1,4 +1,15 @@
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { test, expect, type Page, type Route } from '@playwright/test';
+import { signBookingConfirmation } from '../../src/features/workshops/confirmation-url';
+
+// The dev server validates /booking-confirmation against BOOKING_CONFIRM_SECRET
+// (astro:env), so the stubbed booking must hand back a URL signed with the
+// same secret the server reads from .env.local.
+const ENV_LOCAL = fileURLToPath(new URL('../../.env.local', import.meta.url));
+if (existsSync(ENV_LOCAL)) process.loadEnvFile(ENV_LOCAL);
+const CONFIRM_SECRET = process.env.BOOKING_CONFIRM_SECRET ?? '';
+
 // Seeded Bookings service (see .wix/seeded.json → bookings.services: Care 101);
 // live slot availability in the dev site is empty, so every flow stubs
 // /api/slots and /api/bookings. The assertions check this repo's app behavior,
@@ -14,6 +25,15 @@ const BOOKING_BODY = (id: string, status: string) =>
       localStartDate: SEED_SLOT.localStartDate,
       localEndDate: SEED_SLOT.localEndDate,
     },
+    confirmationUrl: `/booking-confirmation?${signBookingConfirmation(
+      {
+        id,
+        service: 'Care 101',
+        start: SEED_SLOT.localStartDate,
+        end: SEED_SLOT.localEndDate,
+      },
+      CONFIRM_SECRET,
+    )}`,
   });
 
 async function stubSlots(page: Page) {

@@ -1,25 +1,29 @@
 ---
 import Layout from '@/app/layout.astro';
 import { SITE_TIMEZONE, getWorkshopBookingState, type WorkshopBookingState } from '@/features/workshops/bookings';
+import { verifyBookingConfirmationUrl } from '@/features/workshops/confirmation-url-server';
 import { currentLanguage, localize, useTranslation } from '@/shared/i18n';
 
 const { t } = useTranslation();
 
-const id = Astro.url.searchParams.get('id') || Astro.url.searchParams.get('bookingId') || Astro.url.searchParams.get('bookingNumber');
-const service = Astro.url.searchParams.get('service');
-const start = Astro.url.searchParams.get('start') || Astro.url.searchParams.get('startDate');
-const end = Astro.url.searchParams.get('end') || Astro.url.searchParams.get('endDate');
+const params = Astro.url.searchParams;
+const signatureValid = verifyBookingConfirmationUrl(params);
+
+const id = params.get('id');
+const service = params.get('service');
+const start = params.get('start');
+const end = params.get('end');
+
+const hasBooking = Boolean(signatureValid && id && service && start && end);
 
 let resolved: WorkshopBookingState | null = null;
-if (id) {
+if (hasBooking && id) {
+  console.log('[booking-confirmation] signature ok, resolving booking state');
   resolved = await getWorkshopBookingState(id);
 }
 
-const statusParam = Astro.url.searchParams.get('status');
-const status = resolved?.status ?? (statusParam ? statusParam.toUpperCase() : null);
+const status = resolved?.status ?? null;
 const paymentStatus = resolved?.paymentStatus ?? null;
-
-const hasBooking = Boolean(id && service && start && end);
 
 const confirmed = status === 'CONFIRMED' || paymentStatus === 'PAID';
 const pending = status === 'PENDING' || status === 'CREATED';

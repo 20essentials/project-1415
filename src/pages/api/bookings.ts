@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { WorkshopBookingError, WorkshopCheckoutError, createWorkshopBooking } from '@/features/workshops/bookings';
+import { signBookingConfirmationUrl } from '@/features/workshops/confirmation-url-server';
 import { createWorkshopCheckout } from '@/features/workshops/workshop-checkout';
 import { localeUrl } from '@/shared/i18n';
 
@@ -39,6 +40,23 @@ function getOrigin(request: Request): string {
   } catch {
     return 'https://localhost';
   }
+}
+
+interface ReceiptLike {
+  id: string;
+  serviceName: string;
+  localStartDate: string;
+  localEndDate: string;
+}
+
+function confirmationPath(receipt: ReceiptLike, language: string): string {
+  const query = signBookingConfirmationUrl({
+    id: receipt.id,
+    service: receipt.serviceName,
+    start: receipt.localStartDate,
+    end: receipt.localEndDate,
+  });
+  return `${localeUrl('/booking-confirmation', language)}?${query}`;
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -83,15 +101,16 @@ export const POST: APIRoute = async ({ request }) => {
       });
 
       try {
+        const confirmation = confirmationPath(receipt, language);
         const checkoutUrl = await createWorkshopCheckout({
           serviceId: payload.serviceId,
           localStartDate: payload.localStartDate,
           timezone: 'Europe/Rome',
           language,
           postFlowUrl: `${origin}${localeUrl(`/services/${receipt.slug}?booking=cancelled`, language)}`,
-          thankYouPageUrl: `${origin}/booking-confirmation?id=${encodeURIComponent(receipt.id)}&service=${encodeURIComponent(receipt.serviceName)}&start=${encodeURIComponent(receipt.localStartDate)}&end=${encodeURIComponent(receipt.localEndDate)}`,
+          thankYouPageUrl: `${origin}${confirmation}`,
         });
-        return json({ booking: receipt, checkoutUrl }, 200);
+        return json({ booking: receipt, checkoutUrl, confirmationUrl: confirmation }, 200);
       } catch (checkoutError) {
         if (checkoutError instanceof WorkshopCheckoutError) {
           const code = checkoutError.code === 'INVALID_INPUT' ? 'INVALID_INPUT' : 'CHECKOUT_UNAVAILABLE';
@@ -111,7 +130,7 @@ export const POST: APIRoute = async ({ request }) => {
       values,
       paymentOption: 'OFFLINE',
     });
-    return json({ booking: receipt }, 200);
+    return json({ booking: receipt, confirmationUrl: confirmationPath(receipt, language) }, 200);
   } catch (error) {
     if (error instanceof WorkshopBookingError) {
       return json({ error: error.code }, ERROR_STATUS[error.code] ?? 400);

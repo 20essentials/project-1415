@@ -175,7 +175,6 @@ const relatedWorkshops = otherWorkshops.filter((candidate) => candidate.id !== w
             serviceId={workshop.id}
             timeZone={SITE_TIMEZONE}
             locale={currentLanguage()}
-            confirmationBase={localize('/booking-confirmation')}
             fields={bookingFields}
             labels={{ ...bookingLabels, submitOnline: t('services.payment.book-and-pay'), submittingOnline: t('services.payment.redirecting'), checkoutUnavailable: t('services.payment.checkout-unavailable'), payOffline: t('services.payment.pay-offline'), cancelledBanner: t('services.cancelled-banner'), retryBooking: t('services.retry-booking') }}
             allowOnlinePayment={true}

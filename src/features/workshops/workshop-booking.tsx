@@ -38,7 +38,6 @@ interface WorkshopBookingProps {
   serviceId: string;
   timeZone: string;
   locale: string;
-  confirmationBase: string;
   fields: BookingField[];
   labels?: Partial<WorkshopBookingLabels>;
   allowOnlinePayment?: boolean;
@@ -68,6 +67,7 @@ interface BookingReceiptDto {
 interface BookingResponse {
   booking?: BookingReceiptDto;
   checkoutUrl?: string;
+  confirmationUrl?: string;
   error?: string;
 }
 
@@ -162,7 +162,6 @@ export function WorkshopBooking({
   serviceId,
   timeZone,
   locale,
-  confirmationBase,
   fields,
   labels: labelOverrides,
   allowOnlinePayment = false,
@@ -281,14 +280,8 @@ export function WorkshopBooking({
         return;
       }
 
-      const params = new URLSearchParams({
-        id: data.booking.id,
-        service: data.booking.serviceName,
-        start: data.booking.localStartDate,
-        end: data.booking.localEndDate,
-        status: data.booking.status,
-      });
-      window.location.assign(`${confirmationBase}?${params.toString()}`);
+      if (!data.confirmationUrl) throw new Error("MISSING_CONFIRMATION_URL");
+      window.location.assign(data.confirmationUrl);
     } catch (error) {
       console.error("[workshop-booking] booking failed:", error);
       setSubmitState("error");
