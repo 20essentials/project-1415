@@ -46,6 +46,10 @@ export default defineConfig({
         access: 'public',
         optional: true,
       }),
+      BOOKING_CONFIRM_SECRET: envField.string({
+        context: 'server',
+        access: 'secret',
+      }),
     },
   },
 });
