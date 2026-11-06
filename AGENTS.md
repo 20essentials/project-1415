@@ -162,6 +162,7 @@ Estas reglas existen porque ya cometí cada error. No son estilo, son calidad.
 
 - Todo output temporal (logs de servidores, respuestas curl, dumps, patches) se escribe en `./.tmp/` de este proyecto (ya en `.gitignore`). Setup ref: `/setup-opencode-temp`.
 - **Nunca escribir en `/tmp`, `C:\Temp` ni `AppData\Local\Temp`**: el shell no está autorizado ahí y cada escritura dispara el prompt de permisos y ataja al usuario la sesión. Redirecciones tipo `npm run dev > /tmp/x.log` o `curl ... > /tmp/x.json` están prohibidas; usar `./.tmp/x.log`.
+- **El puerto 4321 se cierra siempre al terminar** (`npm run dev`, `astro dev`, `wix dev`): matar el proceso que escucha en 4321 y confirmar que responde `000`/no responde. Nunca dejarlo corriendo entre mensajes ni "por si el usuario lo quiere".
 
 ### Alcance (no asumir más de lo pedido)
 

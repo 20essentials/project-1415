@@ -7,12 +7,48 @@ la fuente de verdad del **CÓMO** ejecutar cada paso.
 
 | Paso | Estado | Notas |
 | :-- | :------ | :------ |
-| 1 – 34 | ✅ done | Completados y verificados |
+| 0 | ✅ done | Scaffold + Wix setup (login, proyecto, apps, env) |
+| 1 | ✅ done | Design system + header + navbar + hero |
+| 2 | ✅ done | Footer completo |
+| 3 | ✅ done | Seed del catálogo (5 plantas, variantes, categorías, imágenes) |
+| 4 | ✅ done | Home landing scroll-world |
+| 5 | ✅ done | Shop + páginas de categoría |
+| 6 | ✅ done | Product detail (variantes + add-to-cart) |
+| 7 | ✅ done | Cart + checkout nativo Wix + badge en nav |
+| 8 | ✅ done | About + Contact (Wix Forms) |
+| 9 | ✅ done | SEO + accesibilidad + polish |
+| 10 | ✅ done | Member login + account (Wix Members Area) |
+| 11 | ✅ done | Plant care journal (CMS) |
+| 12 | ✅ done | Multilingual support (en, es, it) + Wix Translation |
+| 13 | ✅ done | SEO main pages + robots/sitemap |
+| 14 | ✅ done | SEO item pages con `@wix/seo` |
+| 15 | ✅ done | Lookbook estacional |
+| 16 | ✅ done | Reseñas de producto |
+| 17 | ✅ done | Gift cards landing |
+| 18 | ✅ done | Newsletter signup |
+| 19 | ✅ done | Site search |
+| 20 | ✅ done | Workshops (Bookings) |
+| 21 | ✅ done | Analytics + consent |
+| 22 | ✅ done | Performance audit |
+| 23 | ✅ done | Build + release (sitio en vivo) |
+| 24 | ✅ done | Historial de órdenes (miembros) |
+| 25 | ✅ done | Filtros y ordenación del catálogo |
+| 26 | ✅ done | Cupones/promo en el carrito |
+| 27 | ✅ done | Escribir reseña de producto |
+| 28 | ✅ done | Favoritos (wishlist) |
+| 29 | ✅ done | Perfil de miembro editable |
+| 30 | ✅ done | Gift Cards: app oficial + compra real |
+| 31 | ✅ done | Performance: métricas post-release + vídeo |
+| 32 | ✅ done | Schemas CMS como código (Data Collections extension) |
+| 33 | ✅ done | Restock alerts: event extension + dashboard page |
+| 34 | ✅ done | CI/CD + env tipado |
 | 35 | ✅ done | Analytics: eventos faltantes + plataformas externas + consentimiento granular |
 | 36 | ✅ done | Workshops pagados: checkout online (Bookings) |
 | 37 | ✅ done | Plant Parent Club: membresía con Pricing Plans + contenido gated |
-| 38 – 40 | ✅ done | Blog con Wix Blog: app + feature headless + 12 posts (el Journal sigue en CMS) |
-| 41 | ✅ done | Blog: 12 posts traducidos a es/it (language-aware) |
+| 38 | ✅ done | Wix Blog: app + feature blog (feed, categorías, post) |
+| 39 | ✅ done | Blog: seed de 4 artículos reales (Draft Posts API) |
+| 40 | ✅ done | Blog: pulido (teaser home, analytics, E2E) |
+| 41 | ✅ done | Blog: traducción de los 12 posts a es/it (language-aware) |
 | 42 | ✅ done | Wix Events: Open Day (RSVP) + tour pagado en `/events` |
 | 43 | ✅ done | Wix Donations: campaña con goal en `/donate` |
 | 44 | ✅ done | Wix Restaurants: menú + cena Jungle Tasting en `/dining` |
@@ -20,9 +56,11 @@ la fuente de verdad del **CÓMO** ejecutar cada paso.
 | 46 | ✅ done | Smart Chat: gate de instalación + API backend |
 | 47 | ✅ done | Smart Chat: widget flotante + vlist |
 | 48 | ✅ done | Smart Chat: contacto, handoff y hardening |
-| 49 – 51 | ✅ done | FAQ app + Blog comments + Waitlist de talleres (CMS fallback) |
+| 49 | ✅ done | FAQ app: `/faq` con categorías + búsqueda de cuidado |
+| 50 | ✅ done | Blog comments: leer + postear en el Journal |
+| 51 | ✅ done | Talleres: waitlist CMS (la API nativa es solo EVENT) |
 
-**Total:** 51/51 steps materializados completados.
+**Total:** 52/52 steps completados (0–51).
 Los items ⚪ parket viven en su sección aparte: no se materializan ni ejecutan por iniciativa del agente — solo cuando el propietario lo pida explícitamente.
 
 ---
