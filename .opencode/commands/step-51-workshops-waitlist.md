@@ -3,7 +3,7 @@ description: Step 51 — Lista de espera en talleres (Bookings Waitlist API) · 
 ---
 # Step 51 — Lista de espera en talleres (Bookings Waitlist API)
 
-> **Siguiente:** `/generate-next-steps` (o el paso que el propietario pida)
+> **Siguiente:** `/step-52-booking-confirmation-signed-url` (o `/generate-next-steps`)
 
 ## Objetivo
 

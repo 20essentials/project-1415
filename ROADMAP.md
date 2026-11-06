@@ -59,8 +59,11 @@ la fuente de verdad del **CÓMO** ejecutar cada paso.
 | 49 | ✅ done | FAQ app: `/faq` con categorías + búsqueda de cuidado |
 | 50 | ✅ done | Blog comments: leer + postear en el Journal |
 | 51 | ✅ done | Talleres: waitlist CMS (la API nativa es solo EVENT) |
+| 52 | ✅ done | Security: booking confirmation con URL firmada (HMAC) |
+| 53 | materialized | Security: rate limit en APIs de checkout |
+| 54 | materialized | Security: guard de pago offline vs config del servicio |
 
-**Total:** 52/52 steps completados (0–51).
+**Total:** 53/55 steps completados (0–54): 53–54 materializados, pendientes de ejecución.
 Los items ⚪ parket viven en su sección aparte: no se materializan ni ejecutan por iniciativa del agente — solo cuando el propietario lo pida explícitamente.
 
 ---
@@ -125,6 +128,9 @@ Estados: `pending` → `materialized` (ya existe su step-N file) → `✅ done` 
 | 49 | FAQ app: `/faq` con categorías + búsqueda de cuidado | ✅ done | `step-49-faq-app.md` |
 | 50 | Blog comments: leer + postear en el Journal | ✅ done | `step-50-blog-comments.md` |
 | 51 | Talleres: lista de espera CMS (la API nativa es solo para sesiones EVENT) | ✅ done | `step-51-workshops-waitlist.md` |
+| 52 | Booking confirmation con URL firmada (HMAC) — fix IDOR de estado de reservas | ✅ done | `step-52-booking-confirmation-signed-url.md` |
+| 53 | Rate limit en las APIs de checkout sin auth (throttle por IP) | materialized | `step-53-checkout-api-rate-limit.md` |
+| 54 | Guard de pago offline vs `payment.options.inPerson` del servicio | materialized | `step-54-offline-payment-guard.md` |
 
 ## Premium / parket (solo cuando el propietario pida)
 
