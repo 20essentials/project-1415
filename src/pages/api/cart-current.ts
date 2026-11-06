@@ -1,22 +1,35 @@
 import type { APIRoute } from 'astro';
 import { currentCart } from '@wix/ecom';
 
-// `currentCart.getCurrentCart` responde 404 cuando el visitante aún no tiene
-// carrito; si la llamada sale del browser el navegador loguea "Failed to load
-// resource" en cada página (badge del header). Este route hace la llamada
-// server-side y devuelve 200 con `cart: null` como comportamiento por defecto.
+function json(body: unknown): Response {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+// 404 es el estado normal del header en la primera visita (sin carrito): no se
+// loguea. Cualquier otro fallo sí, y se marca con `error` para que la UI lo
+// distinga de un carrito realmente vacío.
+function isMissingCart(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const e = error as {
+    status?: unknown;
+    details?: { applicationError?: { code?: unknown } };
+  };
+  return (
+    e.status === 404 ||
+    e.details?.applicationError?.code === 'OWNED_CART_NOT_FOUND'
+  );
+}
+
 export const GET: APIRoute = async () => {
   try {
     const cart = await currentCart.getCurrentCart();
-    return new Response(JSON.stringify({ cart }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return json({ cart });
   } catch (error) {
+    if (isMissingCart(error)) return json({ cart: null });
     console.error('[cart-current-api] getCurrentCart failed:', error);
-    return new Response(JSON.stringify({ cart: null }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return json({ cart: null, error: 'FAILED' });
   }
 };

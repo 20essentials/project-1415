@@ -70,6 +70,7 @@ export interface CartLabels {
   errorUpdate: string;
   errorRemove: string;
   errorCheckout: string;
+  retry: string;
   quantityFor: string;
   decreaseQty: string;
   increaseQty: string;
@@ -100,6 +101,7 @@ const DEFAULT_LABELS: CartLabels = {
   errorUpdate: "Failed to update cart",
   errorRemove: "Failed to remove item",
   errorCheckout: "Failed to start checkout",
+  retry: "Try again",
   quantityFor: "Quantity for {{name}}",
   decreaseQty: "Decrease quantity",
   increaseQty: "Increase quantity",
@@ -135,6 +137,7 @@ interface CartViewProps {
 
 interface CartPayload {
   cart?: unknown;
+  error?: string;
 }
 
 export function CartView({
@@ -155,18 +158,20 @@ export function CartView({
   const refreshCart = async () => {
     setLoading(true);
     setError(null);
-    // Mismo route que el badge: el navegador no ve el 404 de getCurrentCart
-    // para un visitante sin carrito; cart null = carrito vacio.
+    // Mismo route que el badge: cart null = carrito vacio (sin carrito aun).
+    // `error: 'FAILED'` es un fallo real: se muestra el mensaje suave con retry.
     try {
       const res = await fetch("/api/cart-current");
-      if (!res.ok) {
+      const payload = res.ok ? ((await res.json()) as CartPayload) : null;
+      if (!payload || payload.error) {
         setCart(null);
-      } else {
-        const payload = (await res.json()) as CartPayload;
-        setCart(payload.cart ?? null);
-        if (payload.cart) publishCartUpdate(payload.cart);
+        setError(labels.errorLoad);
+        return;
       }
+      setCart(payload.cart ?? null);
+      if (payload.cart) publishCartUpdate(payload.cart);
     } catch {
+      setCart(null);
       setError(labels.errorLoad);
     } finally {
       setLoading(false);
@@ -211,8 +216,8 @@ export function CartView({
       } else {
         await refreshCart();
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : labels.errorUpdate);
+    } catch {
+      setError(labels.errorUpdate);
     } finally {
       setUpdating(false);
     }
@@ -241,8 +246,8 @@ export function CartView({
       } else {
         await refreshCart();
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : labels.errorRemove);
+    } catch {
+      setError(labels.errorRemove);
     } finally {
       setUpdating(false);
     }
@@ -343,8 +348,8 @@ export function CartView({
         value: total ?? undefined,
       });
       window.location.href = fullUrl;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : labels.errorCheckout);
+    } catch {
+      setError(labels.errorCheckout);
       setCheckoutLoading(false);
     }
   };
@@ -366,12 +371,21 @@ export function CartView({
         <div className="cart-header">
           <h1>{labels.title}</h1>
         </div>
-        <div className="cart-empty">
-          <p>{labels.empty}</p>
-          <a className="btn btn-primary" href={continueHref}>
-            <span className="text-trim">{labels.continueShopping}</span>
-          </a>
-        </div>
+        {error ? (
+          <div className="cart-empty" role="alert">
+            <p>{error}</p>
+            <button type="button" className="btn btn-primary" onClick={() => void refreshCart()}>
+              <span className="text-trim">{labels.retry}</span>
+            </button>
+          </div>
+        ) : (
+          <div className="cart-empty">
+            <p>{labels.empty}</p>
+            <a className="btn btn-primary" href={continueHref}>
+              <span className="text-trim">{labels.continueShopping}</span>
+            </a>
+          </div>
+        )}
       </div>
     );
   }

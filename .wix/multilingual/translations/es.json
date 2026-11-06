@@ -102,6 +102,7 @@
   "cart.quantity-for": "Cantidad de {{name}}",
   "cart.redirecting": "Redirigiendo…",
   "cart.remove": "Eliminar",
+  "cart.retry": "Reintentar",
   "cart.subtotal": "Subtotal",
   "cart.summary": "Resumen del pedido",
   "cart.title": "Carrito",
