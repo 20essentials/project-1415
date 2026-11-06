@@ -3,7 +3,6 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig, envField } from 'astro/config';
 import wix from '@wix/astro';
 import wixPages from '@wix/astro-pages';
-
 import react from '@astrojs/react';
 import wixHostingAdapter from '@wix/astro-wix-hosting-adapter';
 import tailwindcss from '@tailwindcss/vite';
